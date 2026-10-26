@@ -20,7 +20,7 @@ const TODAY = new Date("2026-11-01");
 const DOCS = ["proforma_invoice", "packing_list", "insurance_certificate"] as const;
 
 const norm = (v: unknown) =>
-  typeof v === "number" ? Math.round(v * 100) / 100 : typeof v === "string" ? v.toLowerCase().replace(/[^a-z0-9.]/g, "") : v;
+  typeof v === "number" ? Math.round(v * 100) / 100 : typeof v === "string" ? v.toLowerCase().replace(/^rc\s*/, "").replace(/[^a-z0-9.]/g, "") : v;
 
 /** Compare flat scalar fields + line fields; returns [matched, total, mismatches]. */
 function score(truth: Record<string, unknown>, got: Record<string, unknown>, prefix = ""): [number, number, string[]] {

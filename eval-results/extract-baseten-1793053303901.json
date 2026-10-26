@@ -1,0 +1,19 @@
+[
+  {
+    "id": "case_12",
+    "expected": [
+      "INVOICE_TOTAL_MISMATCH",
+      "PACKING_QTY_MISMATCH",
+      "VAGUE_DESCRIPTION"
+    ],
+    "found": [
+      "INVOICE_TOTAL_MISMATCH",
+      "VAGUE_DESCRIPTION",
+      "PACKING_QTY_MISMATCH"
+    ],
+    "mismatches": [
+      "proforma_invoice.buyer.rc_number: expected \"RC 1688213\" got \"1688213\"",
+      "packing_list.buyer.rc_number: expected \"RC 1688213\" got \"1688213\""
+    ]
+  }
+]

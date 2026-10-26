@@ -1,0 +1,36 @@
+
+=== ha (6s) verified=true,true
+* Jimillar Invoice Bai Daidaita Ba
+  Jimillar layukan kaya = USD 177,589.68, amma invoice ya nuna 177,739.68 (bambanci 150.00). Gyara: Don Allah ku nemi mai kaya ya sake bayar da proforma invoice da jimilla daidai.
+* Layi na 1: Bayani Bai Cika Ba
+  "Spare parts" ba za a iya sa mata HS code ba. Kwastam da banki suna buƙatar make, model, kayan da aka yi kaya da shi ko specification. Gyara: Don Allah ku nemi mai kaya ya bayar da cikakken bayanin kasuwanci (menene kayan, an yi shi da me, girma/capacity, da amfaninsa).
+
+=== yo (16s) verified=true,true
+* Àpapọ̀ owó inú ìwé-owó kò pé
+  Àpapọ̀ àwọn nǹkan = USD 177,589.68, ṣùgbọ́n ìwé-owó sọ pé 177,739.68 (ìyàtọ̀ 150.00). Àtúnṣe: Ẹ jọ̀wọ́ sọ fún olùpèsè kí ó tún ìwé-owó proforma pẹ̀lú àpapọ̀ tó tọ́ ránṣẹ́.
+* Laini 1: Àpèjúwe kò ṣe kedere tó
+  "Spare parts" kò tó fún ìpínsọ́ HS code. Kọ́stọ́mù àti báǹkì nílò orúkọ ẹ̀rọ, àwòṣe, ohun èlò tí a fi ṣe é tàbí àlàyé pípéye. Àtúnṣe: Ẹ jọ̀wọ́ beere lọ́wọ́ olùpèsè fún àpèjúwe ọjà kíkún (kí ni ó jẹ́, ohun èlò tí a fi ṣe é, ìwọ̀n/agbára, bí a ṣe ń lò ó).
+
+=== ig (8s) verified=true,true
+* Ngụkọta akwụkwọ ọnụahịa adabaghị
+  Ngụkọta ọnụahịa niile dị n'ahịrị bụ USD 177,589.68, mana akwụkwọ ọnụahịa dere 177,739.68 (ọdịiche bụ 150.00). Ihe a ga-eme: Biko gwa onye na-eweta ngwaahịa ka ọ wepụtaghachi akwụkwọ ọnụahịa proforma nwere ngụkọta ziri ezi.
+* Ahịrị 1: Nkọwa edoghị anya
+  Enweghị ike iji "Spare parts" chọpụta koodu HS. Kọstọm na ụlọ akụ chọrọ nkọwa dịka make, model, material ma ọ bụ specification. Ihe a ga-eme: Biko rịọ onye na-eweta ngwaahịa ka ọ nye nkọwa azụmahịa zuru oke (ihe ọ bụ, ihe e ji mee ya, nha/ikike, ojiji ya).
+
+=== pcm (8s) verified=true,true
+* Invoice total no balance
+  Good day Sir/Ma, abeg check am. Line items na USD 177,589.68 but invoice total na 177,739.68 (difference na 150.00). Abeg tell supplier make dem reissue proforma invoice with correct total.
+* Line 1: Description too vague, e no clear
+  Good day Sir/Ma, "Spare parts" no enough to get HS code. Customs and bank need make, model, material or specification. Abeg tell supplier make dem give full commercial description (wetin e be, material, size/capacity, and wetin dem dey use am for).
+
+=== zh (6s) verified=true,true
+* 发票总额对不上
+  您好，明细合计为 USD 177,589.68，但发票上写的是 177,739.68（相差 150.00）。麻烦请供应商重新开具一份更正总金额的形式发票，谢谢。
+* 第1行：品名描述过于笼统
+  您好，“Spare parts” 无法归类 HS 编码。海关和银行需要品牌、型号、材质或规格。请让供应商提供完整的商业描述（具体是什么、材质、尺寸/容量、用途），谢谢。
+
+=== fr (5s) verified=true,true
+* Total facture ne correspond pas
+  Somme des lignes = USD 177,589.68, mais la facture indique 177,739.68 (écart de 150.00). Correction : veuillez demander au fournisseur de réémettre la facture proforma avec le total corrigé.
+* Ligne 1 : description trop vague
+  "Spare parts" ne permet pas de déterminer le code SH. La douane et la banque ont besoin de la marque, du modèle, de la matière ou des spécifications. Correction : veuillez demander au fournisseur une description commerciale complète (nature du produit, matière, taille/capacité, usage).

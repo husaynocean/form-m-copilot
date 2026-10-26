@@ -1,0 +1,33 @@
+#1   8502.12  Diesel generating set, 100 kVA, 3-phase  -> model 8502.12 (high)
+#3   8502.13  Diesel generator 500 kVA soundproof  -> model 8502.13 (high)
+#8   8502.20  Petrol generator 3.5 kVA portable  -> model 8502.20 (high)
+#2   2002.90  Tomato paste in drums, 28-30% brix, 220 L  -> model 2002.90 (high)
+#1   3902.10  Polypropylene granules, injection grade  -> model 3902.10 (high)
+#1   8415.10  Split air conditioner, 1.5 HP, inverter  -> model 8415.10 (high)
+#3   5208.32  Woven fabric, 100% cotton, dyed, plain weave, 150 g/m2  -> model 5208.32 (high)
+#14  3004.90  Paracetamol tablets 500 mg, 10x10 blister  -> model 3004.90 (high)
+#1   8477.10  Plastic injection moulding machine, 250 T  -> model 8477.10 (high)
+#2   1001.19  Durum wheat, unmilled  -> model 1001.19 (high)
+#1   9405.42  LED floodlight 200 W, IP65  -> model 9405.42 (high)
+#1   4819.10  Corrugated carton boxes, flat-packed  -> model 4819.10 (high)
+#2   8541.43  Monocrystalline solar panels 550 W  -> model 8541.43 (high)
+#2   8517.13  Smartphones, 128 GB, dual SIM  -> model 8517.13 (high)
+#1   8471.30  Laptop computers 15.6 inch  -> model null (low) ✗
+#1   4011.10  New pneumatic rubber tyres for passenger cars  -> model 4011.10 (high)
+#2   1701.14  Raw cane sugar, ICUMSA 600-1200  -> model 1701.14 (high)
+#3   0303.54  Frozen mackerel, whole  -> model null (low) ✗
+#3   0402.21  Milk powder, full cream, 26% fat, in 25 kg bags  -> model 0402.21 (high)
+#2   2523.29  Portland cement, grey  -> model 2523.29 (high)
+#1   7210.41  Galvanised steel roofing sheets, corrugated  -> model 7210.41 (medium)
+#2   8507.60  Lithium-ion batteries for solar storage  -> model 8507.60 (high)
+#1   1511.90  Refined palm olein, edible  -> model 1511.90 (high)
+#1   3102.10  Urea fertilizer, 46% N, granular  -> model 3102.10 (high)
+#1   6309.00  Second-hand clothing, worn  -> model 6309.00 (high)
+#1   8429.52  Wheeled excavator, hydraulic, 360 degree  -> model 8429.52 (high)
+#2   6907.21  Glazed porcelain floor tiles, water absorption below 0.5%, 60x60 cm  -> model 6907.21 (high)
+#8   8711.20  Motorcycles, 125 cc petrol engine  -> model 8711.20 (high)
+#1   8413.70  Electric water pumps, centrifugal, 1 HP  -> model 8413.70 (high)
+#7   8544.49  Insulated copper electric cable, 2.5 mm2, 450/750 V  -> model 8544.49 (high)
+
+Retrieval recall: @1 14/30  @5 26/30  @15 30/30
+Model: exact 28/30, correct heading 28/30, abstained 2

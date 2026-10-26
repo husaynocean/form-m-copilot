@@ -1,0 +1,16 @@
+[
+  {
+    "id": "case_12",
+    "expected": [
+      "INVOICE_TOTAL_MISMATCH",
+      "PACKING_QTY_MISMATCH",
+      "VAGUE_DESCRIPTION"
+    ],
+    "found": [],
+    "mismatches": [
+      "proforma_invoice: FAILED fetch failed",
+      "packing_list: FAILED fetch failed",
+      "insurance_certificate: FAILED fetch failed"
+    ]
+  }
+]

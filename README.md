@@ -13,6 +13,13 @@ The extraction pipeline also runs on Meta open-weights models, so a bank could h
 
 Built for the Meta Global AI Developer Hackathon (Indie Developer track, "Build for Your World").
 
+## What was built when
+
+Everything in this repository was created for this hackathon. Commit history is the record.
+
+- **26 Oct 2026 (before kickoff):** synthetic test data only (`samples/`, `scripts/generate_samples.py`). This is test material, not a product feature, and is not shown as a feature in the demo.
+- **26 Oct – 4 Nov 2026 (build period):** all application code: extraction, validation agent, HS-code assistant, Form M draft, WhatsApp channel, open-weights deployment.
+
 ## Synthetic test pack
 
 `samples/` holds 12 synthetic import cases (3 documents each, as clean PDFs and phone-style photos) with a ground-truth `answer_key.json` per case. 3 cases are clean, 9 contain deliberate errors:

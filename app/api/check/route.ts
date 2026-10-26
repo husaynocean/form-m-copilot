@@ -2,7 +2,7 @@ import { extractDocument } from "@/lib/extract";
 import { validate } from "@/lib/validate";
 import { buildFormMDraft } from "@/lib/formm";
 import { checkPrintedHsCodes, suggestHs, type HsSuggestion } from "@/lib/hs";
-import type { DocumentSet, Extraction } from "@/lib/schema";
+import type { DocumentSet, Extraction, Issue } from "@/lib/schema";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -41,6 +41,7 @@ export async function POST(req: Request) {
         send({ type: "start", files: files.map((f) => f.name) });
 
         const docs: DocumentSet = {};
+        const uncertain: string[] = [];
         const trace: Record<string, unknown>[] = [];
         await Promise.all(
           files.map(async (f, index) => {
@@ -50,7 +51,8 @@ export async function POST(req: Request) {
               const e: Extraction = r.extraction;
               const dup = Boolean(docs[e.doc_type]);
               if (!dup) (docs as Record<string, Extraction>)[e.doc_type] = e;
-              const ev = { index, file: f.name, status: dup ? "duplicate" : "ok", doc_type: e.doc_type, model: r.model, ms: r.ms, repaired: r.repaired };
+              if (r.verification?.uncertain.length) uncertain.push(...r.verification.uncertain);
+              const ev = { index, file: f.name, status: dup ? "duplicate" : "ok", doc_type: e.doc_type, model: r.model, ms: r.ms, repaired: r.repaired, verification: r.verification };
               trace.push(ev);
               send({ type: "doc", ...ev });
             } catch (err) {
@@ -67,7 +69,17 @@ export async function POST(req: Request) {
         }
 
         send({ type: "stage", stage: "validate" });
-        const issues = [...validate(docs), ...checkPrintedHsCodes(docs)];
+        const issues: Issue[] = [...validate(docs), ...checkPrintedHsCodes(docs)];
+        if (uncertain.length) {
+          issues.push({
+            code: "UNCERTAIN_READING",
+            severity: "warning",
+            title: "Please confirm these amounts by eye",
+            detail: `Three independent reads of the invoice disagreed on: ${uncertain.join(", ")}.`,
+            evidence: uncertain.map((field) => ({ doc: "proforma_invoice" as const, field, value: null })),
+            fix: "Check these figures on the original document; the photo may be blurred or folded there.",
+          });
+        }
         send({ type: "issues", issues });
 
         send({ type: "stage", stage: "hs" });

@@ -10,7 +10,7 @@ import type { Link, Phase, SheetState } from "@/components/DocScene";
 const DocScene = dynamic(() => import("@/components/DocScene"), { ssr: false, loading: () => <div className="scene" /> });
 
 interface HsSuggestion { line: number; code: string | null; official_text: string | null; confidence: string; reason: string; missing_info: string | null }
-interface DocEvent { index: number; file: string; status: string; doc_type?: string; model?: string; ms?: number; repaired?: boolean; error?: string }
+interface DocEvent { index: number; file: string; status: string; doc_type?: string; model?: string; ms?: number; repaired?: boolean; error?: string; verification?: { rereads: number; agreed: boolean; corrected: string[]; uncertain: string[] } }
 interface Result { issues: Issue[]; draft: FormMDraft; hs: HsSuggestion[]; ms: number }
 
 const DEMOS = [
@@ -277,6 +277,15 @@ export default function Home() {
                           {d.status === "ok" ? "✓" : d.status === "failed" ? "✕" : "•"} {d.doc_type ? DOC_LABEL[d.doc_type] : d.file}
                           {d.ms ? <span className="mono"> {(d.ms / 1000).toFixed(1)}s</span> : null}
                           {d.repaired ? <span className="tag">self-repaired</span> : null}
+                          {d.verification?.rereads ? (
+                            <span className="tag">
+                              {d.verification.corrected.length
+                                ? `totals re-read ${d.verification.rereads + 1}× · corrected`
+                                : d.verification.uncertain.length
+                                ? "totals unclear"
+                                : `totals re-read ${d.verification.rereads + 1}× · agree`}
+                            </span>
+                          ) : null}
                         </span>
                       ))}
                     </div>

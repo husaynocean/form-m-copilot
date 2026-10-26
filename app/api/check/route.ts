@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { extractDocument } from "@/lib/extract";
 import { validate } from "@/lib/validate";
 import { buildFormMDraft } from "@/lib/formm";
+import { checkPrintedHsCodes, suggestHs, type HsSuggestion } from "@/lib/hs";
 import type { DocumentSet, Extraction } from "@/lib/schema";
 
 export const runtime = "nodejs";
@@ -53,7 +54,26 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Could not read any of the documents.", trace }, { status: 502 });
   }
 
-  const issues = validate(docs);
+  const issues = [...validate(docs), ...checkPrintedHsCodes(docs)];
   const draft = buildFormMDraft(docs);
-  return NextResponse.json({ docs, issues, draft, trace, ms: Date.now() - started });
+
+  // HS assistant: suggest codes for lines with no code or a flagged code.
+  const flagged = new Set(
+    issues.filter((i) => i.code.startsWith("HS_CODE_")).map((i) => Number(/lines\[(\d+)\]/.exec(i.evidence[0]?.field ?? "")?.[1])),
+  );
+  const lines = docs.proforma_invoice?.lines ?? [];
+  const hs: (HsSuggestion & { line: number })[] = [];
+  await Promise.all(
+    lines.map(async (l, i) => {
+      if ((l.hs_code && !flagged.has(i)) || !l.description) return;
+      try {
+        hs.push({ line: i, ...(await suggestHs(l.description)) });
+      } catch (e) {
+        trace.push({ file: `hs line ${i + 1}`, status: "failed", error: String((e as Error).message).slice(0, 200) });
+      }
+    }),
+  );
+  hs.sort((a, b) => a.line - b.line);
+
+  return NextResponse.json({ docs, issues, draft, hs, trace, ms: Date.now() - started });
 }

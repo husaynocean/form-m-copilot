@@ -58,11 +58,11 @@ INCOTERMS = ["FOB", "CFR", "CIF"]
 
 # (description, HS code, unit, unit price range, kg per unit)
 PRODUCTS = [
-    ("Diesel generating set, 100 kVA, 3-phase", "8502.13", "set", (6500, 9000), 1450),
+    ("Diesel generating set, 100 kVA, 3-phase", "8502.12", "set", (6500, 9000), 1450),
     ("Tomato paste in drums, 28-30% brix, 220 L", "2002.90", "drum", (180, 240), 235),
     ("Polypropylene granules, injection grade", "3902.10", "MT", (1050, 1300), 1000),
     ("Split air conditioner, 1.5 HP, inverter", "8415.10", "unit", (210, 290), 38),
-    ("Woven cotton fabric, dyed, 150 cm width", "5208.32", "metre", (1.8, 3.2), 0.18),
+    ("Woven fabric, 100% cotton, dyed, plain weave, 150 g/m2", "5208.32", "metre", (1.8, 3.2), 0.18),
     ("Paracetamol tablets 500 mg, 10x10 blister", "3004.90", "carton", (14, 22), 6),
     ("Plastic injection moulding machine, 250 T", "8477.10", "set", (38000, 52000), 9800),
     ("Durum wheat, unmilled", "1001.19", "MT", (290, 360), 1000),

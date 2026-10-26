@@ -46,7 +46,9 @@ Regenerate with `python3 scripts/generate_samples.py` (needs `reportlab`, `Pillo
 ```
 photos ──► 1. Extract (Muse Spark vision → typed JSON, Zod-validated, self-repair on bad JSON)
        ──► 2. Validate (deterministic TypeScript rules: arithmetic, names, quantities, ports, currency, dates)
-       ──► 3. Form M draft (every field traced to its source document) + fix-list
+       ──► 3. HS-code assistant (BM25 over 5,612 official HS 2022 subheadings → model picks from shortlist → code verified)
+       ──► 4. Form M draft (every field traced to its source document) + fix-list
+       ──► 5. Fix-list in English, Hausa or Pidgin (every figure verified unchanged after translation)
 ```
 
 The model only reads documents. Every flag is computed in code, so results are reproducible and explainable to a bank officer.
@@ -57,8 +59,11 @@ The model only reads documents. Every flag is computed in code, so results are r
 | `lib/extract.ts` | Classify + extract prompt, schema validation, repair loop |
 | `lib/validate.ts` | Cross-document rule engine |
 | `lib/formm.ts` | Form M draft builder |
+| `lib/hs.ts` | HS retrieval, model choice with verification, printed-code checks |
+| `lib/explain.ts` | Hausa / Pidgin explanations with number-preservation check |
 | `app/api/check` | Upload → extract (parallel) → validate → draft |
 | `scripts/eval-rules.ts` | Rule engine vs. answer keys (perfect extraction) |
+| `scripts/eval-hs.ts` | HS assistant on 30 hand-checked import descriptions (`samples/hs_testset.json`) |
 | `scripts/eval-extract.ts` | Full pipeline on the photos vs. answer keys (needs a model key) |
 
 ## Run locally
@@ -68,5 +73,10 @@ npm install
 cp .env.example .env.local   # add a key for META, BASETEN or an OpenAI-compatible endpoint
 npm run dev                  # http://localhost:3000, try "Sample B"
 npm run eval:rules           # rule engine accuracy
+npm run eval:hs              # HS shortlist recall (add -- --model to score the model's choice)
 npm run eval:extract         # end-to-end accuracy on the 12 synthetic cases
 ```
+
+## Data
+
+`data/hs-2022.csv`: Harmonized System 2022 nomenclature from [datasets/harmonized-system](https://github.com/datasets/harmonized-system), ODC Public Domain Dedication and Licence (PDDL). Rebuild the index with `python3 scripts/build_hs_index.py`.

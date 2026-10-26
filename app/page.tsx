@@ -4,8 +4,17 @@ import { useRef, useState } from "react";
 import type { Issue } from "@/lib/schema";
 import type { FormMDraft } from "@/lib/formm";
 
+interface HsSuggestion {
+  line: number;
+  code: string | null;
+  official_text: string | null;
+  confidence: string;
+  reason: string;
+  missing_info: string | null;
+}
 interface CheckResult {
   issues: Issue[];
+  hs: HsSuggestion[];
   draft: FormMDraft;
   trace: { file: string; status: string; doc_type?: string; model?: string; ms?: number; repaired?: boolean; error?: string }[];
   ms: number;
@@ -33,6 +42,9 @@ export default function Home() {
   const [result, setResult] = useState<CheckResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [drag, setDrag] = useState(false);
+  const [lang, setLang] = useState<"en" | "ha" | "pcm">("en");
+  const [translated, setTranslated] = useState<{ title: string; body: string; verified: boolean }[] | null>(null);
+  const [translating, setTranslating] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
   function choose(list: File[]) {
@@ -40,6 +52,30 @@ export default function Home() {
     setPreviews(list.map((f) => URL.createObjectURL(f)));
     setResult(null);
     setError(null);
+    setLang("en");
+    setTranslated(null);
+  }
+
+  async function switchLang(next: "en" | "ha" | "pcm") {
+    setLang(next);
+    if (next === "en" || !result) return setTranslated(null);
+    setTranslating(true);
+    try {
+      const res = await fetch("/api/explain", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ issues: result.issues, lang: next }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Translation failed");
+      setTranslated(data.items);
+    } catch (e) {
+      setError((e as Error).message);
+      setLang("en");
+      setTranslated(null);
+    } finally {
+      setTranslating(false);
+    }
   }
 
   async function loadDemo(caseId: string) {
@@ -56,6 +92,8 @@ export default function Home() {
     setBusy(true);
     setError(null);
     setResult(null);
+    setLang("en");
+    setTranslated(null);
     try {
       const body = new FormData();
       files.forEach((f) => body.append("files", f));
@@ -131,14 +169,24 @@ export default function Home() {
           {[...errors, ...warnings].length > 0 && (
             <>
               <h2>Fix-list</h2>
-              {[...errors, ...warnings].map((i, k) => (
-                <div key={k} className={`issue ${i.severity}`}>
-                  <h3>{i.title}</h3>
-                  <div>{i.detail}</div>
-                  <div className="fix"><b>Fix:</b> {i.fix}</div>
-                  <div className="code">{i.code}</div>
-                </div>
-              ))}
+              <div className="row" style={{ marginTop: 0, marginBottom: 12 }}>
+                {(["en", "ha", "pcm"] as const).map((l) => (
+                  <button key={l} className={lang === l ? "primary" : ""} disabled={translating} onClick={() => switchLang(l)}>
+                    {{ en: "English", ha: "Hausa", pcm: "Pidgin" }[l]}
+                  </button>
+                ))}
+                {translating && <span className="spinner" />}
+              </div>
+              {[...errors, ...warnings].map((i, k) => {
+                const t = translated?.[result.issues.indexOf(i)];
+                return (
+                  <div key={k} className={`issue ${i.severity}`}>
+                    <h3>{t ? t.title : i.title}</h3>
+                    {t ? <div>{t.body}</div> : <><div>{i.detail}</div><div className="fix"><b>Fix:</b> {i.fix}</div></>}
+                    <div className="code">{i.code}{t && !t.verified ? " · shown in English (figures could not be verified in translation)" : ""}</div>
+                  </div>
+                );
+              })}
             </>
           )}
 
@@ -168,16 +216,26 @@ export default function Home() {
                 <tr><th>Description</th><th>HS code</th><th>Qty</th><th>Unit price</th><th>Amount</th><th>Gross kg</th></tr>
               </thead>
               <tbody>
-                {result.draft.items.map((it, k) => (
+                {result.draft.items.map((it, k) => {
+                  const sug = result.hs?.find((h) => h.line === k);
+                  return (
                   <tr key={k}>
                     <td className="desc">{it.description}</td>
-                    <td className={it.hs_code ? "" : "err"}>{it.hs_code ?? "Needed"}</td>
+                    <td className={it.hs_code && !sug ? "" : "err"}>
+                      {it.hs_code ?? "Needed"}
+                      {sug && (
+                        <div className="muted" style={{ whiteSpace: "normal", minWidth: 160 }}>
+                          {sug.code ? <>Suggested <b>{sug.code}</b> ({sug.confidence})<br />{sug.reason}</> : <>No safe suggestion. {sug.missing_info ?? sug.reason}</>}
+                        </div>
+                      )}
+                    </td>
                     <td>{it.quantity?.toLocaleString()} {it.unit}</td>
                     <td>{money(it.unit_price)}</td>
                     <td>{money(it.amount)}</td>
                     <td>{it.gross_weight_kg?.toLocaleString() ?? "—"}</td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -40,3 +40,33 @@ Everything in this repository was created for this hackathon. Commit history is 
 Regenerate with `python3 scripts/generate_samples.py` (needs `reportlab`, `Pillow`, `pdftoppm`).
 
 **All companies, people, addresses, RC and policy numbers are invented. No real customer or bank documents are used anywhere in this project.**
+
+## How it works
+
+```
+photos ──► 1. Extract (Muse Spark vision → typed JSON, Zod-validated, self-repair on bad JSON)
+       ──► 2. Validate (deterministic TypeScript rules: arithmetic, names, quantities, ports, currency, dates)
+       ──► 3. Form M draft (every field traced to its source document) + fix-list
+```
+
+The model only reads documents. Every flag is computed in code, so results are reproducible and explainable to a bank officer.
+
+| Path | What |
+|---|---|
+| `lib/llm.ts` | One client for Meta Model API, Baseten (Muse Spark Open) or any OpenAI-compatible server (e.g. Muse Glimmer on Modal) |
+| `lib/extract.ts` | Classify + extract prompt, schema validation, repair loop |
+| `lib/validate.ts` | Cross-document rule engine |
+| `lib/formm.ts` | Form M draft builder |
+| `app/api/check` | Upload → extract (parallel) → validate → draft |
+| `scripts/eval-rules.ts` | Rule engine vs. answer keys (perfect extraction) |
+| `scripts/eval-extract.ts` | Full pipeline on the photos vs. answer keys (needs a model key) |
+
+## Run locally
+
+```bash
+npm install
+cp .env.example .env.local   # add a key for META, BASETEN or an OpenAI-compatible endpoint
+npm run dev                  # http://localhost:3000, try "Sample B"
+npm run eval:rules           # rule engine accuracy
+npm run eval:extract         # end-to-end accuracy on the 12 synthetic cases
+```

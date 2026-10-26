@@ -1,0 +1,78 @@
+{
+  "case_id": "case_07",
+  "importer": {
+    "name": "Kurmi Textiles Ltd",
+    "rc_number": "RC 1777120",
+    "address": "18 Murtala Mohammed Way, Kano",
+    "phone": "08031110007"
+  },
+  "beneficiary": {
+    "name": "Anatolia Textile Export A.S.",
+    "address": "Organize Sanayi Bolgesi 14, Bursa, Turkey",
+    "country": "Turkey"
+  },
+  "proforma": {
+    "number": "PI-2610-801",
+    "date": "2026-10-18",
+    "valid_until": "2027-01-16",
+    "currency": "USD",
+    "incoterm": null,
+    "country_of_origin": null,
+    "country_of_supply": "Turkey",
+    "port_of_loading": "Gemlik",
+    "port_of_discharge": "Apapa, Lagos",
+    "mode_of_transport": "Sea",
+    "payment_terms": "Bills for Collection",
+    "items": [
+      {
+        "description": "Woven cotton fabric, dyed, 150 cm width",
+        "hs_code": "5208.32",
+        "unit": "metre",
+        "quantity": 12000,
+        "unit_price": 3.19,
+        "line_total": 38280.0,
+        "gross_weight_kg": 2268.0,
+        "net_weight_kg": 2160.0,
+        "packages": 600
+      }
+    ],
+    "goods_value": 38280.0,
+    "freight": 2296.8,
+    "insurance": 382.8,
+    "total": 40959.6
+  },
+  "packing_list": {
+    "number": "PL-2610-963",
+    "date": "2026-10-18",
+    "beneficiary_name": "Anatolia Textile Export A.S.",
+    "importer_name": "Kurmi Textiles Ltd",
+    "port_of_discharge": "Apapa, Lagos",
+    "items": [
+      {
+        "description": "Woven cotton fabric, dyed, 150 cm width",
+        "quantity": 12000,
+        "unit": "metre",
+        "packages": 600,
+        "net_weight_kg": 2160.0,
+        "gross_weight_kg": 2268.0
+      }
+    ]
+  },
+  "insurance_certificate": {
+    "insurer": "Savannah Shield Insurance Plc",
+    "policy_number": "MC/40021/26",
+    "certificate_number": "CERT-961722",
+    "insured": "Kurmi Textiles Ltd",
+    "currency": "USD",
+    "sum_insured": 45055.56,
+    "voyage": "Gemlik to Apapa, Lagos",
+    "conveyance": "Sea - containerised",
+    "date": "2026-10-20",
+    "cover": "Institute Cargo Clauses (A)"
+  },
+  "expected_issues": [
+    "MISSING_INCOTERM",
+    "MISSING_COUNTRY_OF_ORIGIN"
+  ],
+  "note": "Ground truth. 'printed_*' fields show what is printed when an error was injected."
+}

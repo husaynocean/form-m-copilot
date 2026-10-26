@@ -1,0 +1,112 @@
+{
+  "issue_catalogue": {
+    "INVOICE_TOTAL_MISMATCH": "Invoice grand total does not equal sum of line totals (+ freight/insurance).",
+    "PACKING_QTY_MISMATCH": "Quantity on packing list differs from proforma invoice.",
+    "BENEFICIARY_NAME_MISMATCH": "Supplier/beneficiary name differs between documents.",
+    "IMPORTER_NAME_MISMATCH": "Importer name differs between documents.",
+    "MISSING_INCOTERM": "Proforma invoice does not state an Incoterm.",
+    "VAGUE_DESCRIPTION": "Goods description too vague to classify (no HS-relevant detail).",
+    "CURRENCY_MISMATCH": "Currency differs between invoice and insurance certificate.",
+    "INSURED_VALUE_TOO_LOW": "Insured value is below the invoice value of the goods.",
+    "PORT_MISMATCH": "Port of discharge differs between documents.",
+    "PROFORMA_EXPIRED": "Proforma invoice validity date has passed.",
+    "MISSING_COUNTRY_OF_ORIGIN": "Country of origin not stated on proforma invoice."
+  },
+  "cases": [
+    {
+      "case_id": "case_01",
+      "expected_issues": [],
+      "importer": "Arewa Fresh Agro Ltd",
+      "beneficiary": "Malabar Agro Traders Pvt Ltd"
+    },
+    {
+      "case_id": "case_02",
+      "expected_issues": [],
+      "importer": "Kogi Star Packaging Ltd",
+      "beneficiary": "Rhein Polymer Handels GmbH"
+    },
+    {
+      "case_id": "case_03",
+      "expected_issues": [],
+      "importer": "Lagoon Bright Electricals Ltd",
+      "beneficiary": "Gulf Horizon General Trading LLC"
+    },
+    {
+      "case_id": "case_04",
+      "expected_issues": [
+        "INVOICE_TOTAL_MISMATCH"
+      ],
+      "importer": "Sahel Grain Mills Ltd",
+      "beneficiary": "Malabar Agro Traders Pvt Ltd"
+    },
+    {
+      "case_id": "case_05",
+      "expected_issues": [
+        "PACKING_QTY_MISMATCH"
+      ],
+      "importer": "Delta Cool Systems Ltd",
+      "beneficiary": "Yangtze Harbor Machinery Co., Ltd"
+    },
+    {
+      "case_id": "case_06",
+      "expected_issues": [
+        "BENEFICIARY_NAME_MISMATCH"
+      ],
+      "importer": "Zuma Pharma Supplies Ltd",
+      "beneficiary": "Deccan Generics Pvt Ltd"
+    },
+    {
+      "case_id": "case_07",
+      "expected_issues": [
+        "MISSING_INCOTERM",
+        "MISSING_COUNTRY_OF_ORIGIN"
+      ],
+      "importer": "Kurmi Textiles Ltd",
+      "beneficiary": "Anatolia Textile Export A.S."
+    },
+    {
+      "case_id": "case_08",
+      "expected_issues": [
+        "VAGUE_DESCRIPTION"
+      ],
+      "importer": "Arewa Fresh Agro Ltd",
+      "beneficiary": "Malabar Agro Traders Pvt Ltd"
+    },
+    {
+      "case_id": "case_09",
+      "expected_issues": [
+        "CURRENCY_MISMATCH",
+        "INSURED_VALUE_TOO_LOW"
+      ],
+      "importer": "Kogi Star Packaging Ltd",
+      "beneficiary": "Rhein Polymer Handels GmbH"
+    },
+    {
+      "case_id": "case_10",
+      "expected_issues": [
+        "PORT_MISMATCH",
+        "IMPORTER_NAME_MISMATCH"
+      ],
+      "importer": "Lagoon Bright Electricals Ltd",
+      "beneficiary": "Gulf Horizon General Trading LLC"
+    },
+    {
+      "case_id": "case_11",
+      "expected_issues": [
+        "PROFORMA_EXPIRED"
+      ],
+      "importer": "Sahel Grain Mills Ltd",
+      "beneficiary": "Malabar Agro Traders Pvt Ltd"
+    },
+    {
+      "case_id": "case_12",
+      "expected_issues": [
+        "INVOICE_TOTAL_MISMATCH",
+        "PACKING_QTY_MISMATCH",
+        "VAGUE_DESCRIPTION"
+      ],
+      "importer": "Delta Cool Systems Ltd",
+      "beneficiary": "Yangtze Harbor Machinery Co., Ltd"
+    }
+  ]
+}

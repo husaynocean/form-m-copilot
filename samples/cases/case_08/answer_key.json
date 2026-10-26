@@ -1,0 +1,78 @@
+{
+  "case_id": "case_08",
+  "importer": {
+    "name": "Arewa Fresh Agro Ltd",
+    "rc_number": "RC 1849302",
+    "address": "12 Bompai Road, Kano",
+    "phone": "08031110001"
+  },
+  "beneficiary": {
+    "name": "Malabar Agro Traders Pvt Ltd",
+    "address": "21 Marine Drive, Kochi, India",
+    "country": "India"
+  },
+  "proforma": {
+    "number": "PI-2610-422",
+    "date": "2026-10-19",
+    "valid_until": "2027-01-17",
+    "currency": "USD",
+    "incoterm": "FOB",
+    "country_of_origin": "India",
+    "country_of_supply": "India",
+    "port_of_loading": "Cochin",
+    "port_of_discharge": "Onne, Rivers",
+    "mode_of_transport": "Sea",
+    "payment_terms": "Letter of Credit at sight",
+    "items": [
+      {
+        "description": "Tomato paste in drums, 28-30% brix, 220 L",
+        "hs_code": "2002.90",
+        "unit": "drum",
+        "quantity": 80,
+        "unit_price": 196.06,
+        "line_total": 15684.8,
+        "gross_weight_kg": 19740.0,
+        "net_weight_kg": 18800,
+        "packages": 80,
+        "printed_description": "Machine accessories"
+      }
+    ],
+    "goods_value": 15684.8,
+    "freight": 0.0,
+    "insurance": 0.0,
+    "total": 15684.8
+  },
+  "packing_list": {
+    "number": "PL-2610-771",
+    "date": "2026-10-19",
+    "beneficiary_name": "Malabar Agro Traders Pvt Ltd",
+    "importer_name": "Arewa Fresh Agro Ltd",
+    "port_of_discharge": "Onne, Rivers",
+    "items": [
+      {
+        "description": "Tomato paste in drums, 28-30% brix, 220 L",
+        "quantity": 80,
+        "unit": "drum",
+        "packages": 80,
+        "net_weight_kg": 18800,
+        "gross_weight_kg": 19740.0
+      }
+    ]
+  },
+  "insurance_certificate": {
+    "insurer": "Niger Delta Marine Assurance Ltd",
+    "policy_number": "MC/61856/26",
+    "certificate_number": "CERT-774079",
+    "insured": "Arewa Fresh Agro Ltd",
+    "currency": "USD",
+    "sum_insured": 17253.28,
+    "voyage": "Cochin to Onne, Rivers",
+    "conveyance": "Sea - containerised",
+    "date": "2026-10-21",
+    "cover": "Institute Cargo Clauses (A)"
+  },
+  "expected_issues": [
+    "VAGUE_DESCRIPTION"
+  ],
+  "note": "Ground truth. 'printed_*' fields show what is printed when an error was injected."
+}

@@ -1,0 +1,94 @@
+{
+  "case_id": "case_02",
+  "importer": {
+    "name": "Kogi Star Packaging Ltd",
+    "rc_number": "RC 2011987",
+    "address": "4 Industrial Layout, Lokoja",
+    "phone": "08031110002"
+  },
+  "beneficiary": {
+    "name": "Rhein Polymer Handels GmbH",
+    "address": "Hafenstrasse 5, Hamburg, Germany",
+    "country": "Germany"
+  },
+  "proforma": {
+    "number": "PI-2610-765",
+    "date": "2026-10-07",
+    "valid_until": "2027-01-05",
+    "currency": "EUR",
+    "incoterm": "CIF",
+    "country_of_origin": "Germany",
+    "country_of_supply": "Germany",
+    "port_of_loading": "Hamburg",
+    "port_of_discharge": "Onne, Rivers",
+    "mode_of_transport": "Sea",
+    "payment_terms": "100% advance via bank transfer",
+    "items": [
+      {
+        "description": "Polypropylene granules, injection grade",
+        "hs_code": "3902.10",
+        "unit": "MT",
+        "quantity": 25,
+        "unit_price": 1104.66,
+        "line_total": 27616.5,
+        "gross_weight_kg": 26250.0,
+        "net_weight_kg": 25000,
+        "packages": 1
+      },
+      {
+        "description": "Corrugated carton boxes, flat-packed",
+        "hs_code": "4819.10",
+        "unit": "piece",
+        "quantity": 100000,
+        "unit_price": 0.56,
+        "line_total": 56000.0,
+        "gross_weight_kg": 42000.0,
+        "net_weight_kg": 40000.0,
+        "packages": 5000
+      }
+    ],
+    "goods_value": 83616.5,
+    "freight": 5016.99,
+    "insurance": 836.17,
+    "total": 89469.66
+  },
+  "packing_list": {
+    "number": "PL-2610-658",
+    "date": "2026-10-07",
+    "beneficiary_name": "Rhein Polymer Handels GmbH",
+    "importer_name": "Kogi Star Packaging Ltd",
+    "port_of_discharge": "Onne, Rivers",
+    "items": [
+      {
+        "description": "Polypropylene granules, injection grade",
+        "quantity": 25,
+        "unit": "MT",
+        "packages": 1,
+        "net_weight_kg": 25000,
+        "gross_weight_kg": 26250.0
+      },
+      {
+        "description": "Corrugated carton boxes, flat-packed",
+        "quantity": 100000,
+        "unit": "piece",
+        "packages": 5000,
+        "net_weight_kg": 40000.0,
+        "gross_weight_kg": 42000.0
+      }
+    ]
+  },
+  "insurance_certificate": {
+    "insurer": "Niger Delta Marine Assurance Ltd",
+    "policy_number": "MC/38893/26",
+    "certificate_number": "CERT-571029",
+    "insured": "Kogi Star Packaging Ltd",
+    "currency": "EUR",
+    "sum_insured": 98416.63,
+    "voyage": "Hamburg to Onne, Rivers",
+    "conveyance": "Sea - containerised",
+    "date": "2026-10-09",
+    "cover": "Institute Cargo Clauses (A)"
+  },
+  "expected_issues": [],
+  "note": "Ground truth. 'printed_*' fields show what is printed when an error was injected."
+}

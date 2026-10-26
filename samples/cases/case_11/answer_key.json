@@ -1,0 +1,77 @@
+{
+  "case_id": "case_11",
+  "importer": {
+    "name": "Sahel Grain Mills Ltd",
+    "rc_number": "RC 1920048",
+    "address": "Plot 9, Challawa Industrial Estate, Kano",
+    "phone": "08031110004"
+  },
+  "beneficiary": {
+    "name": "Malabar Agro Traders Pvt Ltd",
+    "address": "21 Marine Drive, Kochi, India",
+    "country": "India"
+  },
+  "proforma": {
+    "number": "PI-2610-666",
+    "date": "2026-03-02",
+    "valid_until": "2026-05-01",
+    "currency": "USD",
+    "incoterm": "CFR",
+    "country_of_origin": "India",
+    "country_of_supply": "India",
+    "port_of_loading": "Cochin",
+    "port_of_discharge": "Tin Can Island, Lagos",
+    "mode_of_transport": "Sea",
+    "payment_terms": "Letter of Credit at sight",
+    "items": [
+      {
+        "description": "Durum wheat, unmilled",
+        "hs_code": "1001.19",
+        "unit": "MT",
+        "quantity": 50,
+        "unit_price": 331.71,
+        "line_total": 16585.5,
+        "gross_weight_kg": 52500.0,
+        "net_weight_kg": 50000,
+        "packages": 2
+      }
+    ],
+    "goods_value": 16585.5,
+    "freight": 995.13,
+    "insurance": 0.0,
+    "total": 17580.63
+  },
+  "packing_list": {
+    "number": "PL-2610-796",
+    "date": "2026-10-17",
+    "beneficiary_name": "Malabar Agro Traders Pvt Ltd",
+    "importer_name": "Sahel Grain Mills Ltd",
+    "port_of_discharge": "Tin Can Island, Lagos",
+    "items": [
+      {
+        "description": "Durum wheat, unmilled",
+        "quantity": 50,
+        "unit": "MT",
+        "packages": 2,
+        "net_weight_kg": 50000,
+        "gross_weight_kg": 52500.0
+      }
+    ]
+  },
+  "insurance_certificate": {
+    "insurer": "Harmattan General Insurance Plc",
+    "policy_number": "MC/25014/26",
+    "certificate_number": "CERT-814825",
+    "insured": "Sahel Grain Mills Ltd",
+    "currency": "USD",
+    "sum_insured": 19338.69,
+    "voyage": "Cochin to Tin Can Island, Lagos",
+    "conveyance": "Sea - containerised",
+    "date": "2026-10-19",
+    "cover": "Institute Cargo Clauses (A)"
+  },
+  "expected_issues": [
+    "PROFORMA_EXPIRED"
+  ],
+  "note": "Ground truth. 'printed_*' fields show what is printed when an error was injected."
+}

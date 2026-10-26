@@ -1,0 +1,78 @@
+{
+  "case_id": "case_09",
+  "importer": {
+    "name": "Kogi Star Packaging Ltd",
+    "rc_number": "RC 2011987",
+    "address": "4 Industrial Layout, Lokoja",
+    "phone": "08031110002"
+  },
+  "beneficiary": {
+    "name": "Rhein Polymer Handels GmbH",
+    "address": "Hafenstrasse 5, Hamburg, Germany",
+    "country": "Germany"
+  },
+  "proforma": {
+    "number": "PI-2610-864",
+    "date": "2026-10-18",
+    "valid_until": "2027-01-16",
+    "currency": "EUR",
+    "incoterm": "CIF",
+    "country_of_origin": "Germany",
+    "country_of_supply": "Germany",
+    "port_of_loading": "Hamburg",
+    "port_of_discharge": "Tin Can Island, Lagos",
+    "mode_of_transport": "Sea",
+    "payment_terms": "100% advance via bank transfer",
+    "items": [
+      {
+        "description": "Corrugated carton boxes, flat-packed",
+        "hs_code": "4819.10",
+        "unit": "piece",
+        "quantity": 20000,
+        "unit_price": 0.44,
+        "line_total": 8800.0,
+        "gross_weight_kg": 8400.0,
+        "net_weight_kg": 8000.0,
+        "packages": 1000
+      }
+    ],
+    "goods_value": 8800.0,
+    "freight": 528.0,
+    "insurance": 88.0,
+    "total": 9416.0
+  },
+  "packing_list": {
+    "number": "PL-2610-538",
+    "date": "2026-10-18",
+    "beneficiary_name": "Rhein Polymer Handels GmbH",
+    "importer_name": "Kogi Star Packaging Ltd",
+    "port_of_discharge": "Tin Can Island, Lagos",
+    "items": [
+      {
+        "description": "Corrugated carton boxes, flat-packed",
+        "quantity": 20000,
+        "unit": "piece",
+        "packages": 1000,
+        "net_weight_kg": 8000.0,
+        "gross_weight_kg": 8400.0
+      }
+    ]
+  },
+  "insurance_certificate": {
+    "insurer": "Harmattan General Insurance Plc",
+    "policy_number": "MC/62350/26",
+    "certificate_number": "CERT-479580",
+    "insured": "Kogi Star Packaging Ltd",
+    "currency": "USD",
+    "sum_insured": 5280.0,
+    "voyage": "Hamburg to Tin Can Island, Lagos",
+    "conveyance": "Sea - containerised",
+    "date": "2026-10-20",
+    "cover": "Institute Cargo Clauses (A)"
+  },
+  "expected_issues": [
+    "CURRENCY_MISMATCH",
+    "INSURED_VALUE_TOO_LOW"
+  ],
+  "note": "Ground truth. 'printed_*' fields show what is printed when an error was injected."
+}

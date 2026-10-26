@@ -1,0 +1,113 @@
+{
+  "case_id": "case_03",
+  "importer": {
+    "name": "Lagoon Bright Electricals Ltd",
+    "rc_number": "RC 1734451",
+    "address": "27 Creek Road, Apapa, Lagos",
+    "phone": "08031110003"
+  },
+  "beneficiary": {
+    "name": "Gulf Horizon General Trading LLC",
+    "address": "Warehouse 7, Jebel Ali, Dubai, UAE",
+    "country": "United Arab Emirates"
+  },
+  "proforma": {
+    "number": "PI-2610-967",
+    "date": "2026-10-04",
+    "valid_until": "2027-01-02",
+    "currency": "USD",
+    "incoterm": "CFR",
+    "country_of_origin": "United Arab Emirates",
+    "country_of_supply": "United Arab Emirates",
+    "port_of_loading": "Jebel Ali",
+    "port_of_discharge": "Tin Can Island, Lagos",
+    "mode_of_transport": "Sea",
+    "payment_terms": "Bills for Collection",
+    "items": [
+      {
+        "description": "LED floodlight 200 W, IP65",
+        "hs_code": "9405.42",
+        "unit": "unit",
+        "quantity": 500,
+        "unit_price": 33.78,
+        "line_total": 16890.0,
+        "gross_weight_kg": 1837.5,
+        "net_weight_kg": 1750.0,
+        "packages": 25
+      },
+      {
+        "description": "Split air conditioner, 1.5 HP, inverter",
+        "hs_code": "8415.10",
+        "unit": "unit",
+        "quantity": 120,
+        "unit_price": 227.23,
+        "line_total": 27267.6,
+        "gross_weight_kg": 4788.0,
+        "net_weight_kg": 4560,
+        "packages": 6
+      },
+      {
+        "description": "Diesel generating set, 100 kVA, 3-phase",
+        "hs_code": "8502.13",
+        "unit": "set",
+        "quantity": 2,
+        "unit_price": 6755.53,
+        "line_total": 13511.06,
+        "gross_weight_kg": 3045.0,
+        "net_weight_kg": 2900,
+        "packages": 2
+      }
+    ],
+    "goods_value": 57668.66,
+    "freight": 3460.12,
+    "insurance": 0.0,
+    "total": 61128.78
+  },
+  "packing_list": {
+    "number": "PL-2610-718",
+    "date": "2026-10-04",
+    "beneficiary_name": "Gulf Horizon General Trading LLC",
+    "importer_name": "Lagoon Bright Electricals Ltd",
+    "port_of_discharge": "Tin Can Island, Lagos",
+    "items": [
+      {
+        "description": "LED floodlight 200 W, IP65",
+        "quantity": 500,
+        "unit": "unit",
+        "packages": 25,
+        "net_weight_kg": 1750.0,
+        "gross_weight_kg": 1837.5
+      },
+      {
+        "description": "Split air conditioner, 1.5 HP, inverter",
+        "quantity": 120,
+        "unit": "unit",
+        "packages": 6,
+        "net_weight_kg": 4560,
+        "gross_weight_kg": 4788.0
+      },
+      {
+        "description": "Diesel generating set, 100 kVA, 3-phase",
+        "quantity": 2,
+        "unit": "set",
+        "packages": 2,
+        "net_weight_kg": 2900,
+        "gross_weight_kg": 3045.0
+      }
+    ]
+  },
+  "insurance_certificate": {
+    "insurer": "Niger Delta Marine Assurance Ltd",
+    "policy_number": "MC/15695/26",
+    "certificate_number": "CERT-865179",
+    "insured": "Lagoon Bright Electricals Ltd",
+    "currency": "USD",
+    "sum_insured": 67241.66,
+    "voyage": "Jebel Ali to Tin Can Island, Lagos",
+    "conveyance": "Sea - containerised",
+    "date": "2026-10-06",
+    "cover": "Institute Cargo Clauses (A)"
+  },
+  "expected_issues": [],
+  "note": "Ground truth. 'printed_*' fields show what is printed when an error was injected."
+}

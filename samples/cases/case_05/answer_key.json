@@ -1,0 +1,77 @@
+{
+  "case_id": "case_05",
+  "importer": {
+    "name": "Delta Cool Systems Ltd",
+    "rc_number": "RC 1688213",
+    "address": "15 Refinery Road, Warri",
+    "phone": "08031110005"
+  },
+  "beneficiary": {
+    "name": "Yangtze Harbor Machinery Co., Ltd",
+    "address": "88 Binhai Avenue, Ningbo, China",
+    "country": "China"
+  },
+  "proforma": {
+    "number": "PI-2610-564",
+    "date": "2026-10-13",
+    "valid_until": "2027-01-11",
+    "currency": "USD",
+    "incoterm": "FOB",
+    "country_of_origin": "China",
+    "country_of_supply": "China",
+    "port_of_loading": "Ningbo",
+    "port_of_discharge": "Tin Can Island, Lagos",
+    "mode_of_transport": "Sea",
+    "payment_terms": "100% advance via bank transfer",
+    "items": [
+      {
+        "description": "Diesel generating set, 100 kVA, 3-phase",
+        "hs_code": "8502.13",
+        "unit": "set",
+        "quantity": 1,
+        "unit_price": 8638.29,
+        "line_total": 8638.29,
+        "gross_weight_kg": 1522.5,
+        "net_weight_kg": 1450,
+        "packages": 1
+      }
+    ],
+    "goods_value": 8638.29,
+    "freight": 0.0,
+    "insurance": 0.0,
+    "total": 8638.29
+  },
+  "packing_list": {
+    "number": "PL-2610-954",
+    "date": "2026-10-13",
+    "beneficiary_name": "Yangtze Harbor Machinery Co., Ltd",
+    "importer_name": "Delta Cool Systems Ltd",
+    "port_of_discharge": "Tin Can Island, Lagos",
+    "items": [
+      {
+        "description": "Diesel generating set, 100 kVA, 3-phase",
+        "quantity": 3,
+        "unit": "set",
+        "packages": 1,
+        "net_weight_kg": 1450,
+        "gross_weight_kg": 1522.5
+      }
+    ]
+  },
+  "insurance_certificate": {
+    "insurer": "Niger Delta Marine Assurance Ltd",
+    "policy_number": "MC/31319/26",
+    "certificate_number": "CERT-488162",
+    "insured": "Delta Cool Systems Ltd",
+    "currency": "USD",
+    "sum_insured": 9502.12,
+    "voyage": "Ningbo to Tin Can Island, Lagos",
+    "conveyance": "Sea - containerised",
+    "date": "2026-10-15",
+    "cover": "Institute Cargo Clauses (A)"
+  },
+  "expected_issues": [
+    "PACKING_QTY_MISMATCH"
+  ],
+  "note": "Ground truth. 'printed_*' fields show what is printed when an error was injected."
+}

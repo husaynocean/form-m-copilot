@@ -1,0 +1,75 @@
+{
+  "case_id": "case_01",
+  "importer": {
+    "name": "Arewa Fresh Agro Ltd",
+    "rc_number": "RC 1849302",
+    "address": "12 Bompai Road, Kano",
+    "phone": "08031110001"
+  },
+  "beneficiary": {
+    "name": "Malabar Agro Traders Pvt Ltd",
+    "address": "21 Marine Drive, Kochi, India",
+    "country": "India"
+  },
+  "proforma": {
+    "number": "PI-2610-204",
+    "date": "2026-10-05",
+    "valid_until": "2027-01-03",
+    "currency": "USD",
+    "incoterm": "FOB",
+    "country_of_origin": "India",
+    "country_of_supply": "India",
+    "port_of_loading": "Cochin",
+    "port_of_discharge": "Onne, Rivers",
+    "mode_of_transport": "Sea",
+    "payment_terms": "100% advance via bank transfer",
+    "items": [
+      {
+        "description": "Tomato paste in drums, 28-30% brix, 220 L",
+        "hs_code": "2002.90",
+        "unit": "drum",
+        "quantity": 160,
+        "unit_price": 196.5,
+        "line_total": 31440.0,
+        "gross_weight_kg": 39480.0,
+        "net_weight_kg": 37600,
+        "packages": 160
+      }
+    ],
+    "goods_value": 31440.0,
+    "freight": 0.0,
+    "insurance": 0.0,
+    "total": 31440.0
+  },
+  "packing_list": {
+    "number": "PL-2610-858",
+    "date": "2026-10-05",
+    "beneficiary_name": "Malabar Agro Traders Pvt Ltd",
+    "importer_name": "Arewa Fresh Agro Ltd",
+    "port_of_discharge": "Onne, Rivers",
+    "items": [
+      {
+        "description": "Tomato paste in drums, 28-30% brix, 220 L",
+        "quantity": 160,
+        "unit": "drum",
+        "packages": 160,
+        "net_weight_kg": 37600,
+        "gross_weight_kg": 39480.0
+      }
+    ]
+  },
+  "insurance_certificate": {
+    "insurer": "Harmattan General Insurance Plc",
+    "policy_number": "MC/21395/26",
+    "certificate_number": "CERT-719176",
+    "insured": "Arewa Fresh Agro Ltd",
+    "currency": "USD",
+    "sum_insured": 34584.0,
+    "voyage": "Cochin to Onne, Rivers",
+    "conveyance": "Sea - containerised",
+    "date": "2026-10-07",
+    "cover": "Institute Cargo Clauses (A)"
+  },
+  "expected_issues": [],
+  "note": "Ground truth. 'printed_*' fields show what is printed when an error was injected."
+}

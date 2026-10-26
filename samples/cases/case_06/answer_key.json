@@ -1,0 +1,77 @@
+{
+  "case_id": "case_06",
+  "importer": {
+    "name": "Zuma Pharma Supplies Ltd",
+    "rc_number": "RC 2104456",
+    "address": "3 Aminu Kano Crescent, Wuse 2, Abuja",
+    "phone": "08031110006"
+  },
+  "beneficiary": {
+    "name": "Deccan Generics Pvt Ltd",
+    "address": "Plot 40, Genome Valley, Hyderabad, India",
+    "country": "India"
+  },
+  "proforma": {
+    "number": "PI-2610-750",
+    "date": "2026-10-03",
+    "valid_until": "2027-01-01",
+    "currency": "USD",
+    "incoterm": "CIF",
+    "country_of_origin": "India",
+    "country_of_supply": "India",
+    "port_of_loading": "Nhava Sheva",
+    "port_of_discharge": "Onne, Rivers",
+    "mode_of_transport": "Sea",
+    "payment_terms": "Letter of Credit at sight",
+    "items": [
+      {
+        "description": "Paracetamol tablets 500 mg, 10x10 blister",
+        "hs_code": "3004.90",
+        "unit": "carton",
+        "quantity": 1500,
+        "unit_price": 21.49,
+        "line_total": 32235.0,
+        "gross_weight_kg": 9450.0,
+        "net_weight_kg": 9000,
+        "packages": 75
+      }
+    ],
+    "goods_value": 32235.0,
+    "freight": 1934.1,
+    "insurance": 322.35,
+    "total": 34491.45
+  },
+  "packing_list": {
+    "number": "PL-2610-646",
+    "date": "2026-10-03",
+    "beneficiary_name": "Deccan Generics Exports",
+    "importer_name": "Zuma Pharma Supplies Ltd",
+    "port_of_discharge": "Onne, Rivers",
+    "items": [
+      {
+        "description": "Paracetamol tablets 500 mg, 10x10 blister",
+        "quantity": 1500,
+        "unit": "carton",
+        "packages": 75,
+        "net_weight_kg": 9000,
+        "gross_weight_kg": 9450.0
+      }
+    ]
+  },
+  "insurance_certificate": {
+    "insurer": "Harmattan General Insurance Plc",
+    "policy_number": "MC/42087/26",
+    "certificate_number": "CERT-271339",
+    "insured": "Zuma Pharma Supplies Ltd",
+    "currency": "USD",
+    "sum_insured": 37940.6,
+    "voyage": "Nhava Sheva to Onne, Rivers",
+    "conveyance": "Sea - containerised",
+    "date": "2026-10-05",
+    "cover": "Institute Cargo Clauses (A)"
+  },
+  "expected_issues": [
+    "BENEFICIARY_NAME_MISMATCH"
+  ],
+  "note": "Ground truth. 'printed_*' fields show what is printed when an error was injected."
+}

@@ -75,7 +75,7 @@ export async function chat(
     model: p.model,
     messages,
     temperature: opts.temperature ?? 0,
-    max_tokens: opts.maxTokens ?? 4096,
+    max_tokens: opts.maxTokens ?? 16000, // headroom for reasoning tokens
   };
   if (opts.json) body.response_format = { type: "json_object" };
 
@@ -88,7 +88,10 @@ export async function chat(
     });
     if (res.ok) {
       const data = await res.json();
-      const text: string = data?.choices?.[0]?.message?.content ?? "";
+      // Reasoning models may return thinking separately (reasoning_content) or
+      // inline in <think> tags; keep only the final answer.
+      const raw: string = data?.choices?.[0]?.message?.content ?? "";
+      const text = raw.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
       return { text, provider: p.name, model: p.model, ms: Date.now() - started };
     }
     const errText = await res.text();

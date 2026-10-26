@@ -155,7 +155,7 @@ export async function suggestHs(description: string, provider?: ProviderConfig):
       },
       { role: "user", content: `Goods description: "${description}"\n\nCandidates:\n${list}` },
     ],
-    { provider, json: true, maxTokens: 400 },
+    { provider, json: true, maxTokens: 4000 },
   );
   const out = parseJsonObject(res.text) as Partial<HsSuggestion>;
   const allowed = new Set(candidates.map((c) => c.code));

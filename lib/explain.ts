@@ -2,19 +2,14 @@ import { chat, parseJsonObject, type ProviderConfig } from "./llm";
 import type { Issue } from "./schema";
 
 /**
- * Explain the fix-list in the importer's language (English, Hausa, Nigerian Pidgin).
+ * Explain the fix-list in the importer's or supplier's language (see lib/languages.ts).
  * Verification: every figure, code and document number in the original must
  * appear unchanged in the translation. If any is lost or altered, the model is
  * asked to fix it; if it still fails, we fall back to English for that item.
  */
 
-export type Lang = "en" | "ha" | "pcm";
-
-const LANG_NAME: Record<Lang, string> = {
-  en: "plain, simple English",
-  ha: "Hausa (Kano/Northern Nigeria usage, Boko script)",
-  pcm: "Nigerian Pidgin English",
-};
+import { LANGUAGES, type Lang } from "./languages";
+export { LANGUAGES, isLang, type Lang } from "./languages";
 
 /** Numbers, codes and references that must survive translation verbatim. */
 export function protectedTokens(text: string): string[] {
@@ -35,9 +30,9 @@ export async function explainIssues(issues: Issue[], lang: Lang, provider?: Prov
   }
   const items = issues.map((i, n) => ({ n, title: i.title, text: `${i.detail} Fix: ${i.fix}` }));
   const system =
-    `Translate each item for a Nigerian importer into ${LANG_NAME[lang]}. ` +
+    `Translate each item into ${LANGUAGES[lang].prompt}. The reader is an importer or their overseas supplier. ` +
     "Write the way a helpful bank officer would say it on WhatsApp: short, clear, respectful. " +
-    "Copy every number, amount, currency code, HS code, date and document number EXACTLY as written. Do not convert or round. " +
+    "Copy every number, amount, currency code, HS code, date and document number EXACTLY as written, using Western digits (0-9) even in Arabic, Hindi or Chinese. Do not convert or round. " +
     "Keep company names unchanged. " +
     'Reply as JSON: {"items":[{"n":0,"title":"...","body":"..."}]}';
 
@@ -47,7 +42,7 @@ export async function explainIssues(issues: Issue[], lang: Lang, provider?: Prov
   ];
   let out: { n: number; title: string; body: string }[] = [];
   for (let attempt = 0; attempt < 2; attempt++) {
-    const res = await chat(messages, { provider, json: true, maxTokens: 3000, temperature: 0.2 });
+    const res = await chat(messages, { provider, json: true, maxTokens: 12000, temperature: 0.2 });
     try {
       out = ((parseJsonObject(res.text) as { items?: typeof out }).items ?? []);
     } catch {

@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import type { Issue } from "@/lib/schema";
 import type { FormMDraft } from "@/lib/formm";
+import { LANGUAGES, type Lang } from "@/lib/languages";
 
 interface HsSuggestion {
   line: number;
@@ -42,7 +43,7 @@ export default function Home() {
   const [result, setResult] = useState<CheckResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [drag, setDrag] = useState(false);
-  const [lang, setLang] = useState<"en" | "ha" | "pcm">("en");
+  const [lang, setLang] = useState<Lang>("en");
   const [translated, setTranslated] = useState<{ title: string; body: string; verified: boolean }[] | null>(null);
   const [translating, setTranslating] = useState(false);
   const input = useRef<HTMLInputElement>(null);
@@ -56,7 +57,7 @@ export default function Home() {
     setTranslated(null);
   }
 
-  async function switchLang(next: "en" | "ha" | "pcm") {
+  async function switchLang(next: Lang) {
     setLang(next);
     if (next === "en" || !result) return setTranslated(null);
     setTranslating(true);
@@ -170,17 +171,28 @@ export default function Home() {
             <>
               <h2>Fix-list</h2>
               <div className="row" style={{ marginTop: 0, marginBottom: 12 }}>
-                {(["en", "ha", "pcm"] as const).map((l) => (
+                {(["en", "ha", "yo", "ig", "pcm"] as const).map((l) => (
                   <button key={l} className={lang === l ? "primary" : ""} disabled={translating} onClick={() => switchLang(l)}>
-                    {{ en: "English", ha: "Hausa", pcm: "Pidgin" }[l]}
+                    {LANGUAGES[l].label}
                   </button>
                 ))}
+                <select
+                  aria-label="More languages"
+                  value={["en", "ha", "yo", "ig", "pcm"].includes(lang) ? "" : lang}
+                  disabled={translating}
+                  onChange={(e) => e.target.value && switchLang(e.target.value as Lang)}
+                >
+                  <option value="">More languages…</option>
+                  {(Object.keys(LANGUAGES) as Lang[])
+                    .filter((l) => !["en", "ha", "yo", "ig", "pcm"].includes(l))
+                    .map((l) => <option key={l} value={l}>{LANGUAGES[l].label}</option>)}
+                </select>
                 {translating && <span className="spinner" />}
               </div>
               {[...errors, ...warnings].map((i, k) => {
                 const t = translated?.[result.issues.indexOf(i)];
                 return (
-                  <div key={k} className={`issue ${i.severity}`}>
+                  <div key={k} className={`issue ${i.severity}`} dir={t ? "auto" : undefined}>
                     <h3>{t ? t.title : i.title}</h3>
                     {t ? <div>{t.body}</div> : <><div>{i.detail}</div><div className="fix"><b>Fix:</b> {i.fix}</div></>}
                     <div className="code">{i.code}{t && !t.verified ? " · shown in English (figures could not be verified in translation)" : ""}</div>

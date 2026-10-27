@@ -10,7 +10,7 @@ import { extractDocument } from "./extract";
 import { analyze } from "./analyze";
 import { explainIssues } from "./explain";
 import { LANGUAGES, isLang, type Lang } from "./languages";
-import { claimReport, getSession, mergeDoc, resetSession, setLang } from "./store";
+import { claimReport, deleteUser, getSession, mergeDoc, resetSession, setLang } from "./store";
 import { downloadMedia, markRead, sendList, sendText } from "./whatsapp";
 import type { DocumentSet, Extraction, Issue } from "./schema";
 
@@ -73,6 +73,10 @@ async function onText(from: string, text: string) {
     return sendText(from, "🧾 New check started. Send photos of the proforma invoice, packing list and insurance certificate.");
   }
   if (["check", "done", "go", "finish"].includes(t)) return report(from, 1, true);
+  if (["delete my data", "delete", "stop"].includes(t)) {
+    await deleteUser(from);
+    return sendText(from, "🗑️ Done. I've deleted your documents and settings.");
+  }
   if (["language", "lang", "languages"].includes(t)) return askLanguage(from);
   return welcome(from);
 }
@@ -85,7 +89,7 @@ async function welcome(from: string) {
       "I check your import documents for Form M errors *before* they reach the bank.",
       "1️⃣ Send a photo of your *proforma invoice*\n2️⃣ Your *packing list*\n3️⃣ Your *insurance certificate*",
       "When all three are in, I cross-check every figure and name, suggest HS codes and send you a fix-list.",
-      "Type *check* to check what you've sent so far, *new* to start again.",
+      "Type *check* to check what you've sent so far, *new* to start again, *delete my data* to erase everything.",
     ].join("\n\n"),
   );
   await askLanguage(from);

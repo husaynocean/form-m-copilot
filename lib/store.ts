@@ -88,3 +88,9 @@ export async function logEvent(e: { sig_ok: boolean; has_sig: boolean; fields?: 
   if (process.env.WA_STORE === "memory") return;
   await rest("wa_events", { method: "POST", body: JSON.stringify(e) }).catch(() => undefined);
 }
+
+/** Remove everything held for a phone number. */
+export async function deleteUser(phone: string) {
+  if (process.env.WA_STORE === "memory") { mem.sessions.delete(phone); return; }
+  await rest(`wa_sessions?phone=eq.${encodeURIComponent(phone)}`, { method: "DELETE" });
+}

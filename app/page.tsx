@@ -398,6 +398,8 @@ export default function Home() {
 
       <footer className="foot">
         Built for the Meta Global AI Developer Hackathon · Runs on Meta open-weight models · Draft for review only, not a submission
+        <br />
+        <a href="/privacy" style={{ color: "inherit" }}>Privacy</a> · <a href="/data-deletion" style={{ color: "inherit" }}>Data deletion</a>
       </footer>
     </div>
   );

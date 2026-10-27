@@ -1,0 +1,6 @@
+.page { max-width: 760px; margin: 0 auto; padding: 48px 16px 80px; }
+.page h1 { font-size: clamp(28px, 6vw, 40px); }
+.page h2 { margin-top: 28px; font-size: 19px; }
+.page p, .page li { color: #cfe7dc; }
+.page a { color: #34d399; }
+.back { display: inline-block; margin-bottom: 24px; font-size: 14px; }

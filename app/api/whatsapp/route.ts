@@ -1,6 +1,6 @@
 import { after } from "next/server";
 import { handleMessage, type IncomingMessage } from "@/lib/bot";
-import { firstSeen } from "@/lib/store";
+import { firstSeen, logEvent } from "@/lib/store";
 import { validSignature } from "@/lib/whatsapp";
 
 export const runtime = "nodejs";
@@ -22,16 +22,24 @@ export async function GET(req: Request) {
  */
 export async function POST(req: Request) {
   const raw = await req.text();
-  if (!validSignature(raw, req.headers.get("x-hub-signature-256"))) {
-    return new Response("Invalid signature", { status: 401 });
-  }
-  let body: { entry?: { changes?: { value?: { messages?: IncomingMessage[] } }[] }[] };
+  const sigHeader = req.headers.get("x-hub-signature-256");
+  const sigOk = validSignature(raw, sigHeader);
+  let body: { entry?: { changes?: { field?: string; value?: { messages?: IncomingMessage[]; statuses?: unknown[] } }[] }[] } = {};
   try {
     body = JSON.parse(raw);
   } catch {
-    return new Response("Bad JSON", { status: 400 });
+    /* logged below */
   }
-  const messages = (body.entry ?? []).flatMap((e) => (e.changes ?? []).flatMap((c) => c.value?.messages ?? []));
+  const changes = (body.entry ?? []).flatMap((e) => e.changes ?? []);
+  const messages = changes.flatMap((c) => c.value?.messages ?? []);
+  await logEvent({
+    sig_ok: sigOk,
+    has_sig: Boolean(sigHeader),
+    fields: [...new Set(changes.map((c) => c.field ?? "?"))].join(","),
+    n_messages: messages.length,
+    n_statuses: changes.reduce((n, c) => n + (c.value?.statuses?.length ?? 0), 0),
+  });
+  if (!sigOk) return new Response("Invalid signature", { status: 401 });
 
   after(async () => {
     // Photos sent together are processed in parallel; the store merges them atomically.

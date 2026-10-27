@@ -82,3 +82,9 @@ export async function resetSession(phone: string) {
     body: JSON.stringify({ docs: {}, reported: false, updated_at: new Date().toISOString() }),
   });
 }
+
+/** Record a webhook delivery (metadata only) to debug Meta configuration. */
+export async function logEvent(e: { sig_ok: boolean; has_sig: boolean; fields?: string; n_messages?: number; n_statuses?: number; note?: string }) {
+  if (process.env.WA_STORE === "memory") return;
+  await rest("wa_events", { method: "POST", body: JSON.stringify(e) }).catch(() => undefined);
+}

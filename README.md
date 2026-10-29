@@ -20,6 +20,24 @@ Everything in this repository was created for this hackathon. Commit history is 
 - **26 Oct 2026 (before kickoff):** synthetic test data only (`samples/`, `scripts/generate_samples.py`). This is test material, not a product feature, and is not shown as a feature in the demo.
 - **26 Oct – 4 Nov 2026 (build period):** all application code: extraction, validation agent, HS-code assistant, Form M draft, WhatsApp channel, open-weights deployment.
 
+## Results (Muse Spark Open on Baseten)
+
+| Test | Result |
+|---|---|
+| Field extraction from phone-style photos (12 cases, 36 documents) | **672 / 672 fields** correct, 36 / 36 documents classified |
+| Planted document errors caught (11 error types) | **14 / 14**, 0 false alarms |
+| Printed total preserved across repeated reads (money re-read) | **12 / 12** |
+| HS-code assistant (30 hand-checked import descriptions) | **28 / 30 exact, 0 wrong**, 2 declined for missing detail |
+| Fix-list translations (Hausa, Yoruba, Igbo, Pidgin, Chinese, French) | every figure verified unchanged |
+| Full check, 3 documents | ~15 s on the web app, ~28 s over the chat bot |
+
+Synthetic, clean printed documents; real crumpled or handwritten paperwork will be harder. Raw outputs are in `eval-results/`.
+
+## Try it
+
+- Web app: https://form-m-copilot.vercel.app (tap "Try a problem file")
+- WhatsApp bot, web preview: https://form-m-copilot.vercel.app/whatsapp — the real WhatsApp number receives messages; Meta blocks outgoing messages until business verification, so the same bot code (`lib/bot.ts`) runs here with a web transport.
+
 ## Synthetic test pack
 
 `samples/` holds 12 synthetic import cases (3 documents each, as clean PDFs and phone-style photos) with a ground-truth `answer_key.json` per case. 3 cases are clean, 9 contain deliberate errors:

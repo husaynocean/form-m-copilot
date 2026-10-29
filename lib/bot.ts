@@ -10,7 +10,7 @@ import { extractDocument } from "./extract";
 import { analyze } from "./analyze";
 import { explainIssues } from "./explain";
 import { LANGUAGES, isLang, type Lang } from "./languages";
-import { claimReport, deleteUser, getSession, mergeDoc, resetSession, setLang } from "./store";
+import { claimReport, deleteUser, getSession, logEvent, mergeDoc, resetSession, setLang } from "./store";
 import { downloadMedia, markRead, sendList, sendText } from "./whatsapp";
 import type { DocumentSet, Extraction, Issue } from "./schema";
 
@@ -59,6 +59,7 @@ export async function handleMessage(m: IncomingMessage) {
     return sendText(m.from, "Send me photos of your *proforma invoice*, *packing list* and *insurance certificate*, one photo per page.");
   } catch (e) {
     console.error("whatsapp handler", e);
+    await logEvent({ sig_ok: true, has_sig: true, fields: "handler_error", note: String((e as Error)?.message ?? e).slice(0, 500) });
     await sendText(m.from, "Sorry, something went wrong on my side. Please try again in a minute.").catch(() => undefined);
   }
 }

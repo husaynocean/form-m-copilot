@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   const raw = await req.text();
   const sigHeader = req.headers.get("x-hub-signature-256");
   const sigOk = validSignature(raw, sigHeader);
-  let body: { entry?: { changes?: { field?: string; value?: { messages?: IncomingMessage[]; statuses?: unknown[] } }[] }[] } = {};
+  let body: { entry?: { changes?: { field?: string; value?: { messages?: IncomingMessage[]; statuses?: { status?: string; errors?: { code?: number; title?: string; message?: string; error_data?: unknown }[] }[] } }[] }[] } = {};
   try {
     body = JSON.parse(raw);
   } catch {
@@ -38,6 +38,7 @@ export async function POST(req: Request) {
     fields: [...new Set(changes.map((c) => c.field ?? "?"))].join(","),
     n_messages: messages.length,
     n_statuses: changes.reduce((n, c) => n + (c.value?.statuses?.length ?? 0), 0),
+    note: JSON.stringify(changes.flatMap((c) => c.value?.statuses ?? []).map((st) => ({ status: st.status, errors: st.errors }))).slice(0, 900) || undefined,
   });
   if (!sigOk) return new Response("Invalid signature", { status: 401 });
 

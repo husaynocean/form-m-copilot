@@ -60,7 +60,19 @@ export default function ChatPreview() {
   async function call(payload: Record<string, unknown>) {
     setPending((p) => p + 1);
     try {
-      const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ session, ...payload }) });
+      // Mobile connections can drop during the ~20 s model call; retry once on a network error.
+      const send = () => fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ session, ...payload }) });
+      let res: Response;
+      try {
+        res = await send();
+      } catch {
+        await new Promise((r) => setTimeout(r, 1500));
+        try {
+          res = await send();
+        } catch {
+          throw new Error("Connection dropped. Check your network and send it again.");
+        }
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Something went wrong");
       for (const r of data.replies as ({ type: "text"; text: string } | { type: "list"; body: string; button: string; rows: { id: string; title: string }[] })[]) {

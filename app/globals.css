@@ -217,3 +217,5 @@ dd.missing { color: var(--red); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition: none !important; }
 }
+
+.ghost.wa { text-decoration: none; color: var(--ink); display: inline-flex; align-items: center; }

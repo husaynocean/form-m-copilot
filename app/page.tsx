@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Issue } from "@/lib/schema";
 import type { FormMDraft } from "@/lib/formm";
 import { LANGUAGES, type Lang } from "@/lib/languages";
+import { resizeImage } from "@/lib/resize";
 import type { Link, Phase, SheetState } from "@/components/DocScene";
 
 const DocScene = dynamic(() => import("@/components/DocScene"), { ssr: false, loading: () => <div className="scene" /> });
@@ -248,13 +249,32 @@ export default function Home() {
           </div>
         </section>
 
-        <input ref={input} type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onChange={(e) => choose(Array.from(e.target.files ?? []))} />
+        <input
+          ref={input}
+          type="file"
+          accept="image/*"
+          multiple
+          hidden
+          onChange={async (e) => {
+            // Shrink phone photos before upload (keeps requests under the 4.5 MB limit).
+            const picked = Array.from(e.target.files ?? []).slice(0, 6);
+            const small = await Promise.all(
+              picked.map(async (f) => {
+                const b = await resizeImage(f);
+                return b === f ? f : new File([b], f.name.replace(/\.[a-z0-9]+$/i, "") + ".jpg", { type: "image/jpeg" });
+              }),
+            );
+            choose(small);
+            e.target.value = "";
+          }}
+        />
 
         <div className="actions">
           <button className="cta" disabled={!files.length || busy} onClick={() => run()}>
             {busy ? <><span className="spinner" /> Checking…</> : phase === "result" ? "Check again" : "Check documents"}
           </button>
           <button className="ghost" disabled={busy} onClick={() => input.current?.click()}>Upload photos</button>
+          <a className="ghost wa" href="/whatsapp">💬 Try the WhatsApp bot</a>
           {DEMOS.map((d) => (
             <button key={d.id} className="ghost" disabled={busy} onClick={async () => run(await loadDemo(d.id))}>{d.label}</button>
           ))}

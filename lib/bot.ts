@@ -11,8 +11,38 @@ import { analyze } from "./analyze";
 import { explainIssues } from "./explain";
 import { LANGUAGES, isLang, type Lang } from "./languages";
 import { claimReport, deleteUser, getSession, logEvent, mergeDoc, resetSession, setLang } from "./store";
-import { downloadMedia, markRead, sendList, sendText } from "./whatsapp";
+import * as wa from "./whatsapp";
 import type { DocumentSet, Extraction, Issue } from "./schema";
+import { AsyncLocalStorage } from "node:async_hooks";
+
+/**
+ * Where replies go. The real WhatsApp Cloud API by default; the website's
+ * WhatsApp preview runs the exact same conversation logic with a transport
+ * that collects replies instead of sending them.
+ */
+export interface Transport {
+  sendText(to: string, text: string): Promise<unknown>;
+  sendList(to: string, body: string, button: string, rows: { id: string; title: string }[]): Promise<unknown>;
+  markRead(messageId: string): Promise<unknown>;
+  downloadMedia(mediaId: string): Promise<{ dataUrl: string }>;
+}
+const whatsappTransport: Transport = {
+  sendText: wa.sendText,
+  sendList: wa.sendList,
+  markRead: wa.markRead,
+  downloadMedia: wa.downloadMedia,
+};
+const transportStore = new AsyncLocalStorage<Transport>();
+const t = () => transportStore.getStore() ?? whatsappTransport;
+const sendText = (to: string, text: string) => t().sendText(to, text);
+const sendList = (to: string, body: string, button: string, rows: { id: string; title: string }[]) => t().sendList(to, body, button, rows);
+const markRead = (id: string) => t().markRead(id);
+const downloadMedia = (id: string) => t().downloadMedia(id);
+
+/** Run the bot with a custom transport (used by the web preview). */
+export function withTransport<T>(transport: Transport, fn: () => Promise<T>): Promise<T> {
+  return transportStore.run(transport, fn);
+}
 
 const DOC_NAME: Record<string, string> = {
   proforma_invoice: "proforma invoice",

@@ -21,6 +21,17 @@ export async function GET(req: Request) {
   const dbg = await j(await fetch(`${G}/debug_token?input_token=${encodeURIComponent(token)}`, { headers: auth }));
   const data = (dbg.body as { data?: { is_valid?: boolean; expires_at?: number; scopes?: string[]; granular_scopes?: { scope: string; target_ids?: string[] }[] } })?.data;
   const wabaIds = [...new Set((data?.granular_scopes ?? []).filter((s) => s.scope.startsWith("whatsapp")).flatMap((s) => s.target_ids ?? []))];
+  const lookups: unknown[] = [];
+  const business = u.searchParams.get("business");
+  if (business) {
+    for (const edge of ["owned_whatsapp_business_accounts", "client_whatsapp_business_accounts"]) {
+      const r = await j(await fetch(`${G}/${business}/${edge}?fields=id,name`, { headers: auth }));
+      lookups.push({ edge, ...r });
+      for (const w of ((r.body as { data?: { id: string }[] })?.data ?? [])) if (!wabaIds.includes(w.id)) wabaIds.push(w.id);
+    }
+  }
+  const waba = u.searchParams.get("waba");
+  if (waba && !wabaIds.includes(waba)) wabaIds.push(waba);
 
   const phone = await j(await fetch(`${G}/${process.env.WHATSAPP_PHONE_NUMBER_ID}?fields=display_phone_number,verified_name,quality_rating,platform_type,status`, { headers: auth }));
 
@@ -36,6 +47,7 @@ export async function GET(req: Request) {
   return Response.json({
     token: { valid: data?.is_valid, expires_at: data?.expires_at, scopes: data?.scopes, debug_status: dbg.status, error: (dbg.body as { error?: unknown })?.error },
     phone,
+    lookups,
     wabas,
   });
 }

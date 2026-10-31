@@ -2,12 +2,14 @@
 
 AI that checks Nigerian import documents before they reach the bank.
 
+**Demo video (1:39):** https://youtu.be/CLK3YI_W_q8 · **Live app:** https://form-m-copilot.vercel.app
+
 An importer sends photos or PDFs of their **proforma invoice**, **packing list** and **marine insurance certificate**. Form M Copilot:
 
 1. extracts every field into structured JSON (Meta Muse Spark, vision),
 2. cross-checks the documents against each other (totals, quantities, names, ports, currency, insured value, dates),
 3. suggests HS codes with reasons,
-4. returns a pre-filled Form M draft plus a plain-language fix-list in English, Hausa or Pidgin, on WhatsApp or the web.
+4. returns a pre-filled Form M draft plus a plain-language fix-list in 14 languages (including Hausa, Yoruba, Igbo, Pidgin, French, Arabic and Chinese), on WhatsApp or the web.
 
 The extraction pipeline also runs on Meta open-weights models, so a bank could host it inside its own network.
 
@@ -35,6 +37,7 @@ Synthetic, clean printed documents; real crumpled or handwritten paperwork will 
 
 ## Try it
 
+- Demo video: https://youtu.be/CLK3YI_W_q8
 - Web app: https://form-m-copilot.vercel.app (tap "Try a problem file")
 - WhatsApp bot, web preview: https://form-m-copilot.vercel.app/whatsapp — the real WhatsApp number receives messages; Meta blocks outgoing messages until business verification, so the same bot code (`lib/bot.ts`) runs here with a web transport.
 

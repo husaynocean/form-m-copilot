@@ -1,0 +1,97 @@
+{
+  "case_id": "x01",
+  "today": "2026-11-14",
+  "category": "non-oil",
+  "expected_issues": [],
+  "exporter_rc": "RC 1903344",
+  "truth": {
+    "proforma_invoice": {
+      "doc_type": "proforma_invoice",
+      "seller": {
+        "name": "Dala Sesame Exports Ltd",
+        "address": "22 Sharada Industrial Estate, Kano",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Rotterdam Seed Import B.V.",
+        "address": "Waalhaven 112, Rotterdam, Netherlands",
+        "rc_number": null
+      },
+      "invoice_number": "CI-2610-447",
+      "invoice_date": "2026-10-19",
+      "valid_until": null,
+      "currency": "USD",
+      "incoterm": "FOB",
+      "country_of_origin": "Nigeria",
+      "country_of_supply": "Nigeria",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Rotterdam",
+      "mode_of_transport": "Sea",
+      "payment_terms": "Cash against documents",
+      "lines": [
+        {
+          "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
+          "hs_code": "1207.40",
+          "quantity": 100,
+          "unit": "MT",
+          "unit_price": 1480.0,
+          "line_total": 148000.0
+        }
+      ],
+      "goods_value": 148000.0,
+      "freight": null,
+      "insurance": null,
+      "total": 148000.0
+    },
+    "packing_list": {
+      "doc_type": "packing_list",
+      "seller": {
+        "name": "Dala Sesame Exports Ltd",
+        "address": "22 Sharada Industrial Estate, Kano",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Rotterdam Seed Import B.V.",
+        "address": "Waalhaven 112, Rotterdam, Netherlands",
+        "rc_number": null
+      },
+      "packing_list_number": "PL-2610-743",
+      "date": "2026-10-19",
+      "proforma_reference": "CI-2610-447",
+      "port_of_discharge": "Rotterdam",
+      "lines": [
+        {
+          "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
+          "quantity": 100,
+          "unit": "MT",
+          "packages": 2000,
+          "net_weight_kg": 100000.0,
+          "gross_weight_kg": 101200.0
+        }
+      ]
+    },
+    "bill_of_lading": {
+      "doc_type": "bill_of_lading",
+      "bl_number": "LOS2614127",
+      "shipper": "Dala Sesame Exports Ltd",
+      "consignee": "Rotterdam Seed Import B.V.",
+      "notify_party": "Rotterdam Seed Import B.V.",
+      "vessel": "MV Atlantic Kestrel",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Rotterdam",
+      "shipped_on_board_date": "2026-10-25",
+      "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
+      "packages": 2000,
+      "gross_weight_kg": 101200.0,
+      "freight_terms": "Freight collect"
+    },
+    "nepc_certificate": {
+      "doc_type": "nepc_certificate",
+      "exporter_name": "Dala Sesame Exports Ltd",
+      "certificate_number": "NEPC/KN/0042871",
+      "rc_number": "RC 1903344",
+      "issue_date": "2025-12-29",
+      "expiry_date": "2027-12-29"
+    }
+  }
+}

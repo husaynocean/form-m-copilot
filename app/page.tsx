@@ -12,14 +12,30 @@ const DocScene = dynamic(() => import("@/components/DocScene"), { ssr: false, lo
 
 interface HsSuggestion { line: number; code: string | null; official_text: string | null; confidence: string; reason: string; missing_info: string | null }
 interface DocEvent { index: number; file: string; status: string; doc_type?: string; model?: string; ms?: number; repaired?: boolean; error?: string; verification?: { rereads: number; agreed: boolean; corrected: string[]; uncertain: string[] } }
-interface Result { issues: Issue[]; draft: FormMDraft; hs: HsSuggestion[]; ms: number }
+interface Tracker { category: string; bl_number: string | null; bl_date: string; deadline: string; days_total: number; days_left: number; status: "ok" | "due_soon" | "overdue"; amount: number | null; currency: string | null }
+interface Result { issues: Issue[]; draft: FormMDraft; hs: HsSuggestion[]; ms: number; tracker?: Tracker | null }
+type Mode = "import" | "export";
 
-const DEMOS = [
-  { id: "case_12", label: "Try a problem file" },
-  { id: "case_01", label: "Try a clean file" },
-];
-const DOCS = ["proforma_invoice", "packing_list", "insurance_certificate"] as const;
-const DOC_LABEL: Record<string, string> = { proforma_invoice: "Proforma invoice", packing_list: "Packing list", insurance_certificate: "Insurance cert." };
+const MODES: Record<Mode, {
+  tab: string; form: string; eyebrow: string; head: string; lead: string; draftNote: string; okText: string;
+  demos: { id: string; label: string }[]; docs: string[];
+}> = {
+  import: {
+    tab: "Imports · Form M", form: "Form M", eyebrow: "For Nigerian importers & trade desks", head: "Catch Form M errors",
+    lead: "Snap your proforma invoice, packing list and insurance certificate. The agent reads every figure, cross-checks the documents against each other and drafts your Form M, in your language.",
+    draftNote: "Pre-filled · verify on the Nigeria Single Window", okText: "problems · ready for the bank",
+    demos: [{ id: "case_12", label: "Try a problem file" }, { id: "case_01", label: "Try a clean file" }],
+    docs: ["proforma_invoice", "packing_list", "insurance_certificate"],
+  },
+  export: {
+    tab: "Exports · Form NXP", form: "Form NXP", eyebrow: "For Nigerian exporters & trade desks", head: "Catch Form NXP errors",
+    lead: "Snap your invoice, packing list, bill of lading and NEPC certificate. The agent cross-checks them, drafts your Form NXP and starts the clock on your repatriation deadline.",
+    draftNote: "Pre-filled · verify on the CBN Trade Monitoring System", okText: "problems · ready for the bank",
+    demos: [{ id: "export_problem", label: "Try a problem file" }, { id: "export_clean", label: "Try a clean file" }],
+    docs: ["commercial_invoice", "packing_list", "bill_of_lading", "nepc_certificate"],
+  },
+};
+const DOC_LABEL: Record<string, string> = { proforma_invoice: "Invoice", packing_list: "Packing list", insurance_certificate: "Insurance cert.", bill_of_lading: "Bill of lading", nepc_certificate: "NEPC cert." };
 const QUICK: Lang[] = ["en", "ha", "yo", "ig", "pcm"];
 
 const money = (v: unknown) =>
@@ -43,6 +59,9 @@ function useCountUp(target: number, run: boolean, ms = 900) {
 }
 
 export default function Home() {
+  const [mode, setMode] = useState<Mode>("import");
+  const M = MODES[mode];
+  const label = (d: string) => (d === "proforma_invoice" && mode === "import" ? "Proforma invoice" : DOC_LABEL[d] ?? d);
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [phase, setPhase] = useState<Phase>("idle");
@@ -78,9 +97,15 @@ export default function Home() {
     reset();
   }
 
+  function switchMode(next: Mode) {
+    if (next === mode || busy) return;
+    previews.forEach((p) => URL.revokeObjectURL(p));
+    setFiles([]); setPreviews([]); reset(); setMode(next);
+  }
+
   async function loadDemo(caseId: string) {
     const list = await Promise.all(
-      DOCS.map(async (d) => {
+      M.docs.map(async (d) => {
         const blob = await (await fetch(`/demo/${caseId}_${d}.jpg`)).blob();
         return new File([blob], `${d}.jpg`, { type: "image/jpeg" });
       }),
@@ -97,6 +122,7 @@ export default function Home() {
     try {
       const body = new FormData();
       list.forEach((f) => body.append("files", f));
+      body.append("mode", mode);
       const res = await fetch("/api/check", { method: "POST", body });
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => ({}));
@@ -190,7 +216,7 @@ export default function Home() {
     { key: "read", title: "Reading documents", sub: `${docEvents.length}/${files.length || 3} pages · vision model` },
     { key: "validate", title: "Cross-checking", sub: issues ? `${issues.length} finding${issues.length === 1 ? "" : "s"} · totals, names, quantities, ports, dates` : "totals, names, quantities, ports, dates" },
     { key: "hs", title: "Classifying goods", sub: "5,612 HS 2022 codes · verified shortlist" },
-    { key: "draft", title: "Drafting Form M", sub: "every field traced to its source" },
+    { key: "draft", title: `Drafting ${M.form}`, sub: mode === "export" ? "every field traced · repatriation clock started" : "every field traced to its source" },
   ] as const;
   const order = ["read", "validate", "hs", "draft", "done"];
   const stepState = (k: string) => {
@@ -212,9 +238,14 @@ export default function Home() {
 
       <main>
         <section className="hero">
-          <p className="eyebrow">For Nigerian importers &amp; trade desks</p>
-          <h1>Catch Form M errors <span className="grad">before the bank does.</span></h1>
-          <p className="lead">Snap your proforma invoice, packing list and insurance certificate. The agent reads every figure, cross-checks the documents against each other and drafts your Form M, in your language.</p>
+          <div className="modes" role="tablist" aria-label="Choose imports or exports">
+            {(Object.keys(MODES) as Mode[]).map((m) => (
+              <button key={m} role="tab" aria-selected={mode === m} className={`mode ${mode === m ? "on" : ""}`} disabled={busy} onClick={() => switchMode(m)}>{MODES[m].tab}</button>
+            ))}
+          </div>
+          <p className="eyebrow">{M.eyebrow}</p>
+          <h1>{M.head} <span className="grad">before the bank does.</span></h1>
+          <p className="lead">{M.lead}</p>
         </section>
 
         <section className={`stage ${phase}`}>
@@ -230,7 +261,7 @@ export default function Home() {
             {phase === "result" && result && (
               <div className={`verdict ${errors.length ? "bad" : "good"}`}>
                 <span className="big mono">{Math.round(errorCount)}</span>
-                <span>{errors.length ? `problem${errors.length > 1 ? "s" : ""} to fix` : "problems · ready for the bank"}</span>
+                <span>{errors.length ? `problem${errors.length > 1 ? "s" : ""} to fix` : M.okText}</span>
               </div>
             )}
           </div>
@@ -241,7 +272,7 @@ export default function Home() {
               return (
                 <span key={i} className={`chip ${s}`}>
                   <span className="chip-dot" />
-                  <span className="chip-label">{ev?.doc_type ? DOC_LABEL[ev.doc_type] : files[i]?.name.replace(/\.[a-z]+$/i, "").replace(/_/g, " ")}</span>
+                  <span className="chip-label">{ev?.doc_type ? label(ev.doc_type) : files[i]?.name.replace(/\.[a-z]+$/i, "").replace(/_/g, " ")}</span>
                   {ev?.ms ? <span className="mono dim"> {(ev.ms / 1000).toFixed(1)}s</span> : s === "scanning" ? <span className="dim">…</span> : null}
                 </span>
               );
@@ -275,7 +306,7 @@ export default function Home() {
           </button>
           <button className="ghost" disabled={busy} onClick={() => input.current?.click()}>Upload photos</button>
           <a className="ghost wa" href="/whatsapp">💬 Try the WhatsApp bot</a>
-          {DEMOS.map((d) => (
+          {M.demos.map((d) => (
             <button key={d.id} className="ghost" disabled={busy} onClick={async () => run(await loadDemo(d.id))}>{d.label}</button>
           ))}
         </div>
@@ -294,7 +325,7 @@ export default function Home() {
                     <div className="subs">
                       {docEvents.map((d) => (
                         <span key={d.index} className={`sub ${d.status}`}>
-                          {d.status === "ok" ? "✓" : d.status === "failed" ? "✕" : "•"} {d.doc_type ? DOC_LABEL[d.doc_type] : d.file}
+                          {d.status === "ok" ? "✓" : d.status === "failed" ? "✕" : "•"} {d.doc_type ? label(d.doc_type) : d.file}
                           {d.ms ? <span className="mono"> {(d.ms / 1000).toFixed(1)}s</span> : null}
                           {d.repaired ? <span className="tag">self-repaired</span> : null}
                           {d.verification?.rereads ? (
@@ -333,6 +364,29 @@ export default function Home() {
               </div>
             </section>
 
+            {result.tracker && (
+              <section className={`tracker ${result.tracker.status}`}>
+                <div className="section-head">
+                  <h2>Repatriation deadline</h2>
+                  <span className="dim small">{result.tracker.days_total} days from the bill of lading date · {result.tracker.category} export · no extensions</span>
+                </div>
+                <div className="tracker-main">
+                  <b className="mono">{result.tracker.days_left < 0 ? `${Math.abs(result.tracker.days_left)} days overdue` : `${result.tracker.days_left} days left`}</b>
+                  <span>
+                    {result.tracker.amount != null ? `${result.tracker.currency ?? ""} ${money(result.tracker.amount)} ` : "Proceeds "}
+                    due by <b className="mono">{result.tracker.deadline}</b>
+                  </span>
+                </div>
+                <div className="bar" aria-hidden="true">
+                  <span style={{ width: `${Math.min(100, Math.max(0, ((result.tracker.days_total - result.tracker.days_left) / result.tracker.days_total) * 100))}%` }} />
+                </div>
+                <div className="tracker-ends mono dim small">
+                  <span>Shipped {result.tracker.bl_date}{result.tracker.bl_number ? ` · B/L ${result.tracker.bl_number}` : ""}</span>
+                  <span>Deadline {result.tracker.deadline}</span>
+                </div>
+              </section>
+            )}
+
             {[...errors, ...warnings].length > 0 && (
               <section>
                 <div className="section-head">
@@ -356,7 +410,7 @@ export default function Home() {
                       <article key={`${lang}-${k}`} className={`issue ${iss.severity}`} style={{ animationDelay: `${k * 90}ms` }} dir={t ? "auto" : undefined}>
                         <header>
                           <span className="sev">{iss.severity === "error" ? "Must fix" : "Check"}</span>
-                          {docs.map((d) => <span key={d} className="docchip">{DOC_LABEL[d]}</span>)}
+                          {docs.map((d) => <span key={d} className="docchip">{label(d)}</span>)}
                         </header>
                         <h3>{t ? t.title : iss.title}</h3>
                         {t ? <p>{t.body}</p> : <><p>{iss.detail}</p><p className="fix"><b>Fix</b> {iss.fix}</p></>}
@@ -369,7 +423,7 @@ export default function Home() {
             )}
 
             <section>
-              <div className="section-head"><h2>Form M draft</h2><span className="dim small">Pre-filled · verify on the Nigeria Single Window</span></div>
+              <div className="section-head"><h2>{M.form} draft</h2><span className="dim small">{M.draftNote}</span></div>
               <div className="draft">
                 {result.draft.sections.map((s, i) => (
                   <div className="panel" key={s.title} style={{ animationDelay: `${i * 70}ms` }}>

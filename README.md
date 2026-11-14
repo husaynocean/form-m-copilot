@@ -38,6 +38,19 @@ Measured on Muse Spark Open (Baseten) during the hackathon. Re-run on Gemini 3.5
 
 Synthetic, clean printed documents; real crumpled or handwritten paperwork will be harder. Raw outputs are in `eval-results/`.
 
+## Exports: Form NXP (added Nov 2026)
+
+The same engine now checks an export file. Switch to **Exports · Form NXP** on the web app and add photos of the invoice, packing list, bill of lading and NEPC exporter's certificate. It:
+
+- cross-checks the exporter name, ports, package count and gross weight across the documents, and checks the invoice arithmetic;
+- checks that the NEPC certificate is in the exporter's name and has not expired;
+- starts the **repatriation clock** from the bill of lading date (180 days for non-oil exports, 90 days for oil and gas, no extensions since the CBN circular of 8 January 2025) and warns when the deadline is within 30 days or has passed;
+- drafts the Form NXP fields, each traced to its source document.
+
+On 6 synthetic export cases (`samples/export_cases/`), read from phone-style photos with Gemini 3.5 Flash-Lite: 24 / 24 documents classified, **10 / 10 planted errors caught, 0 false alarms** (`npx tsx scripts/eval-export.ts --model`).
+
+The rules are in `lib/nxp.ts`. They are a pre-check for review, not regulatory advice: confirm deadlines and requirements against the current CBN Foreign Exchange Manual.
+
 ## Try it
 
 - Demo video: https://youtu.be/CLK3YI_W_q8

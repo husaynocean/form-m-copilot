@@ -2,6 +2,7 @@ import { extractDocument } from "@/lib/extract";
 import { validate } from "@/lib/validate";
 import { buildFormMDraft } from "@/lib/formm";
 import { checkPrintedHsCodes, suggestHs, type HsSuggestion } from "@/lib/hs";
+import { buildNxpDraft, repatriation, validateExport, type ExportCategory } from "@/lib/nxp";
 import type { DocumentSet, Extraction, Issue } from "@/lib/schema";
 
 export const runtime = "nodejs";
@@ -25,6 +26,9 @@ const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 export async function POST(req: Request) {
   const form = await req.formData();
   const files = form.getAll("files").filter((f): f is File => f instanceof File);
+  // mode=export checks a Form NXP file; default is the Form M (import) check.
+  const exportMode = form.get("mode") === "export";
+  const category: ExportCategory = form.get("category") === "oil" ? "oil" : "non-oil";
   const bad =
     files.length === 0 ? "Upload at least one document photo." :
     files.length > MAX_FILES ? `Upload at most ${MAX_FILES} files.` :
@@ -69,7 +73,7 @@ export async function POST(req: Request) {
         }
 
         send({ type: "stage", stage: "validate" });
-        const issues: Issue[] = [...validate(docs), ...checkPrintedHsCodes(docs)];
+        const issues: Issue[] = [...(exportMode ? validateExport(docs, category) : validate(docs)), ...checkPrintedHsCodes(docs)];
         if (uncertain.length) {
           issues.push({
             code: "UNCERTAIN_READING",
@@ -101,8 +105,9 @@ export async function POST(req: Request) {
         send({ type: "hs", hs });
 
         send({ type: "stage", stage: "draft" });
-        const draft = buildFormMDraft(docs);
-        send({ type: "done", result: { docs, issues, draft, hs, trace, ms: Date.now() - started } });
+        const draft = exportMode ? buildNxpDraft(docs) : buildFormMDraft(docs);
+        const tracker = exportMode ? repatriation(docs, category, new Date()) : null;
+        send({ type: "done", result: { mode: exportMode ? "export" : "import", docs, issues, draft, hs, tracker, trace, ms: Date.now() - started } });
       } catch (err) {
         send({ type: "error", error: String((err as Error)?.message ?? err).slice(0, 300) });
       }

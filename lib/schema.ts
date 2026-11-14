@@ -89,10 +89,41 @@ export const InsuranceCertificate = z.object({
 });
 export type InsuranceCertificate = z.infer<typeof InsuranceCertificate>;
 
+/** Export side (Form NXP): the shipping document that starts the repatriation clock. */
+export const BillOfLading = z.object({
+  doc_type: z.literal("bill_of_lading"),
+  bl_number: str,
+  shipper: str,
+  consignee: str,
+  notify_party: str,
+  vessel: str,
+  port_of_loading: str,
+  port_of_discharge: str,
+  shipped_on_board_date: str, // ISO yyyy-mm-dd
+  description: str,
+  packages: num,
+  gross_weight_kg: num,
+  freight_terms: str,
+});
+export type BillOfLading = z.infer<typeof BillOfLading>;
+
+/** NEPC exporter registration certificate. */
+export const NepcCertificate = z.object({
+  doc_type: z.literal("nepc_certificate"),
+  exporter_name: str,
+  certificate_number: str,
+  rc_number: str,
+  issue_date: str,
+  expiry_date: str,
+});
+export type NepcCertificate = z.infer<typeof NepcCertificate>;
+
 export const Extraction = z.discriminatedUnion("doc_type", [
   ProformaInvoice,
   PackingList,
   InsuranceCertificate,
+  BillOfLading,
+  NepcCertificate,
 ]);
 export type Extraction = z.infer<typeof Extraction>;
 export type DocType = Extraction["doc_type"];
@@ -101,6 +132,8 @@ export interface DocumentSet {
   proforma_invoice?: ProformaInvoice;
   packing_list?: PackingList;
   insurance_certificate?: InsuranceCertificate;
+  bill_of_lading?: BillOfLading;
+  nepc_certificate?: NepcCertificate;
 }
 
 export type Severity = "error" | "warning";

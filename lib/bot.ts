@@ -140,6 +140,10 @@ async function onPhoto(from: string, mediaId: string) {
   const { dataUrl } = await downloadMedia(mediaId);
   const r = await extractDocument(dataUrl);
   const doc: Extraction = r.extraction;
+  if (!(doc.doc_type in DOC_NAME)) {
+    await sendText(from, "That looks like an export document (bill of lading or NEPC certificate). Export (Form NXP) checks are on the web app for now: form-m-copilot.vercel.app");
+    return;
+  }
   const held = await mergeDoc(from, doc);
   const missing = ALL_DOCS.filter((d) => !held.includes(d));
 
@@ -157,7 +161,9 @@ function summary(doc: Extraction): string {
   if (doc.doc_type === "packing_list") {
     return `\n${doc.lines.length} line(s) · ${doc.lines.reduce((s, l) => s + (l.packages ?? 0), 0)} package(s)`;
   }
-  return `\n${doc.insurer ?? "?"} · ${doc.currency ?? ""} ${money(doc.sum_insured)}`;
+  if (doc.doc_type === "insurance_certificate") return `\n${doc.insurer ?? "?"} · ${doc.currency ?? ""} ${money(doc.sum_insured)}`;
+  // Export documents are checked on the web app for now.
+  return "\nThis looks like an export document. Export (Form NXP) checks are on the web app for now.";
 }
 
 async function report(from: string, minDocs: number, manual: boolean) {

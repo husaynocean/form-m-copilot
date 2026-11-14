@@ -1,0 +1,116 @@
+{
+  "case_id": "x04",
+  "today": "2026-11-14",
+  "category": "non-oil",
+  "expected_issues": [
+    "PACKAGES_MISMATCH",
+    "PORT_MISMATCH"
+  ],
+  "exporter_rc": "RC 1903344",
+  "truth": {
+    "proforma_invoice": {
+      "doc_type": "proforma_invoice",
+      "seller": {
+        "name": "Dala Sesame Exports Ltd",
+        "address": "22 Sharada Industrial Estate, Kano",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Qingdao Golden Grain Trading Co., Ltd",
+        "address": "66 Gangwan Road, Qingdao, China",
+        "rc_number": null
+      },
+      "invoice_number": "CI-2610-558",
+      "invoice_date": "2026-10-24",
+      "valid_until": null,
+      "currency": "USD",
+      "incoterm": "FOB",
+      "country_of_origin": "Nigeria",
+      "country_of_supply": "Nigeria",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Qingdao",
+      "mode_of_transport": "Sea",
+      "payment_terms": "Cash against documents",
+      "lines": [
+        {
+          "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
+          "hs_code": "1207.40",
+          "quantity": 200,
+          "unit": "MT",
+          "unit_price": 1480.0,
+          "line_total": 296000.0
+        },
+        {
+          "description": "Raw cashew nuts in shell, 80 kg jute bags",
+          "hs_code": "0801.31",
+          "quantity": 50,
+          "unit": "MT",
+          "unit_price": 1180.0,
+          "line_total": 59000.0
+        }
+      ],
+      "goods_value": 355000.0,
+      "freight": null,
+      "insurance": null,
+      "total": 355000.0
+    },
+    "packing_list": {
+      "doc_type": "packing_list",
+      "seller": {
+        "name": "Dala Sesame Exports Ltd",
+        "address": "22 Sharada Industrial Estate, Kano",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Qingdao Golden Grain Trading Co., Ltd",
+        "address": "66 Gangwan Road, Qingdao, China",
+        "rc_number": null
+      },
+      "packing_list_number": "PL-2610-812",
+      "date": "2026-10-24",
+      "proforma_reference": "CI-2610-558",
+      "port_of_discharge": "Qingdao",
+      "lines": [
+        {
+          "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
+          "quantity": 200,
+          "unit": "MT",
+          "packages": 4000,
+          "net_weight_kg": 200000.0,
+          "gross_weight_kg": 202400.0
+        },
+        {
+          "description": "Raw cashew nuts in shell, 80 kg jute bags",
+          "quantity": 50,
+          "unit": "MT",
+          "packages": 625,
+          "net_weight_kg": 50000.0,
+          "gross_weight_kg": 50600.0
+        }
+      ]
+    },
+    "bill_of_lading": {
+      "doc_type": "bill_of_lading",
+      "bl_number": "LOS2626508",
+      "shipper": "Dala Sesame Exports Ltd",
+      "consignee": "Qingdao Golden Grain Trading Co., Ltd",
+      "notify_party": "Qingdao Golden Grain Trading Co., Ltd",
+      "vessel": "MV Atlantic Kestrel",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Shanghai",
+      "shipped_on_board_date": "2026-10-30",
+      "description": "Natural white sesame seeds, 99% purity, 50 kg bags; Raw cashew nuts in shell, 80 kg jute bags",
+      "packages": 4500,
+      "gross_weight_kg": 253000.0,
+      "freight_terms": "Freight collect"
+    },
+    "nepc_certificate": {
+      "doc_type": "nepc_certificate",
+      "exporter_name": "Dala Sesame Exports Ltd",
+      "certificate_number": "NEPC/KN/0042871",
+      "rc_number": "RC 1903344",
+      "issue_date": "2026-01-03",
+      "expiry_date": "2028-01-03"
+    }
+  }
+}

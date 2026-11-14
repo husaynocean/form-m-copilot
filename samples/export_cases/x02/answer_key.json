@@ -1,0 +1,116 @@
+{
+  "case_id": "x02",
+  "today": "2026-11-14",
+  "category": "non-oil",
+  "expected_issues": [
+    "EXPORTER_NAME_MISMATCH",
+    "WEIGHT_MISMATCH"
+  ],
+  "exporter_rc": "RC 2056710",
+  "truth": {
+    "proforma_invoice": {
+      "doc_type": "proforma_invoice",
+      "seller": {
+        "name": "Tiga Agro Commodities Ltd",
+        "address": "7 Zaria Road, Kano",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Hanse Naturkost GmbH",
+        "address": "Speicherstrasse 9, Hamburg, Germany",
+        "rc_number": null
+      },
+      "invoice_number": "CI-2610-484",
+      "invoice_date": "2026-10-04",
+      "valid_until": null,
+      "currency": "USD",
+      "incoterm": "FOB",
+      "country_of_origin": "Nigeria",
+      "country_of_supply": "Nigeria",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Hamburg",
+      "mode_of_transport": "Sea",
+      "payment_terms": "Cash against documents",
+      "lines": [
+        {
+          "description": "Dried hibiscus flowers (sifted), 25 kg bags",
+          "hs_code": "1211.90",
+          "quantity": 40,
+          "unit": "MT",
+          "unit_price": 1320.0,
+          "line_total": 52800.0
+        },
+        {
+          "description": "Dried split ginger, 40 kg bags",
+          "hs_code": "0910.11",
+          "quantity": 25,
+          "unit": "MT",
+          "unit_price": 2150.0,
+          "line_total": 53750.0
+        }
+      ],
+      "goods_value": 106550.0,
+      "freight": null,
+      "insurance": null,
+      "total": 106550.0
+    },
+    "packing_list": {
+      "doc_type": "packing_list",
+      "seller": {
+        "name": "Tiga Agro Commodities Ltd",
+        "address": "7 Zaria Road, Kano",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Hanse Naturkost GmbH",
+        "address": "Speicherstrasse 9, Hamburg, Germany",
+        "rc_number": null
+      },
+      "packing_list_number": "PL-2610-766",
+      "date": "2026-10-04",
+      "proforma_reference": "CI-2610-484",
+      "port_of_discharge": "Hamburg",
+      "lines": [
+        {
+          "description": "Dried hibiscus flowers (sifted), 25 kg bags",
+          "quantity": 40,
+          "unit": "MT",
+          "packages": 1600,
+          "net_weight_kg": 40000.0,
+          "gross_weight_kg": 40480.0
+        },
+        {
+          "description": "Dried split ginger, 40 kg bags",
+          "quantity": 25,
+          "unit": "MT",
+          "packages": 625,
+          "net_weight_kg": 25000.0,
+          "gross_weight_kg": 25300.0
+        }
+      ]
+    },
+    "bill_of_lading": {
+      "doc_type": "bill_of_lading",
+      "bl_number": "LOS2618254",
+      "shipper": "Tiga Global Logistics Ltd",
+      "consignee": "Hanse Naturkost GmbH",
+      "notify_party": "Hanse Naturkost GmbH",
+      "vessel": "MV Niger Pearl",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Hamburg",
+      "shipped_on_board_date": "2026-10-10",
+      "description": "Dried hibiscus flowers (sifted), 25 kg bags; Dried split ginger, 40 kg bags",
+      "packages": 2225,
+      "gross_weight_kg": 63380.0,
+      "freight_terms": "Freight collect"
+    },
+    "nepc_certificate": {
+      "doc_type": "nepc_certificate",
+      "exporter_name": "Tiga Agro Commodities Ltd",
+      "certificate_number": "NEPC/KN/0051392",
+      "rc_number": "RC 2056710",
+      "issue_date": "2025-12-14",
+      "expiry_date": "2027-12-14"
+    }
+  }
+}

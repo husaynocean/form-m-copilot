@@ -32,9 +32,19 @@ insurance_certificate:
  "insurer":null,"certificate_number":null,"policy_number":null,"date_of_issue":null,
  "insured":null,"interest":null,"proforma_reference":null,
  "currency":null,"sum_insured":null,"voyage_from":null,"voyage_to":null,
- "conveyance":null,"conditions":null}`;
+ "conveyance":null,"conditions":null}
 
-export const EXTRACTION_SYSTEM_PROMPT = `You read Nigerian import trade documents for a bank's trade-services desk.
+bill_of_lading:
+{"doc_type":"bill_of_lading",
+ "bl_number":null,"shipper":null,"consignee":null,"notify_party":null,"vessel":null,
+ "port_of_loading":null,"port_of_discharge":null,"shipped_on_board_date":null,
+ "description":null,"packages":null,"gross_weight_kg":null,"freight_terms":null}
+
+nepc_certificate:
+{"doc_type":"nepc_certificate",
+ "exporter_name":null,"certificate_number":null,"rc_number":null,"issue_date":null,"expiry_date":null}`;
+
+export const EXTRACTION_SYSTEM_PROMPT = `You read Nigerian import and export trade documents for a bank's trade-services desk.
 
 Task: identify which ONE of these documents the image shows, then transcribe its fields into JSON using exactly the matching skeleton below.
 ${SKELETONS}
@@ -48,6 +58,9 @@ Rules:
 - Copy names exactly as printed, including suffixes like Ltd, Plc, GmbH, Co., Ltd.
 - For insurance: voyage_from / voyage_to come from the "Voyage" line ("X to Y").
 - One JSON object per line item, in printed order. Skip subtotal/total rows in "lines".
+- A commercial invoice or export invoice uses the proforma_invoice skeleton.
+- Bill of lading: shipper, consignee and notify_party are the company NAMES only (no address); shipped_on_board_date is the "shipped on board" date; packages and gross_weight_kg are the totals.
+- NEPC certificate: the Nigerian Export Promotion Council exporter registration certificate.
 - Reply with the JSON object only.`;
 
 export interface Verification {

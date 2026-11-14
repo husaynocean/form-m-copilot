@@ -1,0 +1,100 @@
+{
+  "case_id": "x06",
+  "today": "2026-11-14",
+  "category": "non-oil",
+  "expected_issues": [
+    "REPATRIATION_OVERDUE",
+    "NEPC_NAME_MISMATCH"
+  ],
+  "exporter_rc": "RC 1811905",
+  "truth": {
+    "proforma_invoice": {
+      "doc_type": "proforma_invoice",
+      "seller": {
+        "name": "Gongola Ginger Traders Ltd",
+        "address": "14 Kachia Road, Kaduna",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Qingdao Golden Grain Trading Co., Ltd",
+        "address": "66 Gangwan Road, Qingdao, China",
+        "rc_number": null
+      },
+      "invoice_number": "CI-2604-632",
+      "invoice_date": "2026-04-17",
+      "valid_until": null,
+      "currency": "USD",
+      "incoterm": "FOB",
+      "country_of_origin": "Nigeria",
+      "country_of_supply": "Nigeria",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Qingdao",
+      "mode_of_transport": "Sea",
+      "payment_terms": "Cash against documents",
+      "lines": [
+        {
+          "description": "Dried hibiscus flowers (sifted), 25 kg bags",
+          "hs_code": "1211.90",
+          "quantity": 80,
+          "unit": "MT",
+          "unit_price": 1320.0,
+          "line_total": 105600.0
+        }
+      ],
+      "goods_value": 105600.0,
+      "freight": null,
+      "insurance": null,
+      "total": 105600.0
+    },
+    "packing_list": {
+      "doc_type": "packing_list",
+      "seller": {
+        "name": "Gongola Ginger Traders Ltd",
+        "address": "14 Kachia Road, Kaduna",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Qingdao Golden Grain Trading Co., Ltd",
+        "address": "66 Gangwan Road, Qingdao, China",
+        "rc_number": null
+      },
+      "packing_list_number": "PL-2604-858",
+      "date": "2026-04-17",
+      "proforma_reference": "CI-2604-632",
+      "port_of_discharge": "Qingdao",
+      "lines": [
+        {
+          "description": "Dried hibiscus flowers (sifted), 25 kg bags",
+          "quantity": 80,
+          "unit": "MT",
+          "packages": 3200,
+          "net_weight_kg": 80000.0,
+          "gross_weight_kg": 80960.0
+        }
+      ]
+    },
+    "bill_of_lading": {
+      "doc_type": "bill_of_lading",
+      "bl_number": "LOS2634762",
+      "shipper": "Gongola Ginger Traders Ltd",
+      "consignee": "Qingdao Golden Grain Trading Co., Ltd",
+      "notify_party": "Qingdao Golden Grain Trading Co., Ltd",
+      "vessel": "MV Sahel Trader",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Qingdao",
+      "shipped_on_board_date": "2026-04-23",
+      "description": "Dried hibiscus flowers (sifted), 25 kg bags",
+      "packages": 3200,
+      "gross_weight_kg": 80960.0,
+      "freight_terms": "Freight collect"
+    },
+    "nepc_certificate": {
+      "doc_type": "nepc_certificate",
+      "exporter_name": "Gongola Farms and Allied Ltd",
+      "certificate_number": "NEPC/KD/0038820",
+      "rc_number": "RC 1811905",
+      "issue_date": "2025-06-27",
+      "expiry_date": "2027-06-27"
+    }
+  }
+}

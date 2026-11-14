@@ -1,0 +1,100 @@
+{
+  "case_id": "x03",
+  "today": "2026-11-14",
+  "category": "non-oil",
+  "expected_issues": [
+    "NEPC_EXPIRED",
+    "INVOICE_TOTAL_MISMATCH"
+  ],
+  "exporter_rc": "RC 1811905",
+  "truth": {
+    "proforma_invoice": {
+      "doc_type": "proforma_invoice",
+      "seller": {
+        "name": "Gongola Ginger Traders Ltd",
+        "address": "14 Kachia Road, Kaduna",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Hanse Naturkost GmbH",
+        "address": "Speicherstrasse 9, Hamburg, Germany",
+        "rc_number": null
+      },
+      "invoice_number": "CI-2610-521",
+      "invoice_date": "2026-10-11",
+      "valid_until": null,
+      "currency": "USD",
+      "incoterm": "FOB",
+      "country_of_origin": "Nigeria",
+      "country_of_supply": "Nigeria",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Hamburg",
+      "mode_of_transport": "Sea",
+      "payment_terms": "Cash against documents",
+      "lines": [
+        {
+          "description": "Dried split ginger, 40 kg bags",
+          "hs_code": "0910.11",
+          "quantity": 60,
+          "unit": "MT",
+          "unit_price": 2150.0,
+          "line_total": 129000.0
+        }
+      ],
+      "goods_value": 129000.0,
+      "freight": null,
+      "insurance": null,
+      "total": 130000.0
+    },
+    "packing_list": {
+      "doc_type": "packing_list",
+      "seller": {
+        "name": "Gongola Ginger Traders Ltd",
+        "address": "14 Kachia Road, Kaduna",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Hanse Naturkost GmbH",
+        "address": "Speicherstrasse 9, Hamburg, Germany",
+        "rc_number": null
+      },
+      "packing_list_number": "PL-2610-789",
+      "date": "2026-10-11",
+      "proforma_reference": "CI-2610-521",
+      "port_of_discharge": "Hamburg",
+      "lines": [
+        {
+          "description": "Dried split ginger, 40 kg bags",
+          "quantity": 60,
+          "unit": "MT",
+          "packages": 1500,
+          "net_weight_kg": 60000.0,
+          "gross_weight_kg": 60720.0
+        }
+      ]
+    },
+    "bill_of_lading": {
+      "doc_type": "bill_of_lading",
+      "bl_number": "LOS2622381",
+      "shipper": "Gongola Ginger Traders Ltd",
+      "consignee": "Hanse Naturkost GmbH",
+      "notify_party": "Hanse Naturkost GmbH",
+      "vessel": "MV Sahel Trader",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Hamburg",
+      "shipped_on_board_date": "2026-10-17",
+      "description": "Dried split ginger, 40 kg bags",
+      "packages": 1500,
+      "gross_weight_kg": 60720.0,
+      "freight_terms": "Freight collect"
+    },
+    "nepc_certificate": {
+      "doc_type": "nepc_certificate",
+      "exporter_name": "Gongola Ginger Traders Ltd",
+      "certificate_number": "NEPC/KD/0038820",
+      "rc_number": "RC 1811905",
+      "issue_date": "2024-08-08",
+      "expiry_date": "2026-08-08"
+    }
+  }
+}

@@ -17,6 +17,12 @@ const BY_CODE = new Map(ENTRIES.map((e) => [e.code, e]));
 // Trade vocabulary -> nomenclature vocabulary. Importers write "generator",
 // the tariff says "generating sets".
 const SYNONYMS: Record<string, string[]> = {
+  // Nigerian export commodities
+  hibiscus: ["plants", "parts", "perfumery", "pharmacy", "dried"],
+  zobo: ["plants", "parts", "perfumery", "pharmacy", "dried"],
+  sesame: ["sesamum", "oil", "seeds"],
+  shea: ["vegetable", "fats", "fixed"],
+  cashew: ["cashew", "nuts", "shell"],
   generator: ["generating", "sets", "electric"],
   genset: ["generating", "sets", "electric"],
   kva: ["generating", "output"],

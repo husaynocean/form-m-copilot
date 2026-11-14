@@ -219,3 +219,21 @@ dd.missing { color: var(--red); }
 }
 
 .ghost.wa { text-decoration: none; color: var(--ink); display: inline-flex; align-items: center; }
+
+/* --- imports / exports switch --- */
+.modes { display: inline-flex; gap: 4px; padding: 4px; margin: 0 0 18px; border-radius: 999px; border: 1px solid var(--line2); background: var(--glass); }
+.mode { padding: 9px 16px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--muted); min-height: 40px; }
+.mode.on { background: var(--em); color: #022c1c; }
+.mode:disabled { opacity: .6; }
+
+/* --- repatriation tracker --- */
+.tracker { padding: 16px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--glass); animation: rise .6s both; }
+.tracker-main { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin: 4px 0 12px; }
+.tracker-main > b { font-size: clamp(22px, 5vw, 32px); color: var(--em); }
+.tracker.due_soon .tracker-main > b { color: #fbbf24; }
+.tracker.overdue .tracker-main > b { color: #fb7185; }
+.tracker .bar { height: 8px; border-radius: 999px; background: var(--line2); overflow: hidden; }
+.tracker .bar span { display: block; height: 100%; border-radius: 999px; background: var(--em); transition: width 1s ease; }
+.tracker.due_soon .bar span { background: #fbbf24; }
+.tracker.overdue .bar span { background: #fb7185; }
+.tracker-ends { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; margin-top: 8px; }

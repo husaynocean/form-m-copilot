@@ -1,0 +1,57 @@
+{
+  "case_id": "q04",
+  "today": "2026-11-14",
+  "used_this_quarter": 0,
+  "expected_issues": [
+    "INVOICE_TOTAL_MISMATCH",
+    "VAGUE_DESCRIPTION"
+  ],
+  "truth": {
+    "proforma_invoice": {
+      "doc_type": "proforma_invoice",
+      "seller": {
+        "name": "Guangzhou Brightstar Equipment Co., Ltd",
+        "address": "120 Huangpu Avenue, Guangzhou, China",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Fagge Tailoring Hub Ltd",
+        "address": "41 Fagge Road, Kano Tel: 08031220001",
+        "rc_number": "RC 3011842"
+      },
+      "invoice_number": "PI-Q04-2610",
+      "invoice_date": "2026-10-30",
+      "valid_until": null,
+      "currency": "USD",
+      "incoterm": "CIF",
+      "country_of_origin": "China",
+      "country_of_supply": "China",
+      "port_of_loading": "Huangpu",
+      "port_of_discharge": "Apapa, Lagos",
+      "mode_of_transport": "Sea",
+      "payment_terms": "100% telegraphic transfer before shipment",
+      "lines": [
+        {
+          "description": "Hair dryer, 1200 W, handheld",
+          "hs_code": "8516.31",
+          "quantity": 40,
+          "unit": "carton",
+          "unit_price": 96.0,
+          "line_total": 3840.0
+        },
+        {
+          "description": "Spare parts",
+          "hs_code": null,
+          "quantity": 1,
+          "unit": "lot",
+          "unit_price": 650.0,
+          "line_total": 650.0
+        }
+      ],
+      "goods_value": 4490.0,
+      "freight": null,
+      "insurance": null,
+      "total": 5000.0
+    }
+  }
+}

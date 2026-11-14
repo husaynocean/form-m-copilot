@@ -4,38 +4,57 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Issue } from "@/lib/schema";
 import type { FormMDraft } from "@/lib/formm";
+import type { Deadline } from "@/lib/deadlines";
 import { LANGUAGES, type Lang } from "@/lib/languages";
 import { resizeImage } from "@/lib/resize";
+import { getTrackerKey, setTrackerKey } from "@/lib/tracker-key";
 import type { Link, Phase, SheetState } from "@/components/DocScene";
 
 const DocScene = dynamic(() => import("@/components/DocScene"), { ssr: false, loading: () => <div className="scene" /> });
 
 interface HsSuggestion { line: number; code: string | null; official_text: string | null; confidence: string; reason: string; missing_info: string | null }
 interface DocEvent { index: number; file: string; status: string; doc_type?: string; model?: string; ms?: number; repaired?: boolean; error?: string; verification?: { rereads: number; agreed: boolean; corrected: string[]; uncertain: string[] } }
-interface Tracker { category: string; bl_number: string | null; bl_date: string; deadline: string; days_total: number; days_left: number; status: "ok" | "due_soon" | "overdue"; amount: number | null; currency: string | null }
-interface Result { issues: Issue[]; draft: FormMDraft; hs: HsSuggestion[]; ms: number; tracker?: Tracker | null }
-type Mode = "import" | "export";
+interface Result { mode: Mode; issues: Issue[]; draft: FormMDraft; hs: HsSuggestion[]; ms: number; deadlines?: Deadline[] }
+type Mode = "import" | "export" | "formq" | "forma";
 
 const MODES: Record<Mode, {
   tab: string; form: string; eyebrow: string; head: string; lead: string; draftNote: string; okText: string;
   demos: { id: string; label: string }[]; docs: string[];
 }> = {
   import: {
-    tab: "Imports · Form M", form: "Form M", eyebrow: "For Nigerian importers & trade desks", head: "Catch Form M errors",
+    tab: "Form M · imports", form: "Form M", eyebrow: "For Nigerian importers & trade desks", head: "Catch Form M errors",
     lead: "Snap your proforma invoice, packing list and insurance certificate. The agent reads every figure, cross-checks the documents against each other and drafts your Form M, in your language.",
     draftNote: "Pre-filled · verify on the Nigeria Single Window", okText: "problems · ready for the bank",
     demos: [{ id: "case_12", label: "Try a problem file" }, { id: "case_01", label: "Try a clean file" }],
     docs: ["proforma_invoice", "packing_list", "insurance_certificate"],
   },
   export: {
-    tab: "Exports · Form NXP", form: "Form NXP", eyebrow: "For Nigerian exporters & trade desks", head: "Catch Form NXP errors",
-    lead: "Snap your invoice, packing list, bill of lading and NEPC certificate. The agent cross-checks them, drafts your Form NXP and starts the clock on your repatriation deadline.",
+    tab: "Form NXP · exports", form: "Form NXP", eyebrow: "For Nigerian exporters & trade desks", head: "Catch Form NXP errors",
+    lead: "Snap your invoice, packing list, bill of lading and NEPC certificate, plus the CCI and certificate of origin when you have them. The agent cross-checks them, drafts your Form NXP and starts the clock on your repatriation deadline.",
     draftNote: "Pre-filled · verify on the CBN Trade Monitoring System", okText: "problems · ready for the bank",
     demos: [{ id: "export_problem", label: "Try a problem file" }, { id: "export_clean", label: "Try a clean file" }],
-    docs: ["commercial_invoice", "packing_list", "bill_of_lading", "nepc_certificate"],
+    docs: ["commercial_invoice", "packing_list", "bill_of_lading", "nepc_certificate", "cci", "certificate_of_origin"],
+  },
+  formq: {
+    tab: "Form Q · small imports", form: "Form Q", eyebrow: "For small importers · up to USD 20,000 a quarter", head: "Catch Form Q errors",
+    lead: "Snap your supplier's invoice. The agent checks the arithmetic, that it is for physical goods, and that it fits your USD 20,000 quarterly allowance, then drafts your Form Q.",
+    draftNote: "Pre-filled · bring Form Q and your instruction letter to the bank", okText: "problems · ready for the bank",
+    demos: [{ id: "formq_problem", label: "Try a problem file" }, { id: "formq_clean", label: "Try a clean file" }],
+    docs: ["proforma_invoice"],
+  },
+  forma: {
+    tab: "Form A · school & medical", form: "Form A", eyebrow: "For school fees & medical bills abroad", head: "Catch Form A errors",
+    lead: "Snap the school bill and admission letter (or the hospital estimate and doctor's letter). The agent checks names, bank details, limits and dates, then drafts your Form A. Don't upload passports or tax documents.",
+    draftNote: "Pre-filled · apply on the CBN Trade Monitoring System", okText: "problems · ready for the bank",
+    demos: [{ id: "forma_problem", label: "Try a problem file" }, { id: "forma_clean", label: "Try a clean file" }],
+    docs: ["fee_invoice", "support_letter"],
   },
 };
-const DOC_LABEL: Record<string, string> = { proforma_invoice: "Invoice", packing_list: "Packing list", insurance_certificate: "Insurance cert.", bill_of_lading: "Bill of lading", nepc_certificate: "NEPC cert." };
+const DOC_LABEL: Record<string, string> = {
+  proforma_invoice: "Invoice", packing_list: "Packing list", insurance_certificate: "Insurance cert.", bill_of_lading: "Bill of lading",
+  nepc_certificate: "NEPC cert.", clean_certificate_of_inspection: "CCI", certificate_of_origin: "Cert. of origin",
+  fee_invoice: "Fee bill", support_letter: "Letter",
+};
 const QUICK: Lang[] = ["en", "ha", "yo", "ig", "pcm"];
 
 const money = (v: unknown) =>
@@ -61,6 +80,9 @@ function useCountUp(target: number, run: boolean, ms = 900) {
 export default function Home() {
   const [mode, setMode] = useState<Mode>("import");
   const [category, setCategory] = useState<"non-oil" | "oil">("non-oil");
+  const [validity, setValidity] = useState<"general" | "plant">("general");
+  const [used, setUsed] = useState("");
+  const [saved, setSaved] = useState<Record<string, "saving" | "saved" | "error">>({});
   const M = MODES[mode];
   const label = (d: string) => (d === "proforma_invoice" && mode === "import" ? "Proforma invoice" : DOC_LABEL[d] ?? d);
   const [files, setFiles] = useState<File[]>([]);
@@ -88,7 +110,7 @@ export default function Home() {
 
   function reset() {
     setPhase("idle"); setStage(null); setDocEvents([]); setIssues(null); setResult(null);
-    setError(null); setLang("en"); setTranslated(null); setElapsed(0);
+    setError(null); setLang("en"); setTranslated(null); setElapsed(0); setSaved({});
   }
 
   function choose(list: File[]) {
@@ -125,6 +147,8 @@ export default function Home() {
       list.forEach((f) => body.append("files", f));
       body.append("mode", mode);
       body.append("category", category);
+      body.append("validity", validity);
+      body.append("used", String(Number(used.replace(/[^0-9.]/g, "")) || 0));
       const res = await fetch("/api/check", { method: "POST", body });
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => ({}));
@@ -158,6 +182,39 @@ export default function Home() {
       setError((e as Error).message);
       setPhase("idle");
       setStage(null);
+    }
+  }
+
+  async function saveDeadline(t: Deadline) {
+    if (!result) return;
+    setSaved((x) => ({ ...x, [t.kind]: "saving" }));
+    const kind = { import: "form_m", export: "nxp", formq: "form_q", forma: "form_a" }[result.mode ?? mode];
+    const name = (title: string) => result.draft.sections.find((sec) => sec.title === title)?.fields.find((f) => f.label === "Name" || f.label === "Institution")?.value;
+    const counterparty =
+      mode === "import" ? name("Beneficiary (supplier)")
+      : mode === "export" ? name("Buyer (consignee)")
+      : mode === "formq" ? name("Supplier (beneficiary)")
+      : name("Beneficiary");
+    const own = mode === "import" ? name("Applicant (importer)") : mode === "export" ? name("Exporter") : mode === "formq" ? name("Applicant (importer)") : name("Student") ?? name("Patient");
+    try {
+      const res = await fetch("/api/files", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          owner: getTrackerKey(),
+          file: {
+            kind, title: String(counterparty ?? M.form), party: own ? String(own) : null, reference: t.reference, amount: t.amount, currency: t.currency,
+            deadline_kind: t.kind, deadline_title: t.title, basis: t.basis, start_label: t.start_label, start_date: t.start_date, days_total: t.days_total,
+            open_issues: errors.length,
+          },
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setTrackerKey(data.owner);
+      setSaved((x) => ({ ...x, [t.kind]: "saved" }));
+    } catch {
+      setSaved((x) => ({ ...x, [t.kind]: "error" }));
     }
   }
 
@@ -246,12 +303,25 @@ export default function Home() {
               <button key={m} role="tab" aria-selected={mode === m} className={`mode ${mode === m ? "on" : ""}`} disabled={busy} onClick={() => switchMode(m)}>{MODES[m].tab}</button>
             ))}
           </div>
+          {mode === "import" && (
+            <div className="cats" role="radiogroup" aria-label="Type of goods">
+              {([["general", "General goods · 180 days"], ["plant", "Plant & machinery · 365 days"]] as const).map(([c, t]) => (
+                <button key={c} role="radio" aria-checked={validity === c} className={`cat ${validity === c ? "on" : ""}`} disabled={busy} onClick={() => { setValidity(c); reset(); }}>{t}</button>
+              ))}
+            </div>
+          )}
           {mode === "export" && (
             <div className="cats" role="radiogroup" aria-label="Type of export">
               {([["non-oil", "Non-oil · 180 days"], ["oil", "Oil & gas · 90 days"]] as const).map(([c, t]) => (
                 <button key={c} role="radio" aria-checked={category === c} className={`cat ${category === c ? "on" : ""}`} disabled={busy} onClick={() => { setCategory(c); reset(); }}>{t}</button>
               ))}
             </div>
+          )}
+          {mode === "formq" && (
+            <label className="cats used">
+              <span className="dim small">Already used this quarter (USD)</span>
+              <input inputMode="decimal" placeholder="0" value={used} disabled={busy} onChange={(e) => { setUsed(e.target.value); if (phase === "result") reset(); }} />
+            </label>
           )}
           <p className="eyebrow">{M.eyebrow}</p>
           <h1>{M.head} <span className="grad">before the bank does.</span></h1>
@@ -365,8 +435,8 @@ export default function Home() {
                 <b className="mono">{currency} {money(valueCount)}</b>
               </div>
               <div className="kpi">
-                <small>Line items</small>
-                <b className="mono">{result.draft.items.length}</b>
+                <small>{result.draft.items.length ? "Line items" : "Documents"}</small>
+                <b className="mono">{result.draft.items.length || docEvents.filter((d) => d.status === "ok").length}</b>
               </div>
               <div className="kpi">
                 <small>Checked in</small>
@@ -374,28 +444,38 @@ export default function Home() {
               </div>
             </section>
 
-            {result.tracker && (
-              <section className={`tracker ${result.tracker.status}`}>
+            {(result.deadlines ?? []).map((t) => (
+              <section key={t.kind} className={`tracker ${t.status}`}>
                 <div className="section-head">
-                  <h2>Repatriation deadline</h2>
-                  <span className="dim small">{result.tracker.days_total} days from the bill of lading date · {result.tracker.category === "oil" ? "oil & gas" : "non-oil"} export · no extensions</span>
+                  <h2>{t.title}</h2>
+                  <span className="dim small">{t.basis}</span>
                 </div>
                 <div className="tracker-main">
-                  <b className="mono">{result.tracker.days_left < 0 ? `${Math.abs(result.tracker.days_left)} days overdue` : `${result.tracker.days_left} days left`}</b>
+                  <b className="mono">{t.days_left < 0 ? `${Math.abs(t.days_left)} days overdue` : `${t.days_left} days left`}</b>
                   <span>
-                    {result.tracker.amount != null ? `${result.tracker.currency ?? ""} ${money(result.tracker.amount)} ` : "Proceeds "}
-                    due by <b className="mono">{result.tracker.deadline}</b>
+                    {t.amount != null ? `${t.currency ?? ""} ${money(t.amount)} · ` : ""}due by <b className="mono">{t.deadline}</b>
                   </span>
                 </div>
                 <div className="bar" aria-hidden="true">
-                  <span style={{ width: `${Math.min(100, Math.max(0, ((result.tracker.days_total - result.tracker.days_left) / result.tracker.days_total) * 100))}%` }} />
+                  <span style={{ width: `${Math.min(100, Math.max(0, ((t.days_total - t.days_left) / t.days_total) * 100))}%` }} />
                 </div>
                 <div className="tracker-ends mono dim small">
-                  <span>Shipped {result.tracker.bl_date}{result.tracker.bl_number ? ` · B/L ${result.tracker.bl_number}` : ""}</span>
-                  <span>Deadline {result.tracker.deadline}</span>
+                  <span>{t.start_label} {t.start_date}{t.reference ? ` · ${t.reference}` : ""}</span>
+                  <span>Due {t.deadline}</span>
+                </div>
+                <p className="dim small tracker-action">{t.action}</p>
+                <div className="tracker-save">
+                  {saved[t.kind] === "saved" ? (
+                    <a className="ghost" href="/tracker">✓ Saved · open tracker</a>
+                  ) : (
+                    <button className="ghost" disabled={saved[t.kind] === "saving"} onClick={() => saveDeadline(t)}>
+                      {saved[t.kind] === "saving" ? "Saving…" : saved[t.kind] === "error" ? "Couldn't save · try again" : "Save & track this deadline"}
+                    </button>
+                  )}
+                  {t.start_label?.startsWith("If") && <span className="dim small">You can set the real {t.kind === "form_m_validity" ? "approval" : "payment"} date in the tracker.</span>}
                 </div>
               </section>
-            )}
+            ))}
 
             {[...errors, ...warnings, ...notes].length > 0 && (
               <section>
@@ -483,7 +563,7 @@ export default function Home() {
       <footer className="foot">
         Started at the Meta Global AI Developer Hackathon · Works with any vision model, now on Google Gemini · Draft for review only, not a submission
         <br />
-        <a href="/privacy" style={{ color: "inherit" }}>Privacy</a> · <a href="/data-deletion" style={{ color: "inherit" }}>Data deletion</a>
+        <a href="/tracker" style={{ color: "inherit" }}>My deadline tracker</a> · <a href="/privacy" style={{ color: "inherit" }}>Privacy</a> · <a href="/data-deletion" style={{ color: "inherit" }}>Data deletion</a>
       </footer>
     </div>
   );

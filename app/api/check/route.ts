@@ -3,6 +3,10 @@ import { validate } from "@/lib/validate";
 import { buildFormMDraft } from "@/lib/formm";
 import { checkPrintedHsCodes, suggestHs, type HsSuggestion } from "@/lib/hs";
 import { buildNxpDraft, repatriation, validateExport, type ExportCategory } from "@/lib/nxp";
+import { buildFormQDraft, invoiceTotal, validateFormQ } from "@/lib/formq";
+import { buildFormADraft, feeDeadline, validateFormA } from "@/lib/forma";
+import { confirmMismatches } from "@/lib/confirm";
+import { formMValidity, formQDocuments, type Deadline, type FormMCategory } from "@/lib/deadlines";
 import type { DocumentSet, Extraction, Issue } from "@/lib/schema";
 
 export const runtime = "nodejs";
@@ -26,9 +30,12 @@ const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 export async function POST(req: Request) {
   const form = await req.formData();
   const files = form.getAll("files").filter((f): f is File => f instanceof File);
-  // mode=export checks a Form NXP file; default is the Form M (import) check.
-  const exportMode = form.get("mode") === "export";
+  // mode: import (Form M, default) | export (Form NXP) | formq | forma
+  const rawMode = String(form.get("mode") ?? "import");
+  const mode = (["import", "export", "formq", "forma"].includes(rawMode) ? rawMode : "import") as "import" | "export" | "formq" | "forma";
   const category: ExportCategory = form.get("category") === "oil" ? "oil" : "non-oil";
+  const validity: FormMCategory = form.get("validity") === "plant" ? "plant" : "general";
+  const used = Math.max(0, Number(form.get("used") ?? 0) || 0);
   const bad =
     files.length === 0 ? "Upload at least one document photo." :
     files.length > MAX_FILES ? `Upload at most ${MAX_FILES} files.` :
@@ -45,16 +52,21 @@ export async function POST(req: Request) {
         send({ type: "start", files: files.map((f) => f.name) });
 
         const docs: DocumentSet = {};
+        const images: Record<string, string> = {};
         const uncertain: string[] = [];
         const trace: Record<string, unknown>[] = [];
         await Promise.all(
           files.map(async (f, index) => {
             try {
               const b64 = Buffer.from(await f.arrayBuffer()).toString("base64");
-              const r = await extractDocument(`data:${f.type};base64,${b64}`);
+              const url = `data:${f.type};base64,${b64}`;
+              const r = await extractDocument(url);
               const e: Extraction = r.extraction;
               const dup = Boolean(docs[e.doc_type]);
-              if (!dup) (docs as Record<string, Extraction>)[e.doc_type] = e;
+              if (!dup) {
+                (docs as Record<string, Extraction>)[e.doc_type] = e;
+                images[e.doc_type] = url;
+              }
               if (r.verification?.uncertain.length) uncertain.push(...r.verification.uncertain);
               const ev = { index, file: f.name, status: dup ? "duplicate" : "ok", doc_type: e.doc_type, model: r.model, ms: r.ms, repaired: r.repaired, verification: r.verification };
               trace.push(ev);
@@ -73,7 +85,19 @@ export async function POST(req: Request) {
         }
 
         send({ type: "stage", stage: "validate" });
-        const issues: Issue[] = [...(exportMode ? validateExport(docs, category) : validate(docs)), ...checkPrintedHsCodes(docs)];
+        const runRules = () =>
+          mode === "export" ? validateExport(docs, category)
+          : mode === "formq" ? validateFormQ(docs, { usedThisQuarter: used })
+          : mode === "forma" ? validateFormA(docs)
+          : validate(docs);
+        let ruleIssues = runRules();
+        // Double-check disputed numbers on the photos before reporting them.
+        const confirm = await confirmMismatches(docs, images, ruleIssues);
+        if (confirm.corrected.length) {
+          ruleIssues = runRules();
+          trace.push({ file: "re-read", status: "corrected", error: confirm.corrected.join("; ") });
+        }
+        const issues: Issue[] = [...ruleIssues, ...(mode === "forma" ? [] : checkPrintedHsCodes(docs))];
         if (uncertain.length) {
           issues.push({
             code: "UNCERTAIN_READING",
@@ -105,9 +129,19 @@ export async function POST(req: Request) {
         send({ type: "hs", hs });
 
         send({ type: "stage", stage: "draft" });
-        const draft = exportMode ? buildNxpDraft(docs) : buildFormMDraft(docs);
-        const tracker = exportMode ? repatriation(docs, category, new Date()) : null;
-        send({ type: "done", result: { mode: exportMode ? "export" : "import", docs, issues, draft, hs, tracker, trace, ms: Date.now() - started } });
+        const pi = docs.proforma_invoice;
+        const draft =
+          mode === "export" ? buildNxpDraft(docs)
+          : mode === "formq" ? buildFormQDraft(docs, { usedThisQuarter: used })
+          : mode === "forma" ? buildFormADraft(docs)
+          : buildFormMDraft(docs);
+        const deadlines = [
+          mode === "export" ? repatriation(docs, category, new Date())
+          : mode === "formq" ? (pi ? formQDocuments({ reference: pi.invoice_number, amount: invoiceTotal(docs), currency: pi.currency }) : null)
+          : mode === "forma" ? feeDeadline(docs)
+          : pi ? formMValidity({ category: validity, reference: pi.invoice_number, amount: pi.total, currency: pi.currency }) : null,
+        ].filter((d): d is Deadline => Boolean(d));
+        send({ type: "done", result: { mode, docs, issues, draft, hs, deadlines, trace, ms: Date.now() - started } });
       } catch (err) {
         send({ type: "error", error: String((err as Error)?.message ?? err).slice(0, 300) });
       }

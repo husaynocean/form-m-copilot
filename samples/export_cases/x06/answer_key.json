@@ -86,7 +86,8 @@
       "description": "Dried hibiscus flowers (sifted), 25 kg bags",
       "packages": 3200,
       "gross_weight_kg": 80960.0,
-      "freight_terms": "Freight collect"
+      "freight_terms": "Freight collect",
+      "nxp_number": "NXP20260644278"
     },
     "nepc_certificate": {
       "doc_type": "nepc_certificate",
@@ -95,6 +96,35 @@
       "rc_number": "RC 1811905",
       "issue_date": "2025-06-27",
       "expiry_date": "2027-06-27"
+    },
+    "clean_certificate_of_inspection": {
+      "doc_type": "clean_certificate_of_inspection",
+      "cci_number": "CCI/26/59866",
+      "date": "2026-04-19",
+      "nxp_number": "NXP20260644278",
+      "inspection_agent": "Sahara Inspection Services Ltd",
+      "exporter": "Gongola Ginger Traders Ltd",
+      "consignee": "Qingdao Golden Grain Trading Co., Ltd",
+      "description": "Dried hibiscus flowers (sifted), 25 kg bags",
+      "hs_code": "1211.90",
+      "quantity": 80,
+      "unit": "MT",
+      "net_weight_kg": 80000.0,
+      "gross_weight_kg": 80960.0,
+      "currency": "USD",
+      "fob_value": 105600.0
+    },
+    "certificate_of_origin": {
+      "doc_type": "certificate_of_origin",
+      "certificate_number": "NACCIMA/CO/26/7274",
+      "date": "2026-04-21",
+      "issuing_body": "NACCIMA (specimen)",
+      "exporter": "Gongola Ginger Traders Ltd",
+      "consignee": "Qingdao Golden Grain Trading Co., Ltd",
+      "country_of_origin": "Federal Republic of Nigeria",
+      "description": "Dried hibiscus flowers (sifted), 25 kg bags",
+      "packages": 3200,
+      "gross_weight_kg": 80960.0
     }
   }
 }

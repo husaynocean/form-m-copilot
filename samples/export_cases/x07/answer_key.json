@@ -1,0 +1,130 @@
+{
+  "case_id": "x07",
+  "today": "2026-11-14",
+  "category": "non-oil",
+  "expected_issues": [
+    "CCI_VALUE_MISMATCH",
+    "COO_ORIGIN_NOT_NIGERIA"
+  ],
+  "exporter_rc": "RC 1903344",
+  "truth": {
+    "proforma_invoice": {
+      "doc_type": "proforma_invoice",
+      "seller": {
+        "name": "Dala Sesame Exports Ltd",
+        "address": "22 Sharada Industrial Estate, Kano",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Hanse Naturkost GmbH",
+        "address": "Speicherstrasse 9, Hamburg, Germany",
+        "rc_number": null
+      },
+      "invoice_number": "CI-2610-669",
+      "invoice_date": "2026-10-14",
+      "valid_until": null,
+      "currency": "USD",
+      "incoterm": "FOB",
+      "country_of_origin": "Nigeria",
+      "country_of_supply": "Nigeria",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Hamburg",
+      "mode_of_transport": "Sea",
+      "payment_terms": "Cash against documents",
+      "lines": [
+        {
+          "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
+          "hs_code": "1207.40",
+          "quantity": 150,
+          "unit": "MT",
+          "unit_price": 1480.0,
+          "line_total": 222000.0
+        }
+      ],
+      "goods_value": 222000.0,
+      "freight": null,
+      "insurance": null,
+      "total": 222000.0
+    },
+    "packing_list": {
+      "doc_type": "packing_list",
+      "seller": {
+        "name": "Dala Sesame Exports Ltd",
+        "address": "22 Sharada Industrial Estate, Kano",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Hanse Naturkost GmbH",
+        "address": "Speicherstrasse 9, Hamburg, Germany",
+        "rc_number": null
+      },
+      "packing_list_number": "PL-2610-881",
+      "date": "2026-10-14",
+      "proforma_reference": "CI-2610-669",
+      "port_of_discharge": "Hamburg",
+      "lines": [
+        {
+          "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
+          "quantity": 150,
+          "unit": "MT",
+          "packages": 3000,
+          "net_weight_kg": 150000.0,
+          "gross_weight_kg": 151800.0
+        }
+      ]
+    },
+    "bill_of_lading": {
+      "doc_type": "bill_of_lading",
+      "bl_number": "LOS2638889",
+      "shipper": "Dala Sesame Exports Ltd",
+      "consignee": "Hanse Naturkost GmbH",
+      "notify_party": "Hanse Naturkost GmbH",
+      "vessel": "MV Atlantic Kestrel",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Hamburg",
+      "shipped_on_board_date": "2026-10-20",
+      "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
+      "packages": 3000,
+      "gross_weight_kg": 151800.0,
+      "freight_terms": "Freight collect",
+      "nxp_number": "NXP20260744991"
+    },
+    "nepc_certificate": {
+      "doc_type": "nepc_certificate",
+      "exporter_name": "Dala Sesame Exports Ltd",
+      "certificate_number": "NEPC/KN/0042871",
+      "rc_number": "RC 1903344",
+      "issue_date": "2025-12-24",
+      "expiry_date": "2027-12-24"
+    },
+    "clean_certificate_of_inspection": {
+      "doc_type": "clean_certificate_of_inspection",
+      "cci_number": "CCI/26/60177",
+      "date": "2026-10-16",
+      "nxp_number": "NXP20260744991",
+      "inspection_agent": "Atlantic Survey & Inspection Ltd",
+      "exporter": "Dala Sesame Exports Ltd",
+      "consignee": "Hanse Naturkost GmbH",
+      "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
+      "hs_code": "1207.40",
+      "quantity": 150,
+      "unit": "MT",
+      "net_weight_kg": 150000.0,
+      "gross_weight_kg": 151800.0,
+      "currency": "USD",
+      "fob_value": 214600.0
+    },
+    "certificate_of_origin": {
+      "doc_type": "certificate_of_origin",
+      "certificate_number": "NACCIMA/CO/26/7303",
+      "date": "2026-10-18",
+      "issuing_body": "NACCIMA (specimen)",
+      "exporter": "Dala Sesame Exports Ltd",
+      "consignee": "Hanse Naturkost GmbH",
+      "country_of_origin": "Republic of Niger",
+      "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
+      "packages": 3000,
+      "gross_weight_kg": 151800.0
+    }
+  }
+}

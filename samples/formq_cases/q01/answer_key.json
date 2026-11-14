@@ -1,0 +1,46 @@
+{
+  "case_id": "q01",
+  "today": "2026-11-14",
+  "used_this_quarter": 0,
+  "expected_issues": [],
+  "truth": {
+    "proforma_invoice": {
+      "doc_type": "proforma_invoice",
+      "seller": {
+        "name": "Guangzhou Brightstar Equipment Co., Ltd",
+        "address": "120 Huangpu Avenue, Guangzhou, China",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Fagge Tailoring Hub Ltd",
+        "address": "41 Fagge Road, Kano Tel: 08031220001",
+        "rc_number": "RC 3011842"
+      },
+      "invoice_number": "PI-Q01-2611",
+      "invoice_date": "2026-11-02",
+      "valid_until": null,
+      "currency": "USD",
+      "incoterm": "CIF",
+      "country_of_origin": "China",
+      "country_of_supply": "China",
+      "port_of_loading": "Huangpu",
+      "port_of_discharge": "Apapa, Lagos",
+      "mode_of_transport": "Sea",
+      "payment_terms": "100% telegraphic transfer before shipment",
+      "lines": [
+        {
+          "description": "Industrial sewing machine, single needle lockstitch, 550 W",
+          "hs_code": "8452.21",
+          "quantity": 30,
+          "unit": "unit",
+          "unit_price": 380.0,
+          "line_total": 11400.0
+        }
+      ],
+      "goods_value": 11400.0,
+      "freight": null,
+      "insurance": null,
+      "total": 11400.0
+    }
+  }
+}

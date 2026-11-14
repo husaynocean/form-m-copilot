@@ -11,7 +11,7 @@ function cfg() {
   return { url: url.replace(/\/$/, ""), key };
 }
 
-async function rest(path: string, init: RequestInit = {}) {
+export async function rest(path: string, init: RequestInit = {}) {
   const { url, key } = cfg();
   const res = await fetch(`${url}/rest/v1/${path}`, {
     ...init,
@@ -26,9 +26,9 @@ const rpc = (fn: string, args: Record<string, unknown>) =>
   process.env.WA_STORE === "memory" ? memRpc(fn, args) : rest(`rpc/${fn}`, { method: "POST", body: JSON.stringify(args) });
 
 // In-memory store for local tests only (WA_STORE=memory). Mirrors the SQL functions.
-const mem = { sessions: new Map<string, { lang: string; docs: Record<string, unknown>; reported: boolean }>(), seen: new Set<string>() };
+const mem = { sessions: new Map<string, { lang: string; mode: string; docs: Record<string, unknown>; reported: boolean }>(), seen: new Set<string>() };
 function memSession(phone: string) {
-  if (!mem.sessions.has(phone)) mem.sessions.set(phone, { lang: "en", docs: {}, reported: false });
+  if (!mem.sessions.has(phone)) mem.sessions.set(phone, { lang: "en", mode: "import", docs: {}, reported: false });
   return mem.sessions.get(phone)!;
 }
 async function memRpc(fn: string, a: Record<string, unknown>): Promise<unknown> {
@@ -47,7 +47,8 @@ async function memRpc(fn: string, a: Record<string, unknown>): Promise<unknown> 
   throw new Error(`unknown rpc ${fn}`);
 }
 
-export interface Session { phone: string; lang: string; docs: Record<string, Extraction>; reported: boolean }
+export type BotMode = "import" | "export";
+export interface Session { phone: string; lang: string; mode?: BotMode; docs: Record<string, Extraction>; reported: boolean }
 
 /** True the first time a WhatsApp message id is seen (webhooks can be redelivered). */
 export const firstSeen = async (id: string): Promise<boolean> => Boolean(await rpc("wa_first_seen", { p_id: id }));
@@ -72,6 +73,16 @@ export async function setLang(phone: string, lang: string) {
     method: "POST",
     headers: { Prefer: "resolution=merge-duplicates" },
     body: JSON.stringify({ phone, lang, updated_at: new Date().toISOString() }),
+  });
+}
+
+/** Switch between import (Form M) and export (Form NXP) checks; clears documents held so far. */
+export async function setMode(phone: string, mode: BotMode) {
+  if (process.env.WA_STORE === "memory") { const s = memSession(phone); s.mode = mode; s.docs = {}; s.reported = false; return; }
+  await rest("wa_sessions?on_conflict=phone", {
+    method: "POST",
+    headers: { Prefer: "resolution=merge-duplicates" },
+    body: JSON.stringify({ phone, mode, docs: {}, reported: false, updated_at: new Date().toISOString() }),
   });
 }
 

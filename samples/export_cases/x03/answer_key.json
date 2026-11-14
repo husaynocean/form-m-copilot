@@ -86,7 +86,8 @@
       "description": "Dried split ginger, 40 kg bags",
       "packages": 1500,
       "gross_weight_kg": 60720.0,
-      "freight_terms": "Freight collect"
+      "freight_terms": "Freight collect",
+      "nxp_number": "NXP20260342139"
     },
     "nepc_certificate": {
       "doc_type": "nepc_certificate",
@@ -95,6 +96,35 @@
       "rc_number": "RC 1811905",
       "issue_date": "2024-08-08",
       "expiry_date": "2026-08-08"
+    },
+    "clean_certificate_of_inspection": {
+      "doc_type": "clean_certificate_of_inspection",
+      "cci_number": "CCI/26/58933",
+      "date": "2026-10-13",
+      "nxp_number": "NXP20260342139",
+      "inspection_agent": "Atlantic Survey & Inspection Ltd",
+      "exporter": "Gongola Ginger Traders Ltd",
+      "consignee": "Hanse Naturkost GmbH",
+      "description": "Dried split ginger, 40 kg bags",
+      "hs_code": "0910.11",
+      "quantity": 60,
+      "unit": "MT",
+      "net_weight_kg": 60000.0,
+      "gross_weight_kg": 60720.0,
+      "currency": "USD",
+      "fob_value": 129000.0
+    },
+    "certificate_of_origin": {
+      "doc_type": "certificate_of_origin",
+      "certificate_number": "NACCIMA/CO/26/7187",
+      "date": "2026-10-15",
+      "issuing_body": "NACCIMA (specimen)",
+      "exporter": "Gongola Ginger Traders Ltd",
+      "consignee": "Hanse Naturkost GmbH",
+      "country_of_origin": "Federal Republic of Nigeria",
+      "description": "Dried split ginger, 40 kg bags",
+      "packages": 1500,
+      "gross_weight_kg": 60720.0
     }
   }
 }

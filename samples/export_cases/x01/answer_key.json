@@ -83,7 +83,8 @@
       "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
       "packages": 2000,
       "gross_weight_kg": 101200.0,
-      "freight_terms": "Freight collect"
+      "freight_terms": "Freight collect",
+      "nxp_number": "NXP20260140713"
     },
     "nepc_certificate": {
       "doc_type": "nepc_certificate",
@@ -92,6 +93,35 @@
       "rc_number": "RC 1903344",
       "issue_date": "2025-12-29",
       "expiry_date": "2027-12-29"
+    },
+    "clean_certificate_of_inspection": {
+      "doc_type": "clean_certificate_of_inspection",
+      "cci_number": "CCI/26/58311",
+      "date": "2026-10-21",
+      "nxp_number": "NXP20260140713",
+      "inspection_agent": "Atlantic Survey & Inspection Ltd",
+      "exporter": "Dala Sesame Exports Ltd",
+      "consignee": "Rotterdam Seed Import B.V.",
+      "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
+      "hs_code": "1207.40",
+      "quantity": 100,
+      "unit": "MT",
+      "net_weight_kg": 100000.0,
+      "gross_weight_kg": 101200.0,
+      "currency": "USD",
+      "fob_value": 148000.0
+    },
+    "certificate_of_origin": {
+      "doc_type": "certificate_of_origin",
+      "certificate_number": "NACCIMA/CO/26/7129",
+      "date": "2026-10-23",
+      "issuing_body": "NACCIMA (specimen)",
+      "exporter": "Dala Sesame Exports Ltd",
+      "consignee": "Rotterdam Seed Import B.V.",
+      "country_of_origin": "Federal Republic of Nigeria",
+      "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
+      "packages": 2000,
+      "gross_weight_kg": 101200.0
     }
   }
 }

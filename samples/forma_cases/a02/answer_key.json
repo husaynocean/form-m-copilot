@@ -1,0 +1,35 @@
+{
+  "case_id": "a02",
+  "today": "2026-11-14",
+  "purpose": "tuition",
+  "expected_issues": [
+    "NAME_MISMATCH",
+    "BANK_DETAILS_MISSING"
+  ],
+  "truth": {
+    "fee_invoice": {
+      "doc_type": "fee_invoice",
+      "institution": "Kestrel Valley College (specimen)",
+      "institution_country": "Canada",
+      "person_name": "Ibrahim Sani Kabir",
+      "purpose": "tuition",
+      "reference": "STU-20294",
+      "period": "Spring semester 2027",
+      "issue_date": "2026-10-12",
+      "due_date": "2027-01-15",
+      "currency": "USD",
+      "amount": 11250.0,
+      "beneficiary_bank": null,
+      "beneficiary_account": null
+    },
+    "support_letter": {
+      "doc_type": "support_letter",
+      "kind": "admission",
+      "institution": "Kestrel Valley College (specimen)",
+      "person_name": "Ibrahim Sani Kabiru",
+      "programme": "MSc Agricultural Economics",
+      "start_date": "2027-01-18",
+      "date": "2026-09-30"
+    }
+  }
+}

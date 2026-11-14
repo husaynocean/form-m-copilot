@@ -102,7 +102,8 @@
       "description": "Natural white sesame seeds, 99% purity, 50 kg bags; Raw cashew nuts in shell, 80 kg jute bags",
       "packages": 4500,
       "gross_weight_kg": 253000.0,
-      "freight_terms": "Freight collect"
+      "freight_terms": "Freight collect",
+      "nxp_number": "NXP20260442852"
     },
     "nepc_certificate": {
       "doc_type": "nepc_certificate",
@@ -111,6 +112,35 @@
       "rc_number": "RC 1903344",
       "issue_date": "2026-01-03",
       "expiry_date": "2028-01-03"
+    },
+    "clean_certificate_of_inspection": {
+      "doc_type": "clean_certificate_of_inspection",
+      "cci_number": "CCI/26/59244",
+      "date": "2026-10-26",
+      "nxp_number": "NXP20260442852",
+      "inspection_agent": "Sahara Inspection Services Ltd",
+      "exporter": "Dala Sesame Exports Ltd",
+      "consignee": "Qingdao Golden Grain Trading Co., Ltd",
+      "description": "Natural white sesame seeds, 99% purity, 50 kg bags; Raw cashew nuts in shell, 80 kg jute bags",
+      "hs_code": "1207.40",
+      "quantity": 250,
+      "unit": "MT",
+      "net_weight_kg": 250000.0,
+      "gross_weight_kg": 253000.0,
+      "currency": "USD",
+      "fob_value": 355000.0
+    },
+    "certificate_of_origin": {
+      "doc_type": "certificate_of_origin",
+      "certificate_number": "NACCIMA/CO/26/7216",
+      "date": "2026-10-28",
+      "issuing_body": "NACCIMA (specimen)",
+      "exporter": "Dala Sesame Exports Ltd",
+      "consignee": "Qingdao Golden Grain Trading Co., Ltd",
+      "country_of_origin": "Federal Republic of Nigeria",
+      "description": "Natural white sesame seeds, 99% purity, 50 kg bags; Raw cashew nuts in shell, 80 kg jute bags",
+      "packages": 4625,
+      "gross_weight_kg": 253000.0
     }
   }
 }

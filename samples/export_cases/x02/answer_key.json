@@ -102,7 +102,8 @@
       "description": "Dried hibiscus flowers (sifted), 25 kg bags; Dried split ginger, 40 kg bags",
       "packages": 2225,
       "gross_weight_kg": 63380.0,
-      "freight_terms": "Freight collect"
+      "freight_terms": "Freight collect",
+      "nxp_number": "NXP20260241426"
     },
     "nepc_certificate": {
       "doc_type": "nepc_certificate",
@@ -111,6 +112,35 @@
       "rc_number": "RC 2056710",
       "issue_date": "2025-12-14",
       "expiry_date": "2027-12-14"
+    },
+    "clean_certificate_of_inspection": {
+      "doc_type": "clean_certificate_of_inspection",
+      "cci_number": "CCI/26/58622",
+      "date": "2026-10-06",
+      "nxp_number": "NXP20260241426",
+      "inspection_agent": "Sahara Inspection Services Ltd",
+      "exporter": "Tiga Agro Commodities Ltd",
+      "consignee": "Hanse Naturkost GmbH",
+      "description": "Dried hibiscus flowers (sifted), 25 kg bags; Dried split ginger, 40 kg bags",
+      "hs_code": "1211.90",
+      "quantity": 65,
+      "unit": "MT",
+      "net_weight_kg": 65000.0,
+      "gross_weight_kg": 65780.0,
+      "currency": "USD",
+      "fob_value": 106550.0
+    },
+    "certificate_of_origin": {
+      "doc_type": "certificate_of_origin",
+      "certificate_number": "NACCIMA/CO/26/7158",
+      "date": "2026-10-08",
+      "issuing_body": "NACCIMA (specimen)",
+      "exporter": "Tiga Agro Commodities Ltd",
+      "consignee": "Hanse Naturkost GmbH",
+      "country_of_origin": "Federal Republic of Nigeria",
+      "description": "Dried hibiscus flowers (sifted), 25 kg bags; Dried split ginger, 40 kg bags",
+      "packages": 2225,
+      "gross_weight_kg": 65780.0
     }
   }
 }

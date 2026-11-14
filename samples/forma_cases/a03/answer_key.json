@@ -1,0 +1,35 @@
+{
+  "case_id": "a03",
+  "today": "2026-11-14",
+  "purpose": "tuition",
+  "expected_issues": [
+    "FEE_LIMIT_EXCEEDED",
+    "INSTITUTION_MISMATCH"
+  ],
+  "truth": {
+    "fee_invoice": {
+      "doc_type": "fee_invoice",
+      "institution": "Kestrel Valley College (specimen)",
+      "institution_country": "Canada",
+      "person_name": "Hauwa Ladi Yusuf",
+      "purpose": "tuition",
+      "reference": "STU-20311",
+      "period": "Spring semester 2027",
+      "issue_date": "2026-10-12",
+      "due_date": "2027-02-01",
+      "currency": "USD",
+      "amount": 31500.0,
+      "beneficiary_bank": "Laurentian Trust Bank",
+      "beneficiary_account": "00412-003-5571908"
+    },
+    "support_letter": {
+      "doc_type": "support_letter",
+      "kind": "admission",
+      "institution": "Kestrel Ridge Polytechnic (specimen)",
+      "person_name": "Hauwa Ladi Yusuf",
+      "programme": "MSc Agricultural Economics",
+      "start_date": "2027-01-18",
+      "date": "2026-09-30"
+    }
+  }
+}

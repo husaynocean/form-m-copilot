@@ -100,6 +100,7 @@ export const BillOfLading = z.object({
   port_of_loading: str,
   port_of_discharge: str,
   shipped_on_board_date: str, // ISO yyyy-mm-dd
+  nxp_number: str.optional().default(null),
   description: str,
   packages: num,
   gross_weight_kg: num,
@@ -118,12 +119,81 @@ export const NepcCertificate = z.object({
 });
 export type NepcCertificate = z.infer<typeof NepcCertificate>;
 
+/** Clean Certificate of Inspection, issued by the pre-shipment inspection agent. */
+export const CleanCertificateOfInspection = z.object({
+  doc_type: z.literal("clean_certificate_of_inspection"),
+  cci_number: str,
+  date: str,
+  nxp_number: str,
+  inspection_agent: str,
+  exporter: str,
+  consignee: str,
+  description: str,
+  hs_code: str,
+  quantity: num,
+  unit: str,
+  net_weight_kg: num,
+  gross_weight_kg: num,
+  currency: str,
+  fob_value: num,
+});
+export type CleanCertificateOfInspection = z.infer<typeof CleanCertificateOfInspection>;
+
+/** Certificate of origin (NACCIMA / NEPC / chamber of commerce). */
+export const CertificateOfOrigin = z.object({
+  doc_type: z.literal("certificate_of_origin"),
+  certificate_number: str,
+  date: str,
+  issuing_body: str,
+  exporter: str,
+  consignee: str,
+  country_of_origin: str,
+  description: str,
+  packages: num,
+  gross_weight_kg: num,
+});
+export type CertificateOfOrigin = z.infer<typeof CertificateOfOrigin>;
+
+/** Form A: a school bill or a hospital cost estimate. */
+export const FeeInvoice = z.object({
+  doc_type: z.literal("fee_invoice"),
+  institution: str,
+  institution_country: str,
+  person_name: str, // student or patient
+  purpose: str, // tuition | medical | other
+  reference: str, // student ID / invoice number
+  period: str, // semester, session or treatment period as printed
+  issue_date: str,
+  due_date: str,
+  currency: str,
+  amount: num,
+  beneficiary_bank: str,
+  beneficiary_account: str,
+});
+export type FeeInvoice = z.infer<typeof FeeInvoice>;
+
+/** Form A: admission letter (tuition) or overseas doctor's letter (medical). */
+export const SupportLetter = z.object({
+  doc_type: z.literal("support_letter"),
+  kind: str, // admission | medical
+  institution: str,
+  person_name: str,
+  programme: str, // course, or the treatment
+  start_date: str,
+  date: str,
+});
+export type SupportLetter = z.infer<typeof SupportLetter>;
+
 export const Extraction = z.discriminatedUnion("doc_type", [
   ProformaInvoice,
   PackingList,
   InsuranceCertificate,
   BillOfLading,
   NepcCertificate,
+  CleanCertificateOfInspection,
+  CertificateOfOrigin,
+  FeeInvoice,
+  SupportLetter,
 ]);
 export type Extraction = z.infer<typeof Extraction>;
 export type DocType = Extraction["doc_type"];
@@ -134,6 +204,10 @@ export interface DocumentSet {
   insurance_certificate?: InsuranceCertificate;
   bill_of_lading?: BillOfLading;
   nepc_certificate?: NepcCertificate;
+  clean_certificate_of_inspection?: CleanCertificateOfInspection;
+  certificate_of_origin?: CertificateOfOrigin;
+  fee_invoice?: FeeInvoice;
+  support_letter?: SupportLetter;
 }
 
 /** info = a note for the officer, not a problem with the documents. */

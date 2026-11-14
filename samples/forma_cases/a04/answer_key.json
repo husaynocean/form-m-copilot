@@ -1,0 +1,34 @@
+{
+  "case_id": "a04",
+  "today": "2026-11-14",
+  "purpose": "medical",
+  "expected_issues": [
+    "FEE_DUE_DATE_PASSED"
+  ],
+  "truth": {
+    "fee_invoice": {
+      "doc_type": "fee_invoice",
+      "institution": "Lakeview Specialist Hospital (specimen)",
+      "institution_country": "Egypt",
+      "person_name": "Usman Garba Danjuma",
+      "purpose": "medical",
+      "reference": "PAT-20328",
+      "period": "Cardiac surgery and 3 weeks' care",
+      "issue_date": "2026-10-12",
+      "due_date": "2026-10-20",
+      "currency": "USD",
+      "amount": 18400.0,
+      "beneficiary_bank": "Nile Delta Bank",
+      "beneficiary_account": "EG38 0019 0005 0000 0000 2631 8000 2"
+    },
+    "support_letter": {
+      "doc_type": "support_letter",
+      "kind": "medical",
+      "institution": "Lakeview Specialist Hospital (specimen)",
+      "person_name": "Usman Garba Danjuma",
+      "programme": "Coronary artery bypass surgery",
+      "start_date": "2026-12-02",
+      "date": "2026-09-30"
+    }
+  }
+}

@@ -105,7 +105,7 @@ export async function chat(
       // Reasoning models may return thinking separately (reasoning_content) or
       // inline in <think> tags; keep only the final answer.
       const raw: string = data?.choices?.[0]?.message?.content ?? "";
-      const text = raw.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
+      const text = raw.replace(/<think>[\s\S]*?<\/think>/g, "").replace(/<thought>[\s\S]*?<\/thought>/g, "").trim();
       return { text, provider: p.name, model, ms: Date.now() - started };
     }
     const errText = await res.text();

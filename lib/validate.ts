@@ -7,6 +7,10 @@ import type { DocumentSet, Issue, PackingLine, InvoiceLine } from "./schema";
  */
 
 const MONEY_TOLERANCE = 1; // currency units; allows for rounding on printed docs
+/** Insured value must be at least 110% of the proforma value. */
+export const INSURANCE_COVER = 1.1;
+/** A proforma invoice is accepted for 3 months from its issue date. */
+export const PROFORMA_VALID_MONTHS = 3;
 
 export function normalizeName(s: string | null | undefined): string {
   return (s ?? "")
@@ -142,18 +146,30 @@ export function validate(docs: DocumentSet, today: Date = new Date()): Issue[] {
     });
 
     // --- dates ------------------------------------------------------------
-    if (pi.valid_until) {
-      const until = new Date(pi.valid_until);
-      if (!Number.isNaN(until.getTime()) && until < startOfDay(today)) {
-        issues.push({
-          code: "PROFORMA_EXPIRED",
-          severity: "error",
-          title: "Proforma invoice has expired",
-          detail: `Valid until ${pi.valid_until}; today is ${today.toISOString().slice(0, 10)}.`,
-          evidence: [{ doc: "proforma_invoice", field: "valid_until", value: pi.valid_until }],
-          fix: "Request a fresh, dated proforma invoice from the supplier.",
-        });
-      }
+    // A proforma is accepted for 3 months from its issue date, or until its
+    // printed validity date if that is earlier.
+    const printed = pi.valid_until ? new Date(pi.valid_until) : null;
+    const issued = pi.invoice_date ? new Date(pi.invoice_date) : null;
+    const threeMonths = issued && !Number.isNaN(issued.getTime()) ? addMonths(issued, PROFORMA_VALID_MONTHS) : null;
+    const todayIso = today.toISOString().slice(0, 10);
+    if (printed && !Number.isNaN(printed.getTime()) && printed < startOfDay(today)) {
+      issues.push({
+        code: "PROFORMA_EXPIRED",
+        severity: "error",
+        title: "Proforma invoice has expired",
+        detail: `Valid until ${pi.valid_until}; today is ${todayIso}.`,
+        evidence: [{ doc: "proforma_invoice", field: "valid_until", value: pi.valid_until }],
+        fix: "Request a fresh, dated proforma invoice from the supplier.",
+      });
+    } else if (threeMonths && threeMonths < startOfDay(today)) {
+      issues.push({
+        code: "PROFORMA_EXPIRED",
+        severity: "error",
+        title: "Proforma invoice is older than 3 months",
+        detail: `Issued ${pi.invoice_date}. Banks accept a proforma for 3 months from its issue date, so it lapsed on ${threeMonths.toISOString().slice(0, 10)}; today is ${todayIso}.`,
+        evidence: [{ doc: "proforma_invoice", field: "invoice_date", value: pi.invoice_date }],
+        fix: "Request a fresh, dated proforma invoice from the supplier.",
+      });
     }
   }
 
@@ -242,17 +258,18 @@ export function validate(docs: DocumentSet, today: Date = new Date()): Issue[] {
       ? pi.lines.reduce((s, l) => s + (l.line_total ?? 0), 0) + (pi.freight ?? 0) + (pi.insurance ?? 0)
       : null;
     const invoiceValue = computed ?? pi.total ?? pi.goods_value;
-    if (ins.sum_insured != null && invoiceValue != null && ins.sum_insured < invoiceValue - MONEY_TOLERANCE) {
+    const required = invoiceValue == null ? null : Math.round(invoiceValue * INSURANCE_COVER * 100) / 100;
+    if (ins.sum_insured != null && required != null && ins.sum_insured < required - MONEY_TOLERANCE) {
       issues.push({
         code: "INSURED_VALUE_TOO_LOW",
         severity: "error",
         title: "Goods are under-insured",
-        detail: `Sum insured ${ins.currency ?? ""} ${fmt(ins.sum_insured)} is below the invoice value ${pi.currency ?? ""} ${fmt(invoiceValue)}.`,
+        detail: `Sum insured ${ins.currency ?? ""} ${fmt(ins.sum_insured)} is below 110% of the proforma value (${pi.currency ?? ""} ${fmt(invoiceValue)} × 110% = ${fmt(required)}).`,
         evidence: [
           { doc: "insurance_certificate", field: "sum_insured", value: ins.sum_insured },
           { doc: "proforma_invoice", field: "total", value: invoiceValue },
         ],
-        fix: "Increase cover to at least the full invoice value (commonly 110% of CIF).",
+        fix: `Ask the insurer to raise the sum insured to at least ${fmt(required)}.`,
       });
     }
   }
@@ -276,6 +293,12 @@ export function validate(docs: DocumentSet, today: Date = new Date()): Issue[] {
   }
 
   return issues;
+}
+
+export function addMonths(d: Date, months: number): Date {
+  const x = new Date(d);
+  x.setUTCMonth(x.getUTCMonth() + months);
+  return x;
 }
 
 function startOfDay(d: Date) {

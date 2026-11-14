@@ -10,7 +10,7 @@ import { extractDocument } from "./extract";
 import { analyze } from "./analyze";
 import { explainIssues } from "./explain";
 import { LANGUAGES, isLang, type Lang } from "./languages";
-import { claimReport, deleteUser, getSession, logEvent, mergeDoc, resetSession, setLang } from "./store";
+import { claimReport, deleteUser, getSession, logEvent, mergeDoc, resetSession, setLang, setMode, type BotMode } from "./store";
 import * as wa from "./whatsapp";
 import type { DocumentSet, Extraction, Issue } from "./schema";
 import { AsyncLocalStorage } from "node:async_hooks";
@@ -45,11 +45,37 @@ export function withTransport<T>(transport: Transport, fn: () => Promise<T>): Pr
 }
 
 const DOC_NAME: Record<string, string> = {
-  proforma_invoice: "proforma invoice",
+  proforma_invoice: "invoice",
   packing_list: "packing list",
   insurance_certificate: "insurance certificate",
+  bill_of_lading: "bill of lading",
+  nepc_certificate: "NEPC certificate",
+  clean_certificate_of_inspection: "Clean Certificate of Inspection (CCI)",
+  certificate_of_origin: "certificate of origin",
 };
-const ALL_DOCS = Object.keys(DOC_NAME);
+/** Documents each check needs before the report runs on its own; optional ones are checked if sent. */
+const MODES: Record<BotMode, { form: string; required: string[]; optional: string[]; ask: string }> = {
+  import: {
+    form: "Form M",
+    required: ["proforma_invoice", "packing_list", "insurance_certificate"],
+    optional: [],
+    ask: "1️⃣ *Proforma invoice*\n2️⃣ *Packing list*\n3️⃣ *Insurance certificate*",
+  },
+  export: {
+    form: "Form NXP",
+    required: ["proforma_invoice", "packing_list", "bill_of_lading", "nepc_certificate"],
+    optional: ["clean_certificate_of_inspection", "certificate_of_origin"],
+    ask: "1️⃣ *Commercial invoice*\n2️⃣ *Packing list*\n3️⃣ *Bill of lading*\n4️⃣ *NEPC certificate*\n➕ CCI and certificate of origin if you have them (send them first)",
+  },
+};
+const MODE_WORDS: Record<string, BotMode> = {
+  import: "import", imports: "import", "form m": "import", formm: "import", importing: "import",
+  export: "export", exports: "export", nxp: "export", "form nxp": "export", exporting: "export",
+};
+async function modeOf(from: string): Promise<BotMode> {
+  const s = await getSession(from).catch(() => null);
+  return s?.mode === "export" ? "export" : "import";
+}
 
 // Words people type to pick a language (English names, native names, codes).
 const LANG_WORDS: Record<string, Lang> = {
@@ -84,9 +110,10 @@ export async function handleMessage(m: IncomingMessage) {
     if (m.type === "interactive") {
       const id = m.interactive?.list_reply?.id ?? m.interactive?.button_reply?.id;
       if (id && isLang(id)) return onLanguage(m.from, id);
+      if (id === "mode:import" || id === "mode:export") return onMode(m.from, id.slice(5) as BotMode, true);
     }
     if (m.type === "text" && m.text) return onText(m.from, m.text.body.trim());
-    return sendText(m.from, "Send me photos of your *proforma invoice*, *packing list* and *insurance certificate*, one photo per page.");
+    return sendText(m.from, `Send me photos of your documents, one photo per page:\n${MODES[await modeOf(m.from)].ask}`);
   } catch (e) {
     console.error("whatsapp handler", e);
     await logEvent({ sig_ok: true, has_sig: true, fields: "handler_error", note: String((e as Error)?.message ?? e).slice(0, 500) });
@@ -99,9 +126,11 @@ async function onText(from: string, text: string) {
   // Only full language names: two-letter codes collide with greetings ("hi" = Hindi).
   const lang = LANG_WORDS[t];
   if (lang) return onLanguage(from, lang);
+  if (MODE_WORDS[t]) return onMode(from, MODE_WORDS[t]);
   if (["new", "reset", "restart", "start over", "clear"].includes(t)) {
     await resetSession(from).catch(() => undefined);
-    return sendText(from, "🧾 New check started. Send photos of the proforma invoice, packing list and insurance certificate.");
+    const mode = await modeOf(from);
+    return sendText(from, `🧾 New ${MODES[mode].form} check started. Send photos of:\n${MODES[mode].ask}\n\nType *${mode === "import" ? "export" : "import"}* to switch to ${mode === "import" ? "an export (Form NXP)" : "an import (Form M)"} check.`);
   }
   if (["check", "done", "go", "finish"].includes(t)) return report(from, 1, true);
   if (["delete my data", "delete", "stop"].includes(t)) {
@@ -117,13 +146,30 @@ async function welcome(from: string) {
     from,
     [
       "👋 *Form M Copilot*",
-      "I check your import documents for Form M errors *before* they reach the bank.",
-      "1️⃣ Send a photo of your *proforma invoice*\n2️⃣ Your *packing list*\n3️⃣ Your *insurance certificate*",
-      "When all three are in, I cross-check every figure and name, suggest HS codes and send you a fix-list.",
+      "I check your trade documents *before* they reach the bank: imports (Form M) and exports (Form NXP).",
+      "Send the photos and I cross-check every figure and name, suggest HS codes, start the clock on your deadline and send you a fix-list.",
       "Type *check* to check what you've sent so far, *new* to start again, *delete my data* to erase everything.",
     ].join("\n\n"),
   );
-  await askLanguage(from);
+  await askMode(from);
+}
+
+function askMode(from: string) {
+  return sendList(from, "What are you checking?", "Choose", [
+    { id: "mode:import", title: "Import · Form M" },
+    { id: "mode:export", title: "Export · Form NXP" },
+  ]);
+}
+
+async function onMode(from: string, mode: BotMode, fromMenu = false) {
+  await setMode(from, mode);
+  const session = await getSession(from).catch(() => null);
+  // Right after "hi", ask the language once; a typed "import"/"export" just switches.
+  if (fromMenu && (!session?.lang || session.lang === "en")) {
+    await sendText(from, `✅ *${MODES[mode].form}* check.`);
+    return askLanguage(from);
+  }
+  return sendText(from, `✅ *${MODES[mode].form}* check. Send photos of:\n${MODES[mode].ask}`);
 }
 
 function askLanguage(from: string) {
@@ -133,25 +179,31 @@ function askLanguage(from: string) {
 
 async function onLanguage(from: string, lang: Lang) {
   await setLang(from, lang);
-  await sendText(from, `✅ Language: *${LANGUAGES[lang].label}*. Now send your document photos.`);
+  await sendText(from, `✅ Language: *${LANGUAGES[lang].label}*. Now send photos of:\n${MODES[await modeOf(from)].ask}`);
 }
 
 async function onPhoto(from: string, mediaId: string) {
   const { dataUrl } = await downloadMedia(mediaId);
   const r = await extractDocument(dataUrl);
   const doc: Extraction = r.extraction;
-  if (!(doc.doc_type in DOC_NAME)) {
-    await sendText(from, "That looks like an export document (bill of lading or NEPC certificate). Export (Form NXP) checks are on the web app for now: form-m-copilot.vercel.app");
+  const mode = await modeOf(from);
+  const M = MODES[mode];
+  if (![...M.required, ...M.optional].includes(doc.doc_type)) {
+    const other: BotMode = mode === "import" ? "export" : "import";
+    const fits = [...MODES[other].required, ...MODES[other].optional].includes(doc.doc_type);
+    await sendText(from, fits
+      ? `That looks like a *${DOC_NAME[doc.doc_type]}*, which belongs to ${other === "export" ? "an export (Form NXP)" : "an import (Form M)"} check. Type *${other}* to switch, then send the photos again.`
+      : "I couldn't use that document here. For school fees, medical bills or Form Q, use the web app: form-m-copilot.vercel.app");
     return;
   }
   const held = await mergeDoc(from, doc);
-  const missing = ALL_DOCS.filter((d) => !held.includes(d));
+  const missing = M.required.filter((d) => !held.includes(d));
 
   const lines = [`✅ Got your *${DOC_NAME[doc.doc_type]}*` + summary(doc)];
   if (r.verification?.rereads) lines.push(`🔁 Amounts read ${r.verification.rereads + 1}× independently${r.verification.corrected.length ? " (one reading corrected)" : ", all agree"}.`);
   if (missing.length) lines.push(`Still need: ${missing.map((d) => `*${DOC_NAME[d]}*`).join(", ")}. (Type *check* to check now.)`);
   await sendText(from, lines.join("\n"));
-  if (!missing.length) await report(from, ALL_DOCS.length, false);
+  if (!missing.length) await report(from, M.required.length, false);
 }
 
 function summary(doc: Extraction): string {
@@ -162,8 +214,11 @@ function summary(doc: Extraction): string {
     return `\n${doc.lines.length} line(s) · ${doc.lines.reduce((s, l) => s + (l.packages ?? 0), 0)} package(s)`;
   }
   if (doc.doc_type === "insurance_certificate") return `\n${doc.insurer ?? "?"} · ${doc.currency ?? ""} ${money(doc.sum_insured)}`;
-  // Export documents are checked on the web app for now.
-  return "\nThis looks like an export document. Export (Form NXP) checks are on the web app for now.";
+  if (doc.doc_type === "bill_of_lading") return `\nB/L ${doc.bl_number ?? "?"} · shipped ${doc.shipped_on_board_date ?? "?"} · ${doc.packages ?? "?"} packages`;
+  if (doc.doc_type === "nepc_certificate") return `\n${doc.exporter_name ?? "?"} · expires ${doc.expiry_date ?? "?"}`;
+  if (doc.doc_type === "clean_certificate_of_inspection") return `\n${doc.cci_number ?? "?"} · ${doc.currency ?? ""} ${money(doc.fob_value)}`;
+  if (doc.doc_type === "certificate_of_origin") return `\nOrigin: ${doc.country_of_origin ?? "?"}`;
+  return "";
 }
 
 async function report(from: string, minDocs: number, manual: boolean) {
@@ -174,9 +229,11 @@ async function report(from: string, minDocs: number, manual: boolean) {
   }
   const session = await getSession(from);
   const lang = (session?.lang && isLang(session.lang) ? session.lang : "en") as Lang;
-  const { issues, hs, draft } = await analyze(docs);
+  const mode: BotMode = session?.mode === "export" ? "export" : "import";
+  const { issues, hs, draft, deadline } = await analyze(docs, [], { mode });
   const errors = issues.filter((i) => i.severity === "error");
   const shown: Issue[] = [...errors, ...issues.filter((i) => i.severity === "warning")];
+  const notes = issues.filter((i) => i.severity === "info");
   const explained = await explainIssues(shown, lang).catch(() => explainIssues(shown, "en"));
 
   const parts: string[] = [];
@@ -186,11 +243,15 @@ async function report(from: string, minDocs: number, manual: boolean) {
       : "✅ *No problems found.* The documents are consistent.",
   );
   explained.forEach((x, i) => parts.push(`*${i + 1}. ${x.title}*\n${x.body}`));
+  notes.forEach((n) => parts.push(`ℹ️ _${n.title}_`));
 
-  const fin = draft.sections.find((s) => s.title === "Financials")?.fields ?? [];
-  const get = (label: string) => fin.find((f) => f.label === label)?.value;
-  const ship = draft.sections.find((s) => s.title === "Shipment")?.fields ?? [];
-  const gs = (label: string) => ship.find((f) => f.label === label)?.value;
+  if (deadline) {
+    const when = deadline.days_left < 0 ? `*${Math.abs(deadline.days_left)} days overdue*` : `*${deadline.days_left} days left*`;
+    parts.push(`⏳ *${deadline.title}*: ${when}, due *${deadline.deadline}*\n_${deadline.basis}_`);
+  }
+
+  const section = (title: string) => draft.sections.find((s) => s.title === title)?.fields ?? [];
+  const get = (title: string, label: string) => section(title).find((f) => f.label === label)?.value;
   const goods = draft.items
     .map((it, k) => {
       const sug = hs.find((h) => h.line === k);
@@ -198,16 +259,30 @@ async function report(from: string, minDocs: number, manual: boolean) {
       return `• ${it.description ?? "—"}: *${code}*`;
     })
     .join("\n");
+  const missing = draft.missing.length ? `Missing: ${draft.missing.slice(0, 6).join("; ")}` : "";
   parts.push(
-    [
-      "📝 *Form M draft*",
-      `Value: ${get("Currency") ?? ""} ${money(get("Total value"))} (${gs("Terms of delivery (Incoterm)") ?? "no Incoterm"})`,
-      `Route: ${gs("Port of loading") ?? "?"} → ${gs("Port of discharge") ?? "?"}`,
-      `Origin: ${gs("Country of origin") ?? "missing"}`,
-      goods,
-      draft.missing.length ? `Missing: ${draft.missing.slice(0, 6).join("; ")}` : "",
-    ].filter(Boolean).join("\n"),
+    (mode === "export"
+      ? [
+          "📝 *Form NXP draft*",
+          `Exporter: ${get("Exporter", "Name") ?? "?"} · NEPC ${get("Exporter", "NEPC certificate no.") ?? "missing"}`,
+          `Buyer: ${get("Buyer (consignee)", "Name") ?? "?"}`,
+          `Value: ${get("Financials", "Currency") ?? ""} ${money(get("Financials", "Total value"))} (${get("Financials", "Delivery terms") ?? "no Incoterm"})`,
+          `Route: ${get("Shipment", "Port of loading") ?? "?"} → ${get("Shipment", "Port of discharge") ?? "?"} · B/L ${get("Shipment", "Bill of lading no.") ?? "?"}`,
+          goods,
+          missing,
+        ]
+      : [
+          "📝 *Form M draft*",
+          `Value: ${get("Financials", "Currency") ?? ""} ${money(get("Financials", "Total value"))} (${get("Shipment", "Terms of delivery (Incoterm)") ?? "no Incoterm"})`,
+          `Route: ${get("Shipment", "Port of loading") ?? "?"} → ${get("Shipment", "Port of discharge") ?? "?"}`,
+          `Origin: ${get("Shipment", "Country of origin") ?? "missing"}`,
+          goods,
+          missing,
+        ]
+    ).filter(Boolean).join("\n"),
   );
-  parts.push("_Draft for review only; verify on the Nigeria Single Window._\nType *new* to check another set, or a language name to switch language.");
+  parts.push(
+    `_Draft for review only; verify on the ${mode === "export" ? "CBN Trade Monitoring System" : "Nigeria Single Window"}._\nType *new* to check another set, *${mode === "export" ? "import" : "export"}* to switch, or a language name to change language.`,
+  );
   await sendText(from, parts.join("\n\n"));
 }

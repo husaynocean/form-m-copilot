@@ -1,0 +1,130 @@
+{
+  "case_id": "x09",
+  "today": "2026-11-14",
+  "category": "non-oil",
+  "expected_issues": [
+    "CCI_HS_MISMATCH",
+    "DATE_ORDER"
+  ],
+  "exporter_rc": "RC 1811905",
+  "truth": {
+    "proforma_invoice": {
+      "doc_type": "proforma_invoice",
+      "seller": {
+        "name": "Gongola Ginger Traders Ltd",
+        "address": "14 Kachia Road, Kaduna",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Rotterdam Seed Import B.V.",
+        "address": "Waalhaven 112, Rotterdam, Netherlands",
+        "rc_number": null
+      },
+      "invoice_number": "CI-2610-743",
+      "invoice_date": "2026-10-21",
+      "valid_until": null,
+      "currency": "USD",
+      "incoterm": "FOB",
+      "country_of_origin": "Nigeria",
+      "country_of_supply": "Nigeria",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Rotterdam",
+      "mode_of_transport": "Sea",
+      "payment_terms": "Cash against documents",
+      "lines": [
+        {
+          "description": "Dried split ginger, 40 kg bags",
+          "hs_code": "0910.11",
+          "quantity": 45,
+          "unit": "MT",
+          "unit_price": 2150.0,
+          "line_total": 96750.0
+        }
+      ],
+      "goods_value": 96750.0,
+      "freight": null,
+      "insurance": null,
+      "total": 96750.0
+    },
+    "packing_list": {
+      "doc_type": "packing_list",
+      "seller": {
+        "name": "Gongola Ginger Traders Ltd",
+        "address": "14 Kachia Road, Kaduna",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Rotterdam Seed Import B.V.",
+        "address": "Waalhaven 112, Rotterdam, Netherlands",
+        "rc_number": null
+      },
+      "packing_list_number": "PL-2610-927",
+      "date": "2026-10-21",
+      "proforma_reference": "CI-2610-743",
+      "port_of_discharge": "Rotterdam",
+      "lines": [
+        {
+          "description": "Dried split ginger, 40 kg bags",
+          "quantity": 45,
+          "unit": "MT",
+          "packages": 1125,
+          "net_weight_kg": 45000.0,
+          "gross_weight_kg": 45540.0
+        }
+      ]
+    },
+    "bill_of_lading": {
+      "doc_type": "bill_of_lading",
+      "bl_number": "LOS2647143",
+      "shipper": "Gongola Ginger Traders Ltd",
+      "consignee": "Rotterdam Seed Import B.V.",
+      "notify_party": "Rotterdam Seed Import B.V.",
+      "vessel": "MV Sahel Trader",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Rotterdam",
+      "shipped_on_board_date": "2026-10-27",
+      "description": "Dried split ginger, 40 kg bags",
+      "packages": 1125,
+      "gross_weight_kg": 45540.0,
+      "freight_terms": "Freight collect",
+      "nxp_number": "NXP20260946417"
+    },
+    "nepc_certificate": {
+      "doc_type": "nepc_certificate",
+      "exporter_name": "Gongola Ginger Traders Ltd",
+      "certificate_number": "NEPC/KD/0038820",
+      "rc_number": "RC 1811905",
+      "issue_date": "2025-12-31",
+      "expiry_date": "2027-12-31"
+    },
+    "clean_certificate_of_inspection": {
+      "doc_type": "clean_certificate_of_inspection",
+      "cci_number": "CCI/26/60799",
+      "date": "2026-10-30",
+      "nxp_number": "NXP20260946417",
+      "inspection_agent": "Atlantic Survey & Inspection Ltd",
+      "exporter": "Gongola Ginger Traders Ltd",
+      "consignee": "Rotterdam Seed Import B.V.",
+      "description": "Dried split ginger, 40 kg bags",
+      "hs_code": "0910.12",
+      "quantity": 45,
+      "unit": "MT",
+      "net_weight_kg": 45000.0,
+      "gross_weight_kg": 45540.0,
+      "currency": "USD",
+      "fob_value": 96750.0
+    },
+    "certificate_of_origin": {
+      "doc_type": "certificate_of_origin",
+      "certificate_number": "NACCIMA/CO/26/7361",
+      "date": "2026-10-25",
+      "issuing_body": "NACCIMA (specimen)",
+      "exporter": "Gongola Ginger Traders Ltd",
+      "consignee": "Rotterdam Seed Import B.V.",
+      "country_of_origin": "Federal Republic of Nigeria",
+      "description": "Dried split ginger, 40 kg bags",
+      "packages": 1125,
+      "gross_weight_kg": 45540.0
+    }
+  }
+}

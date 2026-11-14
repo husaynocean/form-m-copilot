@@ -79,7 +79,7 @@ ISSUES = {
     "MISSING_INCOTERM": "Proforma invoice does not state an Incoterm.",
     "VAGUE_DESCRIPTION": "Goods description too vague to classify (no HS-relevant detail).",
     "CURRENCY_MISMATCH": "Currency differs between invoice and insurance certificate.",
-    "INSURED_VALUE_TOO_LOW": "Insured value is below the invoice value of the goods.",
+    "INSURED_VALUE_TOO_LOW": "Insured value is below 110% of the proforma value.",
     "PORT_MISMATCH": "Port of discharge differs between documents.",
     "PROFORMA_EXPIRED": "Proforma invoice validity date has passed.",
     "MISSING_COUNTRY_OF_ORIGIN": "Country of origin not stated on proforma invoice.",

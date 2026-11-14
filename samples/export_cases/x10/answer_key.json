@@ -1,0 +1,146 @@
+{
+  "case_id": "x10",
+  "today": "2026-11-14",
+  "category": "non-oil",
+  "expected_issues": [
+    "COO_PARTY_MISMATCH",
+    "CCI_WEIGHT_MISMATCH"
+  ],
+  "exporter_rc": "RC 1903344",
+  "truth": {
+    "proforma_invoice": {
+      "doc_type": "proforma_invoice",
+      "seller": {
+        "name": "Dala Sesame Exports Ltd",
+        "address": "22 Sharada Industrial Estate, Kano",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Rotterdam Seed Import B.V.",
+        "address": "Waalhaven 112, Rotterdam, Netherlands",
+        "rc_number": null
+      },
+      "invoice_number": "CI-2610-780",
+      "invoice_date": "2026-10-09",
+      "valid_until": null,
+      "currency": "USD",
+      "incoterm": "FOB",
+      "country_of_origin": "Nigeria",
+      "country_of_supply": "Nigeria",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Rotterdam",
+      "mode_of_transport": "Sea",
+      "payment_terms": "Cash against documents",
+      "lines": [
+        {
+          "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
+          "hs_code": "1207.40",
+          "quantity": 60,
+          "unit": "MT",
+          "unit_price": 1480.0,
+          "line_total": 88800.0
+        },
+        {
+          "description": "Dried hibiscus flowers (sifted), 25 kg bags",
+          "hs_code": "1211.90",
+          "quantity": 20,
+          "unit": "MT",
+          "unit_price": 1320.0,
+          "line_total": 26400.0
+        }
+      ],
+      "goods_value": 115200.0,
+      "freight": null,
+      "insurance": null,
+      "total": 115200.0
+    },
+    "packing_list": {
+      "doc_type": "packing_list",
+      "seller": {
+        "name": "Dala Sesame Exports Ltd",
+        "address": "22 Sharada Industrial Estate, Kano",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Rotterdam Seed Import B.V.",
+        "address": "Waalhaven 112, Rotterdam, Netherlands",
+        "rc_number": null
+      },
+      "packing_list_number": "PL-2610-950",
+      "date": "2026-10-09",
+      "proforma_reference": "CI-2610-780",
+      "port_of_discharge": "Rotterdam",
+      "lines": [
+        {
+          "description": "Natural white sesame seeds, 99% purity, 50 kg bags",
+          "quantity": 60,
+          "unit": "MT",
+          "packages": 1200,
+          "net_weight_kg": 60000.0,
+          "gross_weight_kg": 60720.0
+        },
+        {
+          "description": "Dried hibiscus flowers (sifted), 25 kg bags",
+          "quantity": 20,
+          "unit": "MT",
+          "packages": 800,
+          "net_weight_kg": 20000.0,
+          "gross_weight_kg": 20240.0
+        }
+      ]
+    },
+    "bill_of_lading": {
+      "doc_type": "bill_of_lading",
+      "bl_number": "LOS2651270",
+      "shipper": "Dala Sesame Exports Ltd",
+      "consignee": "Rotterdam Seed Import B.V.",
+      "notify_party": "Rotterdam Seed Import B.V.",
+      "vessel": "MV Atlantic Kestrel",
+      "port_of_loading": "Apapa, Lagos",
+      "port_of_discharge": "Rotterdam",
+      "shipped_on_board_date": "2026-10-15",
+      "description": "Natural white sesame seeds, 99% purity, 50 kg bags; Dried hibiscus flowers (sifted), 25 kg bags",
+      "packages": 2000,
+      "gross_weight_kg": 80960.0,
+      "freight_terms": "Freight collect",
+      "nxp_number": "NXP20261047130"
+    },
+    "nepc_certificate": {
+      "doc_type": "nepc_certificate",
+      "exporter_name": "Dala Sesame Exports Ltd",
+      "certificate_number": "NEPC/KN/0042871",
+      "rc_number": "RC 1903344",
+      "issue_date": "2025-12-19",
+      "expiry_date": "2027-12-19"
+    },
+    "clean_certificate_of_inspection": {
+      "doc_type": "clean_certificate_of_inspection",
+      "cci_number": "CCI/26/61110",
+      "date": "2026-10-11",
+      "nxp_number": "NXP20261047130",
+      "inspection_agent": "Sahara Inspection Services Ltd",
+      "exporter": "Dala Sesame Exports Ltd",
+      "consignee": "Rotterdam Seed Import B.V.",
+      "description": "Natural white sesame seeds, 99% purity, 50 kg bags; Dried hibiscus flowers (sifted), 25 kg bags",
+      "hs_code": "1207.40",
+      "quantity": 80,
+      "unit": "MT",
+      "net_weight_kg": 80000.0,
+      "gross_weight_kg": 84060.0,
+      "currency": "USD",
+      "fob_value": 115200.0
+    },
+    "certificate_of_origin": {
+      "doc_type": "certificate_of_origin",
+      "certificate_number": "NACCIMA/CO/26/7390",
+      "date": "2026-10-13",
+      "issuing_body": "NACCIMA (specimen)",
+      "exporter": "Dala Commodities International Ltd",
+      "consignee": "Rotterdam Seed Import B.V.",
+      "country_of_origin": "Federal Republic of Nigeria",
+      "description": "Natural white sesame seeds, 99% purity, 50 kg bags; Dried hibiscus flowers (sifted), 25 kg bags",
+      "packages": 2000,
+      "gross_weight_kg": 80960.0
+    }
+  }
+}

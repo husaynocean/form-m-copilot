@@ -1,0 +1,32 @@
+{
+  "case_id": "a01",
+  "today": "2026-11-14",
+  "purpose": "tuition",
+  "expected_issues": [],
+  "truth": {
+    "fee_invoice": {
+      "doc_type": "fee_invoice",
+      "institution": "Kestrel Valley College (specimen)",
+      "institution_country": "Canada",
+      "person_name": "Aisha Musa Bello",
+      "purpose": "tuition",
+      "reference": "STU-20277",
+      "period": "Spring semester 2027",
+      "issue_date": "2026-10-12",
+      "due_date": "2027-01-10",
+      "currency": "USD",
+      "amount": 9800.0,
+      "beneficiary_bank": "Laurentian Trust Bank",
+      "beneficiary_account": "00412-003-5571908"
+    },
+    "support_letter": {
+      "doc_type": "support_letter",
+      "kind": "admission",
+      "institution": "Kestrel Valley College (specimen)",
+      "person_name": "Aisha Musa Bello",
+      "programme": "MSc Agricultural Economics",
+      "start_date": "2027-01-18",
+      "date": "2026-09-30"
+    }
+  }
+}

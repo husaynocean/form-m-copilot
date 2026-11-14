@@ -1,0 +1,56 @@
+{
+  "case_id": "q03",
+  "today": "2026-11-14",
+  "used_this_quarter": 0,
+  "expected_issues": [
+    "FORM_Q_NOT_GOODS"
+  ],
+  "truth": {
+    "proforma_invoice": {
+      "doc_type": "proforma_invoice",
+      "seller": {
+        "name": "Guangzhou Brightstar Equipment Co., Ltd",
+        "address": "120 Huangpu Avenue, Guangzhou, China",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Zaria Print & Office Supplies Ltd",
+        "address": "5 Kaduna Road, Zaria Tel: 08031220003",
+        "rc_number": "RC 2987405"
+      },
+      "invoice_number": "PI-Q03-2611",
+      "invoice_date": "2026-11-05",
+      "valid_until": null,
+      "currency": "USD",
+      "incoterm": "CIF",
+      "country_of_origin": "China",
+      "country_of_supply": "China",
+      "port_of_loading": "Huangpu",
+      "port_of_discharge": "Apapa, Lagos",
+      "mode_of_transport": "Sea",
+      "payment_terms": "100% telegraphic transfer before shipment",
+      "lines": [
+        {
+          "description": "Laser printer, monochrome, 40 ppm",
+          "hs_code": "8443.32",
+          "quantity": 12,
+          "unit": "unit",
+          "unit_price": 610.0,
+          "line_total": 7320.0
+        },
+        {
+          "description": "Installation and staff training services",
+          "hs_code": null,
+          "quantity": 1,
+          "unit": "lot",
+          "unit_price": 1500.0,
+          "line_total": 1500.0
+        }
+      ],
+      "goods_value": 8820.0,
+      "freight": null,
+      "insurance": null,
+      "total": 8820.0
+    }
+  }
+}

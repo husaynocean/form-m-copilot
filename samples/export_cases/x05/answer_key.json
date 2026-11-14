@@ -86,7 +86,8 @@
       "description": "Raw cashew nuts in shell, 80 kg jute bags",
       "packages": 1500,
       "gross_weight_kg": 121440.0,
-      "freight_terms": "Freight collect"
+      "freight_terms": "Freight collect",
+      "nxp_number": "NXP20260543565"
     },
     "nepc_certificate": {
       "doc_type": "nepc_certificate",
@@ -95,6 +96,35 @@
       "rc_number": "RC 2056710",
       "issue_date": "2025-08-09",
       "expiry_date": "2027-08-09"
+    },
+    "clean_certificate_of_inspection": {
+      "doc_type": "clean_certificate_of_inspection",
+      "cci_number": "CCI/26/59555",
+      "date": "2026-06-01",
+      "nxp_number": "NXP20260543565",
+      "inspection_agent": "Atlantic Survey & Inspection Ltd",
+      "exporter": "Tiga Agro Commodities Ltd",
+      "consignee": "Rotterdam Seed Import B.V.",
+      "description": "Raw cashew nuts in shell, 80 kg jute bags",
+      "hs_code": "0801.31",
+      "quantity": 120,
+      "unit": "MT",
+      "net_weight_kg": 120000.0,
+      "gross_weight_kg": 121440.0,
+      "currency": "USD",
+      "fob_value": 141600.0
+    },
+    "certificate_of_origin": {
+      "doc_type": "certificate_of_origin",
+      "certificate_number": "NACCIMA/CO/26/7245",
+      "date": "2026-06-03",
+      "issuing_body": "NACCIMA (specimen)",
+      "exporter": "Tiga Agro Commodities Ltd",
+      "consignee": "Rotterdam Seed Import B.V.",
+      "country_of_origin": "Federal Republic of Nigeria",
+      "description": "Raw cashew nuts in shell, 80 kg jute bags",
+      "packages": 1500,
+      "gross_weight_kg": 121440.0
     }
   }
 }

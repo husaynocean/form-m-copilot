@@ -38,18 +38,35 @@ Measured on Muse Spark Open (Baseten) during the hackathon. Re-run on Gemini 3.5
 
 Synthetic, clean printed documents; real crumpled or handwritten paperwork will be harder. Raw outputs are in `eval-results/`.
 
-## Exports: Form NXP (added Nov 2026)
+## What it checks (expanded Nov 2026)
 
-The same engine now checks an export file. Switch to **Exports · Form NXP** on the web app and add photos of the invoice, packing list, bill of lading and NEPC exporter's certificate. It:
+After the hackathon the same engine was extended from Form M to the other bank trade and FX forms. Pick the form at the top of the web app.
 
-- cross-checks the exporter name, ports, package count and gross weight across the documents, and checks the invoice arithmetic;
-- checks that the NEPC certificate is in the exporter's name and has not expired;
-- starts the **repatriation clock** from the bill of lading date (180 days for non-oil exports, 90 days for oil and gas, no extensions since the CBN circular of 8 January 2025) and warns when the deadline is within 30 days or has passed;
-- drafts the Form NXP fields, each traced to its source document.
+| Form | Documents | Checks | Deadline clock |
+|---|---|---|---|
+| **Form M** (imports) | proforma invoice, packing list, insurance certificate | arithmetic, names, quantities, ports, currency, proforma older than 3 months, insured value below **110%** of the proforma, HS codes | Form M validity: 180 days (general goods) or 365 days (plant & machinery), one extension by the bank |
+| **Form NXP** (exports) | invoice, packing list, bill of lading, NEPC certificate, plus CCI and certificate of origin | exporter/consignee across all documents, NEPC name and expiry, ports, packages, gross weight, **CCI** value/quantity/weight/HS code/currency, inspection dated before shipment, the same **NXP number** on every document, certificate of origin states Nigeria | Repatriation: 180 days (non-oil) or 90 days (oil & gas) from the bill of lading date, no extensions |
+| **Form Q** (small imports) | supplier invoice | **USD 20,000 per quarter** including what was already used, physical goods only (services go through Form A), arithmetic, proforma age | Shipping documents due 60 days after payment |
+| **Form A** (school fees, medical) | school bill + admission letter, or hospital estimate + doctor's letter | same person and institution on both, beneficiary bank details present, tuition limit, due date | Payment due date |
 
-On 6 synthetic export cases (`samples/export_cases/`), read from phone-style photos with Gemini 3.5 Flash-Lite: 24 / 24 documents classified, **10 / 10 planted errors caught, 0 false alarms** (`npx tsx scripts/eval-export.ts --model`).
+Before reporting a numeric mismatch (packages, weights, CCI value or quantity), the agent re-reads the disputed number from the photo twice; a misread is corrected instead of reported.
 
-The rules are in `lib/nxp.ts`. They are a pre-check for review, not regulatory advice: confirm deadlines and requirements against the current CBN Foreign Exchange Manual.
+**Deadline tracker** (`/tracker`): "Save & track" stores a summary of the check (never the photos) under a private link, with calendar reminders (`.ics`, alerts 30, 7 and 1 day before) and optional daily email reminders (`/api/cron/reminders`, sent through Brevo once `BREVO_API_KEY` and `MAIL_FROM` are set).
+
+**WhatsApp**: the bot asks "Import · Form M" or "Export · Form NXP" and handles both. Form Q and Form A are on the web app.
+
+Rules and limits come from the bank's published requirements and secondary summaries of the 2026 CBN FX Manual; they are a pre-check for review, not regulatory advice. Passports and tax documents are never requested: Form A lists them as things to bring to the bank.
+
+### Results on the synthetic packs (Gemini 3.5 Flash-Lite, read from phone-style photos)
+
+| Pack | Documents classified | Planted errors caught | False alarms |
+|---|---|---|---|
+| Form M, 12 cases | 36 / 36 | 14 / 14 | 0 |
+| Form NXP, 10 cases (rules on answer keys) | – | 18 / 18 | 0 |
+| Form NXP, first 6 cases from photos | 24 / 24 | 10 / 10 | 0 |
+| Form Q + Form A, 8 cases | 12 / 12 | 9 / 9 | 0 |
+
+`npx tsx scripts/eval-rules.ts`, `eval-export.ts`, `eval-forms.ts` (add `--model` to read the photos). The free Gemini tier allows about 500 requests a day per model, roughly 60–100 document checks.
 
 ## Try it
 

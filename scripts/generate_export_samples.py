@@ -57,7 +57,12 @@ PLAN = {
     "x04": (0, 2, [(0, 200), (3, 50)], 15, ["PACKAGES_MISMATCH", "PORT_MISMATCH"]),
     "x05": (1, 0, [(3, 120)], 162, ["REPATRIATION_DUE_SOON", "CONSIGNEE_MISMATCH"]),
     "x06": (2, 2, [(1, 80)], 205, ["REPATRIATION_OVERDUE", "NEPC_NAME_MISMATCH"]),
+    "x07": (0, 1, [(0, 150)], 25, ["CCI_VALUE_MISMATCH", "COO_ORIGIN_NOT_NIGERIA"]),
+    "x08": (1, 2, [(3, 90)], 40, ["CCI_QUANTITY_MISMATCH", "NXP_NUMBER_MISMATCH"]),
+    "x09": (2, 0, [(2, 45)], 18, ["CCI_HS_MISMATCH", "DATE_ORDER"]),
+    "x10": (0, 0, [(0, 60), (1, 20)], 30, ["COO_PARTY_MISMATCH", "CCI_WEIGHT_MISMATCH"]),
 }
+AGENTS = ["Sahara Inspection Services Ltd", "Atlantic Survey & Inspection Ltd"]
 
 
 def build(cid):
@@ -108,6 +113,23 @@ def build(cid):
         "doc_type": "nepc_certificate", "exporter_name": ex[0], "certificate_number": ex[3], "rc_number": ex[1],
         "issue_date": (shipped - timedelta(days=300)).isoformat(), "expiry_date": (shipped + timedelta(days=430)).isoformat(),
     }
+    nxp = f"NXP{shipped:%Y}{n:02d}{40000 + n * 713}"
+    bl["nxp_number"] = nxp
+    total_qty = sum(l["quantity"] for l in lines)
+    cci = {
+        "doc_type": "clean_certificate_of_inspection", "cci_number": f"CCI/{shipped:%y}/{58000 + n * 311}",
+        "date": (shipped - timedelta(days=4)).isoformat(), "nxp_number": nxp, "inspection_agent": AGENTS[n % 2],
+        "exporter": ex[0], "consignee": by[0], "description": bl["description"], "hs_code": lines[0]["hs_code"],
+        "quantity": total_qty, "unit": "MT", "net_weight_kg": float(sum(p["net_weight_kg"] for p in plines)),
+        "gross_weight_kg": round(sum(p["gross_weight_kg"] for p in plines), 1), "currency": "USD", "fob_value": goods_value,
+    }
+    coo = {
+        "doc_type": "certificate_of_origin", "certificate_number": f"NACCIMA/CO/{shipped:%y}/{7100 + n * 29}",
+        "date": (shipped - timedelta(days=2)).isoformat(), "issuing_body": "NACCIMA (specimen)",
+        "exporter": ex[0], "consignee": by[0], "country_of_origin": "Federal Republic of Nigeria",
+        "description": bl["description"], "packages": sum(p["packages"] for p in plines),
+        "gross_weight_kg": round(sum(p["gross_weight_kg"] for p in plines), 1),
+    }
     # ---- inject errors: the truth records what is PRINTED ----
     if "EXPORTER_NAME_MISMATCH" in issues:
         bl["shipper"] = "Tiga Global Logistics Ltd"
@@ -126,7 +148,24 @@ def build(cid):
         bl["consignee"] = "Maas Commodity Finance B.V."
     if "NEPC_NAME_MISMATCH" in issues:
         nepc["exporter_name"] = "Gongola Farms and Allied Ltd"
-    truth = {"proforma_invoice": inv, "packing_list": pl, "bill_of_lading": bl, "nepc_certificate": nepc}
+    if "CCI_VALUE_MISMATCH" in issues:
+        cci["fob_value"] = money(goods_value - 7400)
+    if "COO_ORIGIN_NOT_NIGERIA" in issues:
+        coo["country_of_origin"] = "Republic of Niger"
+    if "CCI_QUANTITY_MISMATCH" in issues:
+        cci["quantity"] = total_qty + 15
+    if "NXP_NUMBER_MISMATCH" in issues:
+        bl["nxp_number"] = nxp[:-3] + "999"
+    if "CCI_HS_MISMATCH" in issues:
+        cci["hs_code"] = "0910.12"
+    if "DATE_ORDER" in issues:
+        cci["date"] = (shipped + timedelta(days=3)).isoformat()
+    if "COO_PARTY_MISMATCH" in issues:
+        coo["exporter"] = "Dala Commodities International Ltd"
+    if "CCI_WEIGHT_MISMATCH" in issues:
+        cci["gross_weight_kg"] = round(cci["gross_weight_kg"] + 3100, 1)
+    truth = {"proforma_invoice": inv, "packing_list": pl, "bill_of_lading": bl, "nepc_certificate": nepc,
+             "clean_certificate_of_inspection": cci, "certificate_of_origin": coo}
     return {"case_id": cid, "today": TODAY.isoformat(), "category": "non-oil", "expected_issues": issues,
             "exporter_rc": ex[1], "truth": truth}
 
@@ -183,7 +222,7 @@ def make_bl(c, path):
                ["Port of loading", v["port_of_loading"]], ["Port of discharge", v["port_of_discharge"]],
                ["Description of goods", Paragraph(v["description"], N)],
                ["Number of packages", f"{v['packages']:,} bags"], ["Gross weight", f"{v['gross_weight_kg']:,.1f} kg"],
-               ["Freight", v["freight_terms"]], ["Shipped on board", v["shipped_on_board_date"]]],
+               ["Freight", v["freight_terms"]], ["Form NXP No.", v["nxp_number"]], ["Shipped on board", v["shipped_on_board_date"]]],
               [45 * mm, 135 * mm], header=False), Spacer(1, 14),
           Paragraph("SYNTHETIC document generated for software testing. Not a document of title.", N)]
     page(path).build(el)
@@ -199,8 +238,34 @@ def make_nepc(c, path):
     page(path).build(el)
 
 
+def make_cci(c, path):
+    v = c["truth"]["clean_certificate_of_inspection"]
+    el = [Paragraph(v["inspection_agent"].upper(), S), Paragraph("CLEAN CERTIFICATE OF INSPECTION", H), Spacer(1, 6),
+          tbl([["CCI No.", v["cci_number"]], ["Date of issue", v["date"]], ["Form NXP No.", v["nxp_number"]],
+               ["Exporter", v["exporter"]], ["Consignee", v["consignee"]],
+               ["Description of goods", Paragraph(v["description"], N)], ["HS code", v["hs_code"]],
+               ["Quantity inspected", f"{v['quantity']:,} {v['unit']}"], ["Net weight", f"{v['net_weight_kg']:,.1f} kg"],
+               ["Gross weight", f"{v['gross_weight_kg']:,.1f} kg"], ["Verified FOB value", f"{v['currency']} {fmt(v['fob_value'])}"]],
+              [45 * mm, 135 * mm], header=False), Spacer(1, 14),
+          Paragraph("SYNTHETIC specimen generated for software testing. Not issued by any inspection agent.", N)]
+    page(path).build(el)
+
+
+def make_coo(c, path):
+    v = c["truth"]["certificate_of_origin"]
+    el = [Paragraph(v["issuing_body"].upper(), S), Paragraph("CERTIFICATE OF ORIGIN", H), Spacer(1, 6),
+          tbl([["Certificate No.", v["certificate_number"]], ["Date", v["date"]], ["Exporter", v["exporter"]],
+               ["Consignee", v["consignee"]], ["Country of origin", v["country_of_origin"]],
+               ["Description of goods", Paragraph(v["description"], N)], ["Number of packages", f"{v['packages']:,} bags"],
+               ["Gross weight", f"{v['gross_weight_kg']:,.1f} kg"]],
+              [45 * mm, 135 * mm], header=False), Spacer(1, 14),
+          Paragraph("SYNTHETIC specimen generated for software testing. Not issued by any chamber.", N)]
+    page(path).build(el)
+
+
 MAKERS = {"proforma_invoice": ("commercial_invoice", make_invoice), "packing_list": ("packing_list", make_packing),
-          "bill_of_lading": ("bill_of_lading", make_bl), "nepc_certificate": ("nepc_certificate", make_nepc)}
+          "bill_of_lading": ("bill_of_lading", make_bl), "nepc_certificate": ("nepc_certificate", make_nepc),
+          "clean_certificate_of_inspection": ("cci", make_cci), "certificate_of_origin": ("certificate_of_origin", make_coo)}
 
 
 def main():

@@ -36,15 +36,35 @@ insurance_certificate:
 
 bill_of_lading:
 {"doc_type":"bill_of_lading",
- "bl_number":null,"shipper":null,"consignee":null,"notify_party":null,"vessel":null,
+ "bl_number":null,"nxp_number":null,"shipper":null,"consignee":null,"notify_party":null,"vessel":null,
  "port_of_loading":null,"port_of_discharge":null,"shipped_on_board_date":null,
  "description":null,"packages":null,"gross_weight_kg":null,"freight_terms":null}
 
 nepc_certificate:
 {"doc_type":"nepc_certificate",
- "exporter_name":null,"certificate_number":null,"rc_number":null,"issue_date":null,"expiry_date":null}`;
+ "exporter_name":null,"certificate_number":null,"rc_number":null,"issue_date":null,"expiry_date":null}
 
-export const EXTRACTION_SYSTEM_PROMPT = `You read Nigerian import and export trade documents for a bank's trade-services desk.
+clean_certificate_of_inspection:
+{"doc_type":"clean_certificate_of_inspection",
+ "cci_number":null,"date":null,"nxp_number":null,"inspection_agent":null,"exporter":null,"consignee":null,
+ "description":null,"hs_code":null,"quantity":null,"unit":null,"net_weight_kg":null,"gross_weight_kg":null,
+ "currency":null,"fob_value":null}
+
+certificate_of_origin:
+{"doc_type":"certificate_of_origin",
+ "certificate_number":null,"date":null,"issuing_body":null,"exporter":null,"consignee":null,
+ "country_of_origin":null,"description":null,"packages":null,"gross_weight_kg":null}
+
+fee_invoice:
+{"doc_type":"fee_invoice",
+ "institution":null,"institution_country":null,"person_name":null,"purpose":null,"reference":null,"period":null,
+ "issue_date":null,"due_date":null,"currency":null,"amount":null,"beneficiary_bank":null,"beneficiary_account":null}
+
+support_letter:
+{"doc_type":"support_letter",
+ "kind":null,"institution":null,"person_name":null,"programme":null,"start_date":null,"date":null}`;
+
+export const EXTRACTION_SYSTEM_PROMPT = `You read Nigerian trade and foreign-exchange documents for a bank's trade-services desk.
 
 Task: identify which ONE of these documents the image shows, then transcribe its fields into JSON using exactly the matching skeleton below.
 ${SKELETONS}
@@ -61,6 +81,11 @@ Rules:
 - A commercial invoice or export invoice uses the proforma_invoice skeleton.
 - Bill of lading: shipper, consignee and notify_party are the company NAMES only (no address); shipped_on_board_date is the "shipped on board" date; packages and gross_weight_kg are the totals.
 - NEPC certificate: the Nigerian Export Promotion Council exporter registration certificate.
+- clean_certificate_of_inspection: the CCI issued by a pre-shipment inspection agent; quantity, weights and fob_value are the inspected totals.
+- certificate_of_origin: exporter and consignee are company NAMES only.
+- Any document that cites a Form NXP number: copy it into nxp_number exactly as printed.
+- fee_invoice: a school fees bill/invoice or a hospital's treatment cost estimate. purpose is "tuition", "medical" or "other". beneficiary_account is the institution's bank account number or IBAN as printed.
+- support_letter: an admission letter (kind "admission") or an overseas doctor's/hospital letter (kind "medical"). programme is the course or the treatment.
 - Reply with the JSON object only.`;
 
 export interface Verification {

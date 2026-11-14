@@ -1,0 +1,12 @@
+.main { padding-bottom: 60px; }
+.h1 { margin: 0 0 18px; }
+.bar { display: grid; gap: 14px; margin-bottom: 16px; }
+.email { display: grid; gap: 8px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.row input, .date input {
+  flex: 1; min-width: 0; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line2);
+  background: var(--glass); color: inherit; font: inherit; color-scheme: dark;
+}
+.list { display: grid; gap: 12px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin-top: 12px; }
+.date { display: grid; gap: 4px; flex: 1 1 200px; }

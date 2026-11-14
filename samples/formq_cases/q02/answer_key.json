@@ -1,0 +1,48 @@
+{
+  "case_id": "q02",
+  "today": "2026-11-14",
+  "used_this_quarter": 9000,
+  "expected_issues": [
+    "FORM_Q_LIMIT_EXCEEDED"
+  ],
+  "truth": {
+    "proforma_invoice": {
+      "doc_type": "proforma_invoice",
+      "seller": {
+        "name": "Shenzhen Sunpeak Energy Co., Ltd",
+        "address": "8 Keji Road, Shenzhen, China",
+        "rc_number": null
+      },
+      "buyer": {
+        "name": "Sabon Gari Solar Ventures Ltd",
+        "address": "9 Ibrahim Taiwo Road, Kano Tel: 08031220002",
+        "rc_number": "RC 3098117"
+      },
+      "invoice_number": "PI-Q02-2610",
+      "invoice_date": "2026-10-28",
+      "valid_until": null,
+      "currency": "USD",
+      "incoterm": "CIF",
+      "country_of_origin": "China",
+      "country_of_supply": "China",
+      "port_of_loading": "Shekou",
+      "port_of_discharge": "Apapa, Lagos",
+      "mode_of_transport": "Sea",
+      "payment_terms": "100% telegraphic transfer before shipment",
+      "lines": [
+        {
+          "description": "Solar PV module, monocrystalline, 450 W",
+          "hs_code": "8541.43",
+          "quantity": 150,
+          "unit": "unit",
+          "unit_price": 95.0,
+          "line_total": 14250.0
+        }
+      ],
+      "goods_value": 14250.0,
+      "freight": null,
+      "insurance": null,
+      "total": 14250.0
+    }
+  }
+}

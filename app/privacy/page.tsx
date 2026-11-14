@@ -21,8 +21,9 @@ export default function Privacy() {
       </ul>
       <h2>How we use it</h2>
       <p>
-        Only to read your documents, check them, and send you the result. Images are processed by Meta&apos;s open-weight model
-        Muse Spark Open, served by Baseten. We do not sell data, use it for advertising, or use it to train models.
+        Only to read your documents, check them, and send you the result. Images are processed by Google&apos;s Gemini API
+        on its free tier. We do not sell data or use it for advertising. Google may use free-tier requests to improve its
+        products, so please send test documents only, not real customer paperwork.
       </p>
       <h2>Storage and retention</h2>
       <ul>

@@ -79,30 +79,44 @@ export async function chat(
   };
   if (opts.json) body.response_format = { type: "json_object" };
 
+  // Free tiers get busy: if a model is overloaded, rate-limited or slow, move
+  // to the next one in OPENAI_COMPAT_FALLBACK_MODELS (comma-separated).
+  const models = [p.model, ...(p.name === "openai-compatible" ? (process.env.OPENAI_COMPAT_FALLBACK_MODELS ?? "").split(",").map((m) => m.trim()).filter(Boolean) : [])];
+  const timeoutMs = Number(process.env.LLM_TIMEOUT_MS ?? 75000);
+
   let lastErr: unknown;
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const res = await fetch(`${p.baseUrl.replace(/\/$/, "")}/chat/completions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${p.apiKey}` },
-      body: JSON.stringify(body),
-    });
+  for (let attempt = 0; attempt < Math.max(3, models.length + 1); attempt++) {
+    const model = models[attempt % models.length];
+    body.model = model;
+    let res: Response;
+    try {
+      res = await fetch(`${p.baseUrl.replace(/\/$/, "")}/chat/completions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${p.apiKey}` },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+    } catch (e) {
+      lastErr = new Error(`${p.name} ${model}: ${(e as Error).name === "TimeoutError" ? "timed out" : (e as Error).message}`);
+      continue;
+    }
     if (res.ok) {
       const data = await res.json();
       // Reasoning models may return thinking separately (reasoning_content) or
       // inline in <think> tags; keep only the final answer.
       const raw: string = data?.choices?.[0]?.message?.content ?? "";
       const text = raw.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
-      return { text, provider: p.name, model: p.model, ms: Date.now() - started };
+      return { text, provider: p.name, model, ms: Date.now() - started };
     }
     const errText = await res.text();
-    lastErr = new Error(`${p.name} ${res.status}: ${errText.slice(0, 300)}`);
+    lastErr = new Error(`${p.name} ${model} ${res.status}: ${errText.slice(0, 300)}`);
     // Some servers reject response_format; retry once without it.
     if (res.status === 400 && body.response_format) {
       delete body.response_format;
       continue;
     }
     if (res.status === 429 || res.status >= 500) {
-      await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
+      if (models.length === 1) await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
       continue;
     }
     break;

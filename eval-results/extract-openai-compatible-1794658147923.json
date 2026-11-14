@@ -1,0 +1,120 @@
+[
+  {
+    "id": "case_01",
+    "expected": [],
+    "found": [],
+    "mismatches": []
+  },
+  {
+    "id": "case_02",
+    "expected": [],
+    "found": [],
+    "mismatches": []
+  },
+  {
+    "id": "case_03",
+    "expected": [],
+    "found": [],
+    "mismatches": []
+  },
+  {
+    "id": "case_04",
+    "expected": [
+      "INVOICE_TOTAL_MISMATCH"
+    ],
+    "found": [
+      "INVOICE_TOTAL_MISMATCH"
+    ],
+    "mismatches": []
+  },
+  {
+    "id": "case_05",
+    "expected": [
+      "PACKING_QTY_MISMATCH"
+    ],
+    "found": [
+      "PACKING_QTY_MISMATCH"
+    ],
+    "mismatches": []
+  },
+  {
+    "id": "case_06",
+    "expected": [
+      "BENEFICIARY_NAME_MISMATCH"
+    ],
+    "found": [
+      "BENEFICIARY_NAME_MISMATCH"
+    ],
+    "mismatches": []
+  },
+  {
+    "id": "case_07",
+    "expected": [
+      "MISSING_INCOTERM",
+      "MISSING_COUNTRY_OF_ORIGIN"
+    ],
+    "found": [
+      "MISSING_INCOTERM",
+      "MISSING_COUNTRY_OF_ORIGIN"
+    ],
+    "mismatches": []
+  },
+  {
+    "id": "case_08",
+    "expected": [
+      "VAGUE_DESCRIPTION"
+    ],
+    "found": [
+      "VAGUE_DESCRIPTION"
+    ],
+    "mismatches": []
+  },
+  {
+    "id": "case_09",
+    "expected": [
+      "CURRENCY_MISMATCH",
+      "INSURED_VALUE_TOO_LOW"
+    ],
+    "found": [
+      "CURRENCY_MISMATCH",
+      "INSURED_VALUE_TOO_LOW"
+    ],
+    "mismatches": []
+  },
+  {
+    "id": "case_10",
+    "expected": [
+      "PORT_MISMATCH",
+      "IMPORTER_NAME_MISMATCH"
+    ],
+    "found": [
+      "IMPORTER_NAME_MISMATCH",
+      "PORT_MISMATCH"
+    ],
+    "mismatches": []
+  },
+  {
+    "id": "case_11",
+    "expected": [
+      "PROFORMA_EXPIRED"
+    ],
+    "found": [
+      "PROFORMA_EXPIRED"
+    ],
+    "mismatches": []
+  },
+  {
+    "id": "case_12",
+    "expected": [
+      "INVOICE_TOTAL_MISMATCH",
+      "PACKING_QTY_MISMATCH",
+      "VAGUE_DESCRIPTION"
+    ],
+    "found": [
+      "INVOICE_TOTAL_MISMATCH",
+      "VAGUE_DESCRIPTION",
+      "PACKING_QTY_MISMATCH"
+    ],
+    "mismatches": []
+  }
+]

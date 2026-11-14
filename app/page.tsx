@@ -187,7 +187,7 @@ export default function Home() {
   const currency = String(result?.draft.sections.find((s) => s.title === "Financials")?.fields.find((f) => f.label === "Currency")?.value ?? "");
 
   const steps = [
-    { key: "read", title: "Reading documents", sub: `${docEvents.length}/${files.length || 3} pages · Muse Spark Open vision` },
+    { key: "read", title: "Reading documents", sub: `${docEvents.length}/${files.length || 3} pages · vision model` },
     { key: "validate", title: "Cross-checking", sub: issues ? `${issues.length} finding${issues.length === 1 ? "" : "s"} · totals, names, quantities, ports, dates` : "totals, names, quantities, ports, dates" },
     { key: "hs", title: "Classifying goods", sub: "5,612 HS 2022 codes · verified shortlist" },
     { key: "draft", title: "Drafting Form M", sub: "every field traced to its source" },
@@ -207,7 +207,7 @@ export default function Home() {
           <span className="seal" aria-hidden="true">M</span>
           <span>Form M <b>Copilot</b></span>
         </div>
-        <span className="pill"><span className="dot" /> Meta Muse Spark Open</span>
+        <span className="pill"><span className="dot" /> Runs on Gemini</span>
       </header>
 
       <main>
@@ -279,7 +279,7 @@ export default function Home() {
             <button key={d.id} className="ghost" disabled={busy} onClick={async () => run(await loadDemo(d.id))}>{d.label}</button>
           ))}
         </div>
-        <p className="fine">Sample files are synthetic: invented companies, never real customer documents.</p>
+        <p className="fine">Sample files are synthetic: invented companies, never real customer documents. This is a public demo on a free AI tier, so please upload test documents only, not real customer paperwork.</p>
         {error && <p className="alert">{error}</p>}
 
         {(busy || phase === "result") && (
@@ -417,7 +417,7 @@ export default function Home() {
       </main>
 
       <footer className="foot">
-        Built for the Meta Global AI Developer Hackathon · Runs on Meta open-weight models · Draft for review only, not a submission
+        Started at the Meta Global AI Developer Hackathon · Works with any vision model, now on Google Gemini · Draft for review only, not a submission
         <br />
         <a href="/privacy" style={{ color: "inherit" }}>Privacy</a> · <a href="/data-deletion" style={{ color: "inherit" }}>Data deletion</a>
       </footer>

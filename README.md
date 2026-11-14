@@ -6,23 +6,26 @@ AI that checks Nigerian import documents before they reach the bank.
 
 An importer sends photos or PDFs of their **proforma invoice**, **packing list** and **marine insurance certificate**. Form M Copilot:
 
-1. extracts every field into structured JSON (Meta Muse Spark, vision),
+1. extracts every field into structured JSON (vision model),
 2. cross-checks the documents against each other (totals, quantities, names, ports, currency, insured value, dates),
 3. suggests HS codes with reasons,
 4. returns a pre-filled Form M draft plus a plain-language fix-list in 14 languages (including Hausa, Yoruba, Igbo, Pidgin, French, Arabic and Chinese), on WhatsApp or the web.
 
-The extraction pipeline also runs on Meta open-weights models, so a bank could host it inside its own network.
+The model is swappable (`lib/llm.ts`): the live demo runs on Google Gemini's free tier, and the same pipeline runs on open-weights models such as Meta Muse Spark Open, so a bank could host it inside its own network.
 
-Built for the Meta Global AI Developer Hackathon (Indie Developer track, "Build for Your World").
+First built for the Meta Global AI Developer Hackathon (Indie Developer track, "Build for Your World"), October–November 2026.
 
 ## What was built when
 
-Everything in this repository was created for this hackathon. Commit history is the record.
+Commit history is the record.
 
 - **26 Oct 2026 (before kickoff):** synthetic test data only (`samples/`, `scripts/generate_samples.py`). This is test material, not a product feature, and is not shown as a feature in the demo.
 - **26 Oct – 4 Nov 2026 (build period):** all application code: extraction, validation agent, HS-code assistant, Form M draft, WhatsApp channel, open-weights deployment.
+- **After the hackathon (Nov 2026):** the hackathon's Muse Spark Open endpoint was switched off, so the live demo moved to Google Gemini, with automatic fallback between models.
 
-## Results (Muse Spark Open on Baseten)
+## Results
+
+Measured on Muse Spark Open (Baseten) during the hackathon. Re-run on Gemini 3.5 Flash-Lite on 12 Nov 2026 with the same scores for extraction, error detection and HS codes.
 
 | Test | Result |
 |---|---|
@@ -65,7 +68,7 @@ Regenerate with `python3 scripts/generate_samples.py` (needs `reportlab`, `Pillo
 ## How it works
 
 ```
-photos ──► 1. Extract (Muse Spark vision → typed JSON, Zod-validated, self-repair on bad JSON)
+photos ──► 1. Extract (vision model → typed JSON, Zod-validated, self-repair on bad JSON)
        ──► 2. Validate (deterministic TypeScript rules: arithmetic, names, quantities, ports, currency, dates)
        ──► 3. HS-code assistant (BM25 over 5,612 official HS 2022 subheadings → model picks from shortlist → code verified)
        ──► 4. Form M draft (every field traced to its source document) + fix-list
@@ -76,7 +79,7 @@ The model only reads documents. Every flag is computed in code, so results are r
 
 | Path | What |
 |---|---|
-| `lib/llm.ts` | One client for Meta Model API, Baseten (Muse Spark Open) or any OpenAI-compatible server (e.g. Muse Glimmer on Modal) |
+| `lib/llm.ts` | One client for any OpenAI-compatible server (Google Gemini, Meta Model API, Baseten, self-hosted open weights), with model fallback |
 | `lib/extract.ts` | Classify + extract prompt, schema validation, repair loop |
 | `lib/validate.ts` | Cross-document rule engine |
 | `lib/formm.ts` | Form M draft builder |

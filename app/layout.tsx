@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Form M Copilot",
-  description: "An AI agent that checks Nigerian import documents for Form M errors before they reach the bank. Built on Meta's Muse Spark Open.",
+  description: "An AI agent that checks Nigerian import documents for Form M errors before they reach the bank. Works with any vision model; the demo runs on Google Gemini.",
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#030a07" };

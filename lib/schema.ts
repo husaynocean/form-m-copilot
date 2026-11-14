@@ -136,7 +136,8 @@ export interface DocumentSet {
   nepc_certificate?: NepcCertificate;
 }
 
-export type Severity = "error" | "warning";
+/** info = a note for the officer, not a problem with the documents. */
+export type Severity = "error" | "warning" | "info";
 
 export interface Issue {
   code: string;

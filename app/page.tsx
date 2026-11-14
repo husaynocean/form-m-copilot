@@ -60,6 +60,7 @@ function useCountUp(target: number, run: boolean, ms = 900) {
 
 export default function Home() {
   const [mode, setMode] = useState<Mode>("import");
+  const [category, setCategory] = useState<"non-oil" | "oil">("non-oil");
   const M = MODES[mode];
   const label = (d: string) => (d === "proforma_invoice" && mode === "import" ? "Proforma invoice" : DOC_LABEL[d] ?? d);
   const [files, setFiles] = useState<File[]>([]);
@@ -123,6 +124,7 @@ export default function Home() {
       const body = new FormData();
       list.forEach((f) => body.append("files", f));
       body.append("mode", mode);
+      body.append("category", category);
       const res = await fetch("/api/check", { method: "POST", body });
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => ({}));
@@ -207,6 +209,7 @@ export default function Home() {
 
   const errors = result?.issues.filter((i) => i.severity === "error") ?? [];
   const warnings = result?.issues.filter((i) => i.severity === "warning") ?? [];
+  const notes = result?.issues.filter((i) => i.severity === "info") ?? [];
   const errorCount = useCountUp(errors.length, phase === "result", 700);
   const totalValue = Number(result?.draft.sections.find((s) => s.title === "Financials")?.fields.find((f) => f.label === "Total value")?.value ?? 0);
   const valueCount = useCountUp(totalValue, phase === "result", 1400);
@@ -243,6 +246,13 @@ export default function Home() {
               <button key={m} role="tab" aria-selected={mode === m} className={`mode ${mode === m ? "on" : ""}`} disabled={busy} onClick={() => switchMode(m)}>{MODES[m].tab}</button>
             ))}
           </div>
+          {mode === "export" && (
+            <div className="cats" role="radiogroup" aria-label="Type of export">
+              {([["non-oil", "Non-oil · 180 days"], ["oil", "Oil & gas · 90 days"]] as const).map(([c, t]) => (
+                <button key={c} role="radio" aria-checked={category === c} className={`cat ${category === c ? "on" : ""}`} disabled={busy} onClick={() => { setCategory(c); reset(); }}>{t}</button>
+              ))}
+            </div>
+          )}
           <p className="eyebrow">{M.eyebrow}</p>
           <h1>{M.head} <span className="grad">before the bank does.</span></h1>
           <p className="lead">{M.lead}</p>
@@ -368,7 +378,7 @@ export default function Home() {
               <section className={`tracker ${result.tracker.status}`}>
                 <div className="section-head">
                   <h2>Repatriation deadline</h2>
-                  <span className="dim small">{result.tracker.days_total} days from the bill of lading date · {result.tracker.category} export · no extensions</span>
+                  <span className="dim small">{result.tracker.days_total} days from the bill of lading date · {result.tracker.category === "oil" ? "oil & gas" : "non-oil"} export · no extensions</span>
                 </div>
                 <div className="tracker-main">
                   <b className="mono">{result.tracker.days_left < 0 ? `${Math.abs(result.tracker.days_left)} days overdue` : `${result.tracker.days_left} days left`}</b>
@@ -387,7 +397,7 @@ export default function Home() {
               </section>
             )}
 
-            {[...errors, ...warnings].length > 0 && (
+            {[...errors, ...warnings, ...notes].length > 0 && (
               <section>
                 <div className="section-head">
                   <h2>Fix-list</h2>
@@ -403,13 +413,13 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="issues">
-                  {[...errors, ...warnings].map((iss, k) => {
+                  {[...errors, ...warnings, ...notes].map((iss, k) => {
                     const t = translated?.[result.issues.indexOf(iss)];
                     const docs = [...new Set(iss.evidence.map((e) => e.doc))];
                     return (
                       <article key={`${lang}-${k}`} className={`issue ${iss.severity}`} style={{ animationDelay: `${k * 90}ms` }} dir={t ? "auto" : undefined}>
                         <header>
-                          <span className="sev">{iss.severity === "error" ? "Must fix" : "Check"}</span>
+                          <span className="sev">{iss.severity === "error" ? "Must fix" : iss.severity === "warning" ? "Check" : "Note"}</span>
                           {docs.map((d) => <span key={d} className="docchip">{label(d)}</span>)}
                         </header>
                         <h3>{t ? t.title : iss.title}</h3>

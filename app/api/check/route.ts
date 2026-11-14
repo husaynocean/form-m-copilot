@@ -77,9 +77,9 @@ export async function POST(req: Request) {
         if (uncertain.length) {
           issues.push({
             code: "UNCERTAIN_READING",
-            severity: "warning",
-            title: "Please confirm these amounts by eye",
-            detail: `Three independent reads of the invoice disagreed on: ${uncertain.join(", ")}.`,
+            severity: "info",
+            title: "Not an error: please glance at these amounts",
+            detail: `The amounts were read three times and the readings did not fully agree on: ${uncertain.map((f) => f.replace(/^lines\[(\d+)\]\.line_total$/, (_, i) => `line ${Number(i) + 1} amount`).replace("goods_value", "goods value")).join(", ")}.`,
             evidence: uncertain.map((field) => ({ doc: "proforma_invoice" as const, field, value: null })),
             fix: "Check these figures on the original document; the photo may be blurred or folded there.",
           });

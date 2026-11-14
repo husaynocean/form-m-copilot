@@ -85,7 +85,7 @@ export async function chat(
   const timeoutMs = Number(process.env.LLM_TIMEOUT_MS ?? 75000);
 
   let lastErr: unknown;
-  for (let attempt = 0; attempt < Math.max(3, models.length + 1); attempt++) {
+  for (let attempt = 0; attempt < Math.max(4, models.length * 2); attempt++) {
     const model = models[attempt % models.length];
     body.model = model;
     let res: Response;
@@ -116,7 +116,8 @@ export async function chat(
       continue;
     }
     if (res.status === 429 || res.status >= 500) {
-      if (models.length === 1) await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
+      // Brief pause so a busy free tier can recover before the next try.
+      await new Promise((r) => setTimeout(r, models.length === 1 ? 1000 * 2 ** attempt : 600 * (attempt + 1)));
       continue;
     }
     break;

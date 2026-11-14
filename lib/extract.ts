@@ -94,10 +94,12 @@ Copy these numbers EXACTLY as they are printed. Do NOT add, compute, round or co
 printed totals on these invoices are sometimes wrong on purpose, and we need the wrong value.
 - line_totals: the Amount column of each goods line, top to bottom (not subtotal rows)
 - goods_value, freight, insurance, total: the summary rows at the bottom (null if a row is not printed)
+Write each amount as a plain JSON number (31440.00, not "31,440.00").
 If the image is not a proforma invoice, reply {"is_proforma": false}.
 Reply as JSON: {"is_proforma": true, "line_totals": [..], "goods_value": n|null, "freight": n|null, "insurance": n|null, "total": n|null}`;
 
-interface MoneyRead { is_proforma?: boolean; line_totals?: number[]; goods_value?: number | null; freight?: number | null; insurance?: number | null; total?: number | null }
+type Amount = number | string | null;
+interface MoneyRead { is_proforma?: boolean; line_totals?: Amount[]; goods_value?: Amount; freight?: Amount; insurance?: Amount; total?: Amount }
 
 async function readMoney(imageDataUrl: string, provider?: ProviderConfig): Promise<{ read: MoneyRead | null; ms: number }> {
   try {
@@ -122,9 +124,16 @@ function moneyFields(pi: ProformaInvoice): Record<string, number | null> {
   pi.lines.forEach((l, i) => (f[`lines[${i}].line_total`] = l.line_total));
   return f;
 }
+/** Some models return amounts as text ("31,440.00"); turn them into numbers. */
+function toNum(v: unknown): number | null {
+  if (typeof v === "number") return v;
+  if (typeof v !== "string") return null;
+  const n = Number(v.replace(/[^0-9.-]/g, ""));
+  return v.trim() && Number.isFinite(n) ? n : null;
+}
 function moneyFromRead(r: MoneyRead, n: number): Record<string, number | null> {
-  const f: Record<string, number | null> = { goods_value: r.goods_value ?? null, freight: r.freight ?? null, insurance: r.insurance ?? null, total: r.total ?? null };
-  for (let i = 0; i < n; i++) f[`lines[${i}].line_total`] = r.line_totals?.[i] ?? null;
+  const f: Record<string, number | null> = { goods_value: toNum(r.goods_value), freight: toNum(r.freight), insurance: toNum(r.insurance), total: toNum(r.total) };
+  for (let i = 0; i < n; i++) f[`lines[${i}].line_total`] = toNum(r.line_totals?.[i]);
   return f;
 }
 function disagreements(a: Record<string, number | null>, b: Record<string, number | null>): string[] {
@@ -195,6 +204,11 @@ export async function extractDocument(
       const check = Extraction.safeParse(parsed);
       if (check.success) {
         const extraction = check.data;
+        // Keep only the Incoterm code ("CFR Tin Can Island, Lagos" -> "CFR").
+        if (extraction.doc_type === "proforma_invoice" && extraction.incoterm) {
+          const code = /\b(EXW|FCA|FAS|FOB|CFR|CIF|CPT|CIP|DAP|DPU|DDP|C&F|CNF)\b/i.exec(extraction.incoterm)?.[1];
+          if (code) extraction.incoterm = code.toUpperCase().replace(/^(C&F|CNF)$/, "CFR");
+        }
         let verification: Verification | undefined;
         if (extraction.doc_type === "proforma_invoice") {
           const v = await verifyMoney(imageDataUrl, extraction, moneyRead, opts.provider);

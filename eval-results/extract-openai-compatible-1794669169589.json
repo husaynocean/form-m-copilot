@@ -101,7 +101,9 @@
     "found": [
       "PROFORMA_EXPIRED"
     ],
-    "mismatches": []
+    "mismatches": [
+      "proforma_invoice.incoterm: expected \"CFR\" got \"CFR Tin Can Island, Lagos\""
+    ]
   },
   {
     "id": "case_12",

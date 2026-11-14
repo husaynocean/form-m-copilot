@@ -237,3 +237,13 @@ dd.missing { color: var(--red); }
 .tracker.due_soon .bar span { background: #fbbf24; }
 .tracker.overdue .bar span { background: #fb7185; }
 .tracker-ends { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; margin-top: 8px; }
+
+/* notes: information for the officer, not a problem */
+.issue.info { border-color: var(--line2); background: var(--glass); }
+.issue.info::before { background: var(--muted); box-shadow: none; }
+.issue.info .sev { background: rgba(148, 163, 184, 0.14); color: var(--muted); }
+
+/* export type */
+.cats { display: flex; flex-wrap: wrap; gap: 6px; margin: -6px 0 16px; }
+.cat { padding: 7px 12px; min-height: 36px; border-radius: 999px; border: 1px solid var(--line2); background: var(--glass); font-size: 13px; color: var(--muted); }
+.cat.on { border-color: var(--em); color: var(--em); font-weight: 600; }

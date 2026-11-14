@@ -28,7 +28,7 @@ export async function explainIssues(issues: Issue[], lang: Lang, provider?: Prov
   if (lang === "en" || issues.length === 0) {
     return issues.map((i) => ({ code: i.code, title: i.title, body: `${i.detail} ${i.fix}`, verified: true }));
   }
-  const items = issues.map((i, n) => ({ n, title: i.title, text: `${i.detail} Fix: ${i.fix}` }));
+  const items = issues.map((i, n) => ({ n, title: i.title, body: `${i.detail} Fix: ${i.fix}` }));
   const system =
     `Translate each item into ${LANGUAGES[lang].prompt}. The reader is an importer or their overseas supplier. ` +
     "Write the way a helpful bank officer would say it on WhatsApp: short, clear, respectful. " +
@@ -40,7 +40,12 @@ export async function explainIssues(issues: Issue[], lang: Lang, provider?: Prov
     { role: "system" as const, content: system },
     { role: "user" as const, content: JSON.stringify(items) },
   ];
-  let out: { n: number; title: string; body: string }[] = [];
+  type Out = { n: number; title?: string; body?: string; text?: string };
+  // Models sometimes rename "body"; accept "text" too, and never accept an empty translation.
+  const bodyOf = (o: Out | undefined) => (o?.body ?? o?.text ?? "").trim();
+  const usable = (o: Out | undefined, original: string) =>
+    Boolean(o && o.title?.trim() && bodyOf(o)) && missingTokens(original, `${o!.title} ${bodyOf(o)}`).length === 0;
+  let out: Out[] = [];
   for (let attempt = 0; attempt < 2; attempt++) {
     const res = await chat(messages, { provider, json: true, maxTokens: 12000, temperature: 0.2 });
     try {
@@ -51,7 +56,7 @@ export async function explainIssues(issues: Issue[], lang: Lang, provider?: Prov
     const broken = items
       .map((it) => {
         const got = out.find((o) => o.n === it.n);
-        const lost = got ? missingTokens(it.text, `${got.title} ${got.body}`) : ["(missing item)"];
+        const lost = !got || !bodyOf(got) ? ["(the whole translation was missing)"] : missingTokens(it.body, `${got.title} ${bodyOf(got)}`);
         return { n: it.n, lost };
       })
       .filter((b) => b.lost.length);
@@ -60,7 +65,7 @@ export async function explainIssues(issues: Issue[], lang: Lang, provider?: Prov
     messages.push({
       role: "user",
       content:
-        "Some figures were changed or dropped. Keep these exactly: " +
+        "Some items were incomplete or figures were changed. Every item needs a non-empty \"title\" and \"body\". Keep these exactly: " +
         broken.map((b) => `item ${b.n}: ${b.lost.join(", ")}`).join("; ") +
         ". Return the full corrected JSON.",
     });
@@ -69,9 +74,8 @@ export async function explainIssues(issues: Issue[], lang: Lang, provider?: Prov
   return issues.map((issue, n) => {
     const got = out.find((o) => o.n === n);
     const original = `${issue.detail} Fix: ${issue.fix}`;
-    const ok = Boolean(got) && missingTokens(original, `${got!.title} ${got!.body}`).length === 0;
-    return ok
-      ? { code: issue.code, title: got!.title, body: got!.body, verified: true }
+    return usable(got, original)
+      ? { code: issue.code, title: got!.title!.trim(), body: bodyOf(got), verified: true }
       : { code: issue.code, title: issue.title, body: `${issue.detail} ${issue.fix}`, verified: false };
   });
 }

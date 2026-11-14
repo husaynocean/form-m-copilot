@@ -1,10 +1,12 @@
-# Form M Copilot
+# Trade Copilot
 
-AI that checks Nigerian import documents before they reach the bank.
+AI that checks Nigerian trade and FX documents before they reach the bank: **Form M** (imports), **Form NXP** (exports), **Form Q** (small imports) and **Form A** (school fees, medical bills), and tracks their deadlines.
 
-**Demo video (1:39):** https://youtu.be/CLK3YI_W_q8 · **Live app:** https://form-m-copilot.vercel.app
+*Formerly Form M Copilot, built for the Meta Global AI Developer Hackathon; the old address form-m-copilot.vercel.app still works.*
 
-An importer sends photos or PDFs of their **proforma invoice**, **packing list** and **marine insurance certificate**. Form M Copilot:
+**Hackathon demo video (1:39, Form M only):** https://youtu.be/CLK3YI_W_q8 · **Live app:** https://trade-copilot-ng.vercel.app
+
+For Form M, an importer sends photos of their **proforma invoice**, **packing list** and **marine insurance certificate**. Trade Copilot:
 
 1. extracts every field into structured JSON (vision model),
 2. cross-checks the documents against each other (totals, quantities, names, ports, currency, insured value, dates),
@@ -71,8 +73,8 @@ Rules and limits come from the bank's published requirements and secondary summa
 ## Try it
 
 - Demo video: https://youtu.be/CLK3YI_W_q8
-- Web app: https://form-m-copilot.vercel.app (tap "Try a problem file")
-- WhatsApp bot, web preview: https://form-m-copilot.vercel.app/whatsapp — the real WhatsApp number receives messages; Meta blocks outgoing messages until business verification, so the same bot code (`lib/bot.ts`) runs here with a web transport.
+- Web app: https://trade-copilot-ng.vercel.app (tap "Try a problem file")
+- WhatsApp bot, web preview: https://trade-copilot-ng.vercel.app/whatsapp — the real WhatsApp number receives messages; Meta blocks outgoing messages until business verification, so the same bot code (`lib/bot.ts`) runs here with a web transport.
 
 ## Synthetic test pack
 

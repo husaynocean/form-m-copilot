@@ -26,9 +26,9 @@ const rpc = (fn: string, args: Record<string, unknown>) =>
   process.env.WA_STORE === "memory" ? memRpc(fn, args) : rest(`rpc/${fn}`, { method: "POST", body: JSON.stringify(args) });
 
 // In-memory store for local tests only (WA_STORE=memory). Mirrors the SQL functions.
-const mem = { sessions: new Map<string, { lang: string; mode: string; docs: Record<string, unknown>; reported: boolean }>(), seen: new Set<string>() };
+const mem = { sessions: new Map<string, { lang: string; mode: string; fq_used: number; docs: Record<string, unknown>; reported: boolean }>(), seen: new Set<string>() };
 function memSession(phone: string) {
-  if (!mem.sessions.has(phone)) mem.sessions.set(phone, { lang: "en", mode: "import", docs: {}, reported: false });
+  if (!mem.sessions.has(phone)) mem.sessions.set(phone, { lang: "en", mode: "import", fq_used: 0, docs: {}, reported: false });
   return mem.sessions.get(phone)!;
 }
 async function memRpc(fn: string, a: Record<string, unknown>): Promise<unknown> {
@@ -47,8 +47,8 @@ async function memRpc(fn: string, a: Record<string, unknown>): Promise<unknown> 
   throw new Error(`unknown rpc ${fn}`);
 }
 
-export type BotMode = "import" | "export";
-export interface Session { phone: string; lang: string; mode?: BotMode; docs: Record<string, Extraction>; reported: boolean }
+export type BotMode = "import" | "export" | "formq" | "forma";
+export interface Session { phone: string; lang: string; mode?: BotMode; fq_used?: number; docs: Record<string, Extraction>; reported: boolean }
 
 /** True the first time a WhatsApp message id is seen (webhooks can be redelivered). */
 export const firstSeen = async (id: string): Promise<boolean> => Boolean(await rpc("wa_first_seen", { p_id: id }));
@@ -83,6 +83,16 @@ export async function setMode(phone: string, mode: BotMode) {
     method: "POST",
     headers: { Prefer: "resolution=merge-duplicates" },
     body: JSON.stringify({ phone, mode, docs: {}, reported: false, updated_at: new Date().toISOString() }),
+  });
+}
+
+/** Form Q: how much of this quarter's USD 20,000 the user says is already used. */
+export async function setFormQUsed(phone: string, used: number) {
+  if (process.env.WA_STORE === "memory") { memSession(phone).fq_used = used; return; }
+  await rest("wa_sessions?on_conflict=phone", {
+    method: "POST",
+    headers: { Prefer: "resolution=merge-duplicates" },
+    body: JSON.stringify({ phone, fq_used: used, updated_at: new Date().toISOString() }),
   });
 }
 

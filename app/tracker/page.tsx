@@ -72,8 +72,8 @@ export default function Tracker() {
       <div className="aurora" aria-hidden="true" />
       <header className="nav">
         <a className="brand" href="/" style={{ color: "inherit", textDecoration: "none" }}>
-          <span className="seal" aria-hidden="true">M</span>
-          <span>Form M <b>Copilot</b></span>
+          <span className="seal" aria-hidden="true">T</span>
+          <span>Trade <b>Copilot</b></span>
         </a>
         <a className="pill" href="/">← Check documents</a>
       </header>

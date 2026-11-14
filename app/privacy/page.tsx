@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import s from "../legal.module.css";
 
-export const metadata: Metadata = { title: "Privacy policy · Form M Copilot" };
+export const metadata: Metadata = { title: "Privacy policy · Trade Copilot" };
 
 export default function Privacy() {
   return (
     <main className={s.page}>
-      <a className={s.back} href="/">← Form M Copilot</a>
+      <a className={s.back} href="/">← Trade Copilot</a>
       <h1>Privacy policy</h1>
       <p>Last updated: 14 November 2026</p>
       <p>
-        Form M Copilot is a prototype by Husseini Tijani, started at the Meta Global AI Developer Hackathon. It checks photos of
+        Trade Copilot is a prototype by Husseini Tijani, started at the Meta Global AI Developer Hackathon. It checks photos of
         trade and foreign-exchange documents (Form M, Form NXP, Form Q and Form A) for errors and drafts the form for review.
       </p>
       <h2>What we collect</h2>

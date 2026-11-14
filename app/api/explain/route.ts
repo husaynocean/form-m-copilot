@@ -3,7 +3,7 @@ import { explainIssues, isLang, type Lang } from "@/lib/explain";
 import type { Issue } from "@/lib/schema";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 /** POST { issues: Issue[], lang: one of LANGUAGES } -> translated, number-verified fix-list. */
 export async function POST(req: Request) {

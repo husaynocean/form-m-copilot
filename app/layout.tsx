@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Form M Copilot",
-  description: "An AI agent that checks Nigerian import documents for Form M errors before they reach the bank. Works with any vision model; the demo runs on Google Gemini.",
+  title: "Trade Copilot",
+  description: "An AI agent that checks Nigerian trade and FX documents (Form M, Form NXP, Form Q, Form A) before they reach the bank, and tracks the deadlines.",
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#030a07" };

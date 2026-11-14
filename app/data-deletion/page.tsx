@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import s from "../legal.module.css";
 
-export const metadata: Metadata = { title: "Data deletion · Form M Copilot" };
+export const metadata: Metadata = { title: "Data deletion · Trade Copilot" };
 
 export default function DataDeletion() {
   return (
     <main className={s.page}>
-      <a className={s.back} href="/">← Form M Copilot</a>
+      <a className={s.back} href="/">← Trade Copilot</a>
       <h1>Delete your data</h1>
-      <p>You can remove everything Form M Copilot holds about you at any time.</p>
+      <p>You can remove everything Trade Copilot holds about you at any time.</p>
       <h2>On WhatsApp</h2>
       <ol>
-        <li>Send <b>new</b> to the Form M Copilot number to clear the documents from your current check.</li>
+        <li>Send <b>new</b> to the Trade Copilot number to clear the documents from your current check.</li>
         <li>To remove your number and language setting as well, send <b>delete my data</b>.</li>
       </ol>
       <h2>By email</h2>

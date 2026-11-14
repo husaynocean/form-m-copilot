@@ -7,10 +7,11 @@
  *  text   -> commands: language names, "check", "new", "help"
  */
 import { extractDocument } from "./extract";
+import { isQuotaError } from "./llm";
 import { analyze } from "./analyze";
 import { explainIssues } from "./explain";
 import { LANGUAGES, isLang, type Lang } from "./languages";
-import { claimReport, deleteUser, getSession, logEvent, mergeDoc, resetSession, setLang, setMode, type BotMode } from "./store";
+import { claimReport, deleteUser, getSession, logEvent, mergeDoc, resetSession, setFormQUsed, setLang, setMode, type BotMode } from "./store";
 import * as wa from "./whatsapp";
 import type { DocumentSet, Extraction, Issue } from "./schema";
 import { AsyncLocalStorage } from "node:async_hooks";
@@ -52,6 +53,8 @@ const DOC_NAME: Record<string, string> = {
   nepc_certificate: "NEPC certificate",
   clean_certificate_of_inspection: "Clean Certificate of Inspection (CCI)",
   certificate_of_origin: "certificate of origin",
+  fee_invoice: "school bill / hospital estimate",
+  support_letter: "admission or doctor's letter",
 };
 /** Documents each check needs before the report runs on its own; optional ones are checked if sent. */
 const MODES: Record<BotMode, { form: string; required: string[]; optional: string[]; ask: string }> = {
@@ -67,14 +70,29 @@ const MODES: Record<BotMode, { form: string; required: string[]; optional: strin
     optional: ["clean_certificate_of_inspection", "certificate_of_origin"],
     ask: "1️⃣ *Commercial invoice*\n2️⃣ *Packing list*\n3️⃣ *Bill of lading*\n4️⃣ *NEPC certificate*\n➕ CCI and certificate of origin if you have them (send them first)",
   },
+  formq: {
+    form: "Form Q",
+    required: ["proforma_invoice"],
+    optional: [],
+    ask: "1️⃣ The supplier's *invoice* (or demand note)\n\nIf you've already used part of this quarter's USD 20,000, type it like *used 5000* first.",
+  },
+  forma: {
+    form: "Form A",
+    required: ["fee_invoice", "support_letter"],
+    optional: [],
+    ask: "1️⃣ The *school bill* (or hospital cost estimate)\n2️⃣ The *admission letter* (or overseas doctor's letter)\n\n⚠️ Don't send passports or tax documents here.",
+  },
 };
+const MODE_ORDER: BotMode[] = ["import", "export", "formq", "forma"];
+const MODE_TITLE: Record<BotMode, string> = { import: "an import (Form M)", export: "an export (Form NXP)", formq: "a small import (Form Q)", forma: "a school fees / medical (Form A)" };
 const MODE_WORDS: Record<string, BotMode> = {
   import: "import", imports: "import", "form m": "import", formm: "import", importing: "import",
   export: "export", exports: "export", nxp: "export", "form nxp": "export", exporting: "export",
+  "form q": "formq", formq: "formq", "form a": "forma", forma: "forma", "school fees": "forma", "medical": "forma",
 };
 async function modeOf(from: string): Promise<BotMode> {
   const s = await getSession(from).catch(() => null);
-  return s?.mode === "export" ? "export" : "import";
+  return s?.mode && MODE_ORDER.includes(s.mode) ? s.mode : "import";
 }
 
 // Words people type to pick a language (English names, native names, codes).
@@ -110,14 +128,19 @@ export async function handleMessage(m: IncomingMessage) {
     if (m.type === "interactive") {
       const id = m.interactive?.list_reply?.id ?? m.interactive?.button_reply?.id;
       if (id && isLang(id)) return onLanguage(m.from, id);
-      if (id === "mode:import" || id === "mode:export") return onMode(m.from, id.slice(5) as BotMode, true);
+      if (id?.startsWith("mode:") && MODE_ORDER.includes(id.slice(5) as BotMode)) return onMode(m.from, id.slice(5) as BotMode, true);
     }
     if (m.type === "text" && m.text) return onText(m.from, m.text.body.trim());
     return sendText(m.from, `Send me photos of your documents, one photo per page:\n${MODES[await modeOf(m.from)].ask}`);
   } catch (e) {
     console.error("whatsapp handler", e);
     await logEvent({ sig_ok: true, has_sig: true, fields: "handler_error", note: String((e as Error)?.message ?? e).slice(0, 500) });
-    await sendText(m.from, "Sorry, something went wrong on my side. Please try again in a minute.").catch(() => undefined);
+    await sendText(
+      m.from,
+      isQuotaError(e)
+        ? "Sorry, the free AI allowance for today is used up, so I can't read photos right now. Please try again tomorrow."
+        : "Sorry, I couldn't read that one. Please send it again in a minute.",
+    ).catch(() => undefined);
   }
 }
 
@@ -127,10 +150,16 @@ async function onText(from: string, text: string) {
   const lang = LANG_WORDS[t];
   if (lang) return onLanguage(from, lang);
   if (MODE_WORDS[t]) return onMode(from, MODE_WORDS[t]);
+  const usedMatch = /^used\s+(?:usd\s*|\$)?([\d,]+(?:\.\d+)?)$/i.exec(t);
+  if (usedMatch) {
+    const used = Number(usedMatch[1].replace(/,/g, ""));
+    await setFormQUsed(from, used);
+    return sendText(from, `✅ Noted: USD ${money(used)} already used this quarter, so USD ${money(Math.max(0, 20000 - used))} is left. Now send the invoice.`);
+  }
   if (["new", "reset", "restart", "start over", "clear"].includes(t)) {
     await resetSession(from).catch(() => undefined);
     const mode = await modeOf(from);
-    return sendText(from, `🧾 New ${MODES[mode].form} check started. Send photos of:\n${MODES[mode].ask}\n\nType *${mode === "import" ? "export" : "import"}* to switch to ${mode === "import" ? "an export (Form NXP)" : "an import (Form M)"} check.`);
+    return sendText(from, `🧾 New ${MODES[mode].form} check started. Send photos of:\n${MODES[mode].ask}\n\nTo check something else, type *import*, *export*, *form q* or *form a*.`);
   }
   if (["check", "done", "go", "finish"].includes(t)) return report(from, 1, true);
   if (["delete my data", "delete", "stop"].includes(t)) {
@@ -145,8 +174,8 @@ async function welcome(from: string) {
   await sendText(
     from,
     [
-      "👋 *Form M Copilot*",
-      "I check your trade documents *before* they reach the bank: imports (Form M) and exports (Form NXP).",
+      "👋 *Trade Copilot*",
+      "I check your trade and FX documents *before* they reach the bank: imports (Form M), exports (Form NXP), small imports (Form Q) and school fees or medical bills (Form A).",
       "Send the photos and I cross-check every figure and name, suggest HS codes, start the clock on your deadline and send you a fix-list.",
       "Type *check* to check what you've sent so far, *new* to start again, *delete my data* to erase everything.",
     ].join("\n\n"),
@@ -158,6 +187,8 @@ function askMode(from: string) {
   return sendList(from, "What are you checking?", "Choose", [
     { id: "mode:import", title: "Import · Form M" },
     { id: "mode:export", title: "Export · Form NXP" },
+    { id: "mode:formq", title: "Small import · Form Q" },
+    { id: "mode:forma", title: "Fees / medical · Form A" },
   ]);
 }
 
@@ -186,16 +217,27 @@ async function onPhoto(from: string, mediaId: string) {
   const { dataUrl } = await downloadMedia(mediaId);
   const r = await extractDocument(dataUrl);
   const doc: Extraction = r.extraction;
-  const mode = await modeOf(from);
-  const M = MODES[mode];
-  if (![...M.required, ...M.optional].includes(doc.doc_type)) {
-    const other: BotMode = mode === "import" ? "export" : "import";
-    const fits = [...MODES[other].required, ...MODES[other].optional].includes(doc.doc_type);
-    await sendText(from, fits
-      ? `That looks like a *${DOC_NAME[doc.doc_type]}*, which belongs to ${other === "export" ? "an export (Form NXP)" : "an import (Form M)"} check. Type *${other}* to switch, then send the photos again.`
-      : "I couldn't use that document here. For school fees, medical bills or Form Q, use the web app: form-m-copilot.vercel.app");
-    return;
+  const session = await getSession(from).catch(() => null);
+  let mode = await modeOf(from);
+  const fitsMode = (m: BotMode) => [...MODES[m].required, ...MODES[m].optional].includes(doc.doc_type);
+  if (!fitsMode(mode)) {
+    const other = MODE_ORDER.find(fitsMode);
+    if (!other) {
+      await sendText(from, "I couldn't tell what kind of document that is. Please send a clearer photo, one page per photo.");
+      return;
+    }
+    if (Object.keys(session?.docs ?? {}).length === 0) {
+      // Nothing sent yet: switch to the form this document belongs to.
+      await setMode(from, other);
+      mode = other;
+      await sendText(from, `↪️ That's a *${DOC_NAME[doc.doc_type]}*, so I've switched to ${MODE_TITLE[other]} check.`);
+    } else {
+      const word = { import: "import", export: "export", formq: "form q", forma: "form a" }[other];
+      await sendText(from, `That's a *${DOC_NAME[doc.doc_type]}*, which belongs to ${MODE_TITLE[other]} check, but you've already sent documents for ${MODE_TITLE[mode]} check. Type *${word}* to start that check instead, or *check* to finish this one.`);
+      return;
+    }
   }
+  const M = MODES[mode];
   const held = await mergeDoc(from, doc);
   const missing = M.required.filter((d) => !held.includes(d));
 
@@ -218,6 +260,8 @@ function summary(doc: Extraction): string {
   if (doc.doc_type === "nepc_certificate") return `\n${doc.exporter_name ?? "?"} · expires ${doc.expiry_date ?? "?"}`;
   if (doc.doc_type === "clean_certificate_of_inspection") return `\n${doc.cci_number ?? "?"} · ${doc.currency ?? ""} ${money(doc.fob_value)}`;
   if (doc.doc_type === "certificate_of_origin") return `\nOrigin: ${doc.country_of_origin ?? "?"}`;
+  if (doc.doc_type === "fee_invoice") return `\n${doc.institution ?? "?"} · ${doc.person_name ?? "?"} · ${doc.currency ?? ""} ${money(doc.amount)}`;
+  if (doc.doc_type === "support_letter") return `\n${doc.institution ?? "?"} · ${doc.person_name ?? "?"}`;
   return "";
 }
 
@@ -229,8 +273,8 @@ async function report(from: string, minDocs: number, manual: boolean) {
   }
   const session = await getSession(from);
   const lang = (session?.lang && isLang(session.lang) ? session.lang : "en") as Lang;
-  const mode: BotMode = session?.mode === "export" ? "export" : "import";
-  const { issues, hs, draft, deadline } = await analyze(docs, [], { mode });
+  const mode: BotMode = session?.mode && MODE_ORDER.includes(session.mode) ? session.mode : "import";
+  const { issues, hs, draft, deadline } = await analyze(docs, [], { mode, used: Number(session?.fq_used ?? 0) });
   const errors = issues.filter((i) => i.severity === "error");
   const shown: Issue[] = [...errors, ...issues.filter((i) => i.severity === "warning")];
   const notes = issues.filter((i) => i.severity === "info");
@@ -261,7 +305,26 @@ async function report(from: string, minDocs: number, manual: boolean) {
     .join("\n");
   const missing = draft.missing.length ? `Missing: ${draft.missing.slice(0, 6).join("; ")}` : "";
   parts.push(
-    (mode === "export"
+    (mode === "formq"
+      ? [
+          "📝 *Form Q draft*",
+          `Supplier: ${get("Supplier (beneficiary)", "Name") ?? "?"}`,
+          `Value: ${get("Financials", "Currency") ?? ""} ${money(get("Financials", "Total value"))}`,
+          (() => {
+            const left = get("Quarterly allowance", "Left after this (USD)");
+            return `Allowance: USD ${money(get("Quarterly allowance", "Already used (USD)"))} used · ${typeof left === "number" ? `USD ${money(left)} left after this` : left ?? "currency not USD"}`;
+          })(),
+          goods,
+        ]
+      : mode === "forma"
+      ? [
+          "📝 *Form A draft*",
+          `${get("Purpose", "Type") ?? ""}: ${get("Purpose", "Programme / treatment") ?? "?"}`,
+          `For: ${get("Student", "Name") ?? get("Patient", "Name") ?? "?"}`,
+          `Pay to: ${get("Beneficiary", "Institution") ?? "?"} · ${get("Beneficiary", "Account / IBAN") ? `${get("Beneficiary", "Bank") ?? ""} ${get("Beneficiary", "Account / IBAN")}`.trim() : "no bank details"}`,
+          `Amount: ${get("Financials", "Currency") ?? ""} ${money(get("Financials", "Total value"))}`,
+        ]
+      : mode === "export"
       ? [
           "📝 *Form NXP draft*",
           `Exporter: ${get("Exporter", "Name") ?? "?"} · NEPC ${get("Exporter", "NEPC certificate no.") ?? "missing"}`,
@@ -282,7 +345,7 @@ async function report(from: string, minDocs: number, manual: boolean) {
     ).filter(Boolean).join("\n"),
   );
   parts.push(
-    `_Draft for review only; verify on the ${mode === "export" ? "CBN Trade Monitoring System" : "Nigeria Single Window"}._\nType *new* to check another set, *${mode === "export" ? "import" : "export"}* to switch, or a language name to change language.`,
+    `_Draft for review only; verify with the bank${mode === "export" || mode === "forma" ? " on the CBN Trade Monitoring System" : mode === "import" ? " on the Nigeria Single Window" : ""}._\nType *new* to check another set, *import*, *export*, *form q* or *form a* to switch, or a language name to change language.`,
   );
   await sendText(from, parts.join("\n\n"));
 }

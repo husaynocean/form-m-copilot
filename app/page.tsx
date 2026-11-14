@@ -98,6 +98,8 @@ export default function Home() {
   const [translating, setTranslating] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const input = useRef<HTMLInputElement>(null);
+  // Only one check at a time: a new check cancels the previous one.
+  const runRef = useRef<AbortController | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const busy = phase === "reading" || phase === "checking";
 
@@ -139,6 +141,9 @@ export default function Home() {
 
   async function run(list = files) {
     if (!list.length) return;
+    runRef.current?.abort();
+    const ctrl = new AbortController();
+    runRef.current = ctrl;
     reset();
     setPhase("reading");
     setStage("read");
@@ -149,7 +154,7 @@ export default function Home() {
       body.append("category", category);
       body.append("validity", validity);
       body.append("used", String(Number(used.replace(/[^0-9.]/g, "")) || 0));
-      const res = await fetch("/api/check", { method: "POST", body });
+      const res = await fetch("/api/check", { method: "POST", body, signal: ctrl.signal });
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error ?? `Request failed (${res.status})`);
@@ -159,7 +164,7 @@ export default function Home() {
       let buf = "";
       for (;;) {
         const { value, done } = await reader.read();
-        if (done) break;
+        if (done || ctrl.signal.aborted) break;
         buf += dec.decode(value, { stream: true });
         let nl: number;
         while ((nl = buf.indexOf("\n")) >= 0) {
@@ -179,6 +184,7 @@ export default function Home() {
         }
       }
     } catch (e) {
+      if (ctrl.signal.aborted) return;
       setError((e as Error).message);
       setPhase("idle");
       setStage(null);
@@ -290,8 +296,8 @@ export default function Home() {
       <div className="aurora" aria-hidden="true" />
       <header className="nav">
         <div className="brand">
-          <span className="seal" aria-hidden="true">M</span>
-          <span>Form M <b>Copilot</b></span>
+          <span className="seal" aria-hidden="true">T</span>
+          <span>Trade <b>Copilot</b></span>
         </div>
         <span className="pill"><span className="dot" /> Runs on Gemini</span>
       </header>
@@ -407,7 +413,7 @@ export default function Home() {
                         <span key={d.index} className={`sub ${d.status}`}>
                           {d.status === "ok" ? "✓" : d.status === "failed" ? "✕" : "•"} {d.doc_type ? label(d.doc_type) : d.file}
                           {d.ms ? <span className="mono"> {(d.ms / 1000).toFixed(1)}s</span> : null}
-                          {d.repaired ? <span className="tag">self-repaired</span> : null}
+                          {d.repaired ? <span className="tag" title="The AI's first answer was incomplete or in the wrong format; it was shown the problem and corrected itself.">auto-corrected</span> : null}
                           {d.verification?.rereads ? (
                             <span className="tag">
                               {d.verification.corrected.length

@@ -1,4 +1,5 @@
 import { extractDocument } from "@/lib/extract";
+import { isQuotaError } from "@/lib/llm";
 import { validate } from "@/lib/validate";
 import { buildFormMDraft } from "@/lib/formm";
 import { checkPrintedHsCodes, suggestHs, type HsSuggestion } from "@/lib/hs";
@@ -10,7 +11,7 @@ import { formMValidity, formQDocuments, type Deadline, type FormMCategory } from
 import type { DocumentSet, Extraction, Issue } from "@/lib/schema";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 const MAX_FILES = 6;
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -72,7 +73,7 @@ export async function POST(req: Request) {
               trace.push(ev);
               send({ type: "doc", ...ev });
             } catch (err) {
-              const ev = { index, file: f.name, status: "failed", error: String((err as Error)?.message ?? err).slice(0, 200) };
+              const ev = { index, file: f.name, status: "failed", error: isQuotaError(err) ? "daily AI allowance used up" : String((err as Error)?.message ?? err).slice(0, 200) };
               trace.push(ev);
               send({ type: "doc", ...ev });
             }
@@ -80,7 +81,8 @@ export async function POST(req: Request) {
         );
 
         if (Object.keys(docs).length === 0) {
-          send({ type: "error", error: "Could not read any of the documents." });
+          const quota = trace.some((t) => /quota|allowance/i.test(String(t.error ?? "")));
+          send({ type: "error", error: quota ? "The free AI allowance for today is used up, so the documents couldn't be read. Please try again tomorrow." : "Could not read any of the documents. Please try again." });
           return controller.close();
         }
 

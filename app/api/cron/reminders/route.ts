@@ -22,7 +22,7 @@ export async function GET(req: Request) {
   }
   if (!mailEnabled()) return Response.json({ skipped: "email not configured" });
   const today = new Date().toISOString().slice(0, 10);
-  const app = process.env.APP_URL ?? "https://form-m-copilot.vercel.app";
+  const app = process.env.APP_URL ?? "https://trade-copilot-ng.vercel.app";
   let sent = 0, failed = 0;
   for (const f of await filesToRemind(today)) {
     const step = due(f, today);
@@ -32,7 +32,7 @@ export async function GET(req: Request) {
     const subject = `${f.deadline_title} ${left < 0 ? "overdue" : left === 0 ? "due today" : `in ${left} days`}: ${f.title}`;
     const lines = [`${f.deadline_title} for ${f.title} ${when}.`, f.basis ?? "", f.reference ? `Reference: ${f.reference}` : "", f.amount != null ? `Amount: ${f.currency ?? ""} ${f.amount.toLocaleString("en-US")}` : "", `Open your tracker: ${app}/tracker`];
     const text = lines.filter(Boolean).join("\n");
-    const html = `<div style="font-family:system-ui,sans-serif;font-size:15px;line-height:1.5">${lines.filter(Boolean).map((l) => `<p>${l.replace(/</g, "&lt;").replace(/(https:\/\/\S+)/, '<a href="$1">$1</a>')}</p>`).join("")}<p style="color:#666;font-size:12px">You asked Form M Copilot to remind you. To stop, remove your email in the tracker.</p></div>`;
+    const html = `<div style="font-family:system-ui,sans-serif;font-size:15px;line-height:1.5">${lines.filter(Boolean).map((l) => `<p>${l.replace(/</g, "&lt;").replace(/(https:\/\/\S+)/, '<a href="$1">$1</a>')}</p>`).join("")}<p style="color:#666;font-size:12px">You asked Trade Copilot to remind you. To stop, remove your email in the tracker.</p></div>`;
     try {
       await sendMail(f.email, subject, html, text);
       await markReminded(f.id, [...f.reminders_sent, step]);

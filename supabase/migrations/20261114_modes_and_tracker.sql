@@ -30,3 +30,8 @@ create table if not exists public.trade_files (
 create index if not exists trade_files_owner_idx on public.trade_files (owner);
 create index if not exists trade_files_deadline_idx on public.trade_files (deadline) where email is not null;
 alter table public.trade_files enable row level security;
+
+-- Form Q and Form A on WhatsApp; Form Q remembers the allowance already used this quarter.
+alter table public.wa_sessions drop constraint if exists wa_sessions_mode_check;
+alter table public.wa_sessions add constraint wa_sessions_mode_check check (mode in ('import', 'export', 'formq', 'forma'));
+alter table public.wa_sessions add column if not exists fq_used numeric not null default 0 check (fq_used >= 0);

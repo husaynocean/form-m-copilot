@@ -113,8 +113,8 @@ export function toIcs(f: TradeFile, appUrl: string): string {
   const desc = esc([f.basis, f.reference && `Ref: ${f.reference}`, f.amount != null && `${f.currency ?? ""} ${f.amount.toLocaleString("en-US")}`, `Tracker: ${appUrl}/tracker`].filter(Boolean).join("\n"));
   const alarm = (days: number) => ["BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${summary}`, `TRIGGER:-P${days}D`, "END:VALARM"];
   return [
-    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Form M Copilot//Tracker//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
-    "BEGIN:VEVENT", `UID:${f.id}@form-m-copilot`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").slice(0, 15)}Z`,
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Trade Copilot//Tracker//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    "BEGIN:VEVENT", `UID:${f.id}@trade-copilot`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").slice(0, 15)}Z`,
     `DTSTART;VALUE=DATE:${d}`, `DTEND;VALUE=DATE:${next}`, `SUMMARY:${summary}`, `DESCRIPTION:${desc}`,
     ...alarm(30), ...alarm(7), ...alarm(1),
     "END:VEVENT", "END:VCALENDAR", "",

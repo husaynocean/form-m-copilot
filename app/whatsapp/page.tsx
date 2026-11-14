@@ -10,7 +10,14 @@ type Msg =
   | { id: string; from: "bot"; kind: "text"; text: string; at: string }
   | { id: string; from: "bot"; kind: "list"; text: string; button: string; rows: { id: string; title: string }[]; at: string };
 
-const SAMPLES = ["proforma_invoice", "packing_list", "insurance_certificate"];
+// Sample sets per form: the command that switches the bot, then the photos.
+// Optional export documents go first so they are in before the report runs.
+const SAMPLES: { label: string; command: string; batches: string[][] }[] = [
+  { label: "Form M samples", command: "import", batches: [["case_12_proforma_invoice", "case_12_packing_list", "case_12_insurance_certificate"]] },
+  { label: "Form NXP samples", command: "export", batches: [["export_problem_cci", "export_problem_certificate_of_origin"], ["export_problem_commercial_invoice", "export_problem_packing_list", "export_problem_bill_of_lading", "export_problem_nepc_certificate"]] },
+  { label: "Form Q sample", command: "form q", batches: [["formq_problem_proforma_invoice"]] },
+  { label: "Form A samples", command: "form a", batches: [["forma_problem_fee_invoice", "forma_problem_support_letter"]] },
+];
 const now = () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 const uid = () => Math.random().toString(36).slice(2, 10);
 
@@ -106,9 +113,13 @@ export default function ChatPreview() {
     );
   }
 
-  async function sendSamples() {
-    const blobs = await Promise.all(SAMPLES.map(async (d) => (await fetch(`/demo/case_12_${d}.jpg`)).blob()));
-    await sendImages(blobs);
+  async function sendSamples(set: (typeof SAMPLES)[number]) {
+    sendText(set.command);
+    await new Promise((r) => setTimeout(r, 1200)); // let the switch land first
+    for (const batch of set.batches) {
+      const blobs = await Promise.all(batch.map(async (d) => (await fetch(`/demo/${d}.jpg`)).blob()));
+      await sendImages(blobs);
+    }
   }
 
   function pick(row: { id: string; title: string }) {
@@ -121,10 +132,10 @@ export default function ChatPreview() {
     <div className={s.wrap}>
       <div className={s.phone}>
         <header className={s.head}>
-          <a href="/" className={s.back} aria-label="Back to Form M Copilot">‹</a>
-          <span className={s.avatar}>M</span>
+          <a href="/" className={s.back} aria-label="Back to Trade Copilot">‹</a>
+          <span className={s.avatar}>T</span>
           <div className={s.who}>
-            <b>Form M Copilot</b>
+            <b>Trade Copilot</b>
             <small>{pending ? "typing…" : "web preview of the WhatsApp bot"}</small>
           </div>
         </header>
@@ -136,10 +147,10 @@ export default function ChatPreview() {
         <main className={s.feed}>
           {msgs.length === 0 && (
             <div className={s.empty}>
-              <p>Say <b>hi</b>, choose a language, then send the three document photos.</p>
+              <p>Say <b>hi</b>, choose what you&apos;re checking (Form M, NXP, Q or A) and a language, then send the document photos. Or try a sample set.</p>
               <div className={s.quick}>
                 <button onClick={() => sendText("hi")}>👋 Say hi</button>
-                <button onClick={sendSamples}>📎 Send sample documents</button>
+                {SAMPLES.map((set) => <button key={set.label} onClick={() => sendSamples(set)}>📎 {set.label}</button>)}
               </div>
             </div>
           )}
@@ -169,7 +180,7 @@ export default function ChatPreview() {
 
         {msgs.length > 0 && (
           <div className={s.chips}>
-            <button onClick={sendSamples} disabled={pending > 0}>📎 Sample documents</button>
+            {SAMPLES.map((set) => <button key={set.label} onClick={() => sendSamples(set)} disabled={pending > 0}>📎 {set.label}</button>)}
             <button onClick={() => sendText("check")} disabled={pending > 0}>check</button>
             <button onClick={() => sendText("new")} disabled={pending > 0}>new</button>
             <button onClick={() => sendText("language")} disabled={pending > 0}>language</button>

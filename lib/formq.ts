@@ -87,6 +87,8 @@ export function validateFormQ(docs: DocumentSet, opts: { usedThisQuarter?: numbe
   return issues;
 }
 
+const leftText = (n: number) => (n < -0.005 ? `Over the limit by ${fmt(-n)}` : Math.round(n * 100) / 100);
+
 export function buildFormQDraft(docs: DocumentSet, opts: { usedThisQuarter?: number } = {}): FormMDraft {
   const pi = docs.proforma_invoice;
   const f = (label: string, value: DraftField["value"] | undefined, source: string): DraftField => ({ label, value: value ?? null, source: value == null ? null : source });
@@ -108,7 +110,7 @@ export function buildFormQDraft(docs: DocumentSet, opts: { usedThisQuarter?: num
       fields: [
         f("Limit per quarter (USD)", FORM_Q_LIMIT_USD, "CBN"),
         f("Already used (USD)", used, "You"),
-        f("Left after this (USD)", usd && amount != null ? Math.round((FORM_Q_LIMIT_USD - used - amount) * 100) / 100 : null, "Calculated"),
+        f("Left after this (USD)", usd && amount != null ? leftText(FORM_Q_LIMIT_USD - used - amount) : null, "Calculated"),
       ],
     },
   ];

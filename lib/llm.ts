@@ -65,6 +65,32 @@ export interface ChatResult {
   ms: number;
 }
 
+/** Thrown when every model's free allowance for the day is used up. */
+export class QuotaError extends Error {
+  constructor() {
+    super("The free AI allowance for today is used up. Please try again tomorrow.");
+    this.name = "QuotaError";
+  }
+}
+export const isQuotaError = (e: unknown) => e instanceof QuotaError || (e as Error)?.name === "QuotaError";
+
+// Models whose DAILY quota is used up, until when (per server instance).
+const exhausted = new Map<string, number>();
+// Free tiers also limit requests per minute: keep only a few calls in flight.
+const MAX_IN_FLIGHT = Number(process.env.LLM_MAX_CONCURRENCY ?? 4);
+let inFlight = 0;
+const waiting: (() => void)[] = [];
+async function slot<T>(fn: () => Promise<T>): Promise<T> {
+  if (inFlight >= MAX_IN_FLIGHT) await new Promise<void>((r) => waiting.push(r));
+  inFlight++;
+  try {
+    return await fn();
+  } finally {
+    inFlight--;
+    waiting.shift()?.();
+  }
+}
+
 export async function chat(
   messages: ChatMessage[],
   opts: { provider?: ProviderConfig; temperature?: number; maxTokens?: number; json?: boolean } = {},
@@ -81,21 +107,25 @@ export async function chat(
 
   // Free tiers get busy: if a model is overloaded, rate-limited or slow, move
   // to the next one in OPENAI_COMPAT_FALLBACK_MODELS (comma-separated).
-  const models = [p.model, ...(p.name === "openai-compatible" ? (process.env.OPENAI_COMPAT_FALLBACK_MODELS ?? "").split(",").map((m) => m.trim()).filter(Boolean) : [])];
+  const all = [p.model, ...(p.name === "openai-compatible" ? (process.env.OPENAI_COMPAT_FALLBACK_MODELS ?? "").split(",").map((m) => m.trim()).filter(Boolean) : [])];
   const timeoutMs = Number(process.env.LLM_TIMEOUT_MS ?? 75000);
 
   let lastErr: unknown;
-  for (let attempt = 0; attempt < Math.max(4, models.length * 2); attempt++) {
+  for (let attempt = 0; attempt < Math.max(4, all.length * 2); attempt++) {
+    const models = all.filter((m) => (exhausted.get(m) ?? 0) < Date.now());
+    if (!models.length) throw new QuotaError();
     const model = models[attempt % models.length];
     body.model = model;
     let res: Response;
     try {
-      res = await fetch(`${p.baseUrl.replace(/\/$/, "")}/chat/completions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${p.apiKey}` },
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(timeoutMs),
-      });
+      res = await slot(() =>
+        fetch(`${p.baseUrl.replace(/\/$/, "")}/chat/completions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${p.apiKey}` },
+          body: JSON.stringify(body),
+          signal: AbortSignal.timeout(timeoutMs),
+        }),
+      );
     } catch (e) {
       lastErr = new Error(`${p.name} ${model}: ${(e as Error).name === "TimeoutError" ? "timed out" : (e as Error).message}`);
       continue;
@@ -115,13 +145,24 @@ export async function chat(
       delete body.response_format;
       continue;
     }
-    if (res.status === 429 || res.status >= 500) {
-      // Brief pause so a busy free tier can recover before the next try.
+    if (res.status === 429) {
+      if (/per ?day|PerDay|daily/i.test(errText)) {
+        // Daily allowance gone: skip this model until the quota resets (assume ~midnight Pacific; recheck hourly).
+        exhausted.set(model, Date.now() + 60 * 60 * 1000);
+        continue;
+      }
+      // Per-minute limit: wait for the suggested time (capped) and try again.
+      const secs = Math.min(20, Number(/retry in ([\d.]+)s/i.exec(errText)?.[1] ?? 4));
+      await new Promise((r) => setTimeout(r, secs * 1000));
+      continue;
+    }
+    if (res.status >= 500) {
       await new Promise((r) => setTimeout(r, models.length === 1 ? 1000 * 2 ** attempt : 600 * (attempt + 1)));
       continue;
     }
     break;
   }
+  if (all.every((m) => (exhausted.get(m) ?? 0) >= Date.now())) throw new QuotaError();
   throw lastErr;
 }
 

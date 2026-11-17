@@ -12,10 +12,20 @@
 import { rest } from "../store";
 import { defaultPeriods, fetchFlows, queriesFor, type FlowQuery, type FlowRecord, type FlowSource } from "./comtrade";
 import type { Basis } from "./catalog";
+import seed from "./benchmarks-seed.json";
+
+/**
+ * Records pre-fetched for the 20 catalogue codes (scripts/pc-seed-benchmarks.ts),
+ * shipped with the app so common lookups need no Comtrade calls at request time.
+ */
+const SEED = seed as { periods: number[]; records: FlowRecord[] };
+const seeded = (q: FlowQuery, p: number) =>
+  SEED.periods.includes(p) && SEED.records.some((r) => r.hs6 === q.hs6 && (r.reporter_m49 === q.reporter || r.partner_m49 === q.partner));
 
 const STALE_DAYS = 90;
 const MIN_RECORD_USD = 5_000; // tiny flows give noisy unit values
 const ITEM_UNIT = 5; // Comtrade supplementary unit code: number of items
+const MIN_POINTS = 3; // fewer yearly values than this is not a benchmark
 
 export interface Benchmark {
   hs6: string;
@@ -29,6 +39,10 @@ export interface Benchmark {
   sources: FlowSource[];
   /** Share of the points valued CIF (imports) rather than FOB (exports). */
   cif_share: number;
+  /** high / low: how wide the normal range is. */
+  spread: number;
+  /** high: 5+ points and a tight band; medium: usable; low: treat flags with caution. */
+  confidence: "high" | "medium" | "low";
 }
 
 // --- storage -----------------------------------------------------------------
@@ -74,17 +88,26 @@ async function save(q: FlowQuery, periods: number[], records: FlowRecord[], stat
 
 async function storedFlows(hs6: string, q: FlowQuery[]): Promise<FlowRecord[]> {
   const match = (f: FlowRecord) => q.some((x) => x.reporter === f.reporter_m49 && x.partner === f.partner_m49 && x.flow === f.flow && x.periods.includes(f.period));
-  if (memory()) return mem.flows.filter((f) => f.hs6 === hs6 && match(f));
+  const fromSeed = SEED.records.filter((f) => f.hs6 === hs6 && match(f));
+  if (fromSeed.length && q.every((x) => x.periods.every((p) => seeded(x, p)))) return fromSeed;
+  if (memory()) return [...fromSeed, ...mem.flows.filter((f) => f.hs6 === hs6 && match(f))];
   const reporters = [...new Set(q.map((x) => x.reporter))].join(",");
   const rows: FlowRecord[] = (await rest(`pc_benchmarks?hs6=eq.${hs6}&reporter_m49=in.(${reporters})&select=*`)) ?? [];
-  return rows.map((r) => ({ ...r, value_usd: Number(r.value_usd), net_wgt_kg: r.net_wgt_kg == null ? null : Number(r.net_wgt_kg), qty: r.qty == null ? null : Number(r.qty) })).filter(match);
+  return [...fromSeed, ...rows.map((r) => ({ ...r, value_usd: Number(r.value_usd), net_wgt_kg: r.net_wgt_kg == null ? null : Number(r.net_wgt_kg), qty: r.qty == null ? null : Number(r.qty) })).filter(match)];
 }
 
 /** Make sure every query/year has been fetched recently; fetch the missing ones. */
 export async function ensureFlows(hs6: string, origin: number | null, periods = defaultPeriods()): Promise<{ fetched: number; errors: string[] }> {
   let fetched = 0;
   const errors: string[] = [];
-  for (const q of queriesFor(hs6, origin, periods)) {
+  const all = queriesFor(hs6, origin, periods);
+  for (const q of all) {
+    if (q.periods.every((p) => seeded(q, p))) continue;
+    // The origin's exports to the world are only needed when the direct route is thin.
+    if (q.source === "origin_exports_world") {
+      const direct = await storedFlows(hs6, all.filter((x) => x.source !== "origin_exports_world"));
+      if (direct.length >= 3) continue;
+    }
     const have = await fetchedPeriods(q);
     const missing = q.periods.filter((p) => !have.has(p));
     if (!missing.length) continue;
@@ -101,10 +124,11 @@ export async function ensureFlows(hs6: string, origin: number | null, periods = 
 }
 
 // --- statistics ----------------------------------------------------------------
+/** One unit value per record; estimated weights or quantities are left out. */
 export function unitValue(r: FlowRecord, basis: Basis): number | null {
   if (r.value_usd < MIN_RECORD_USD) return null;
-  if (basis === "kg") return r.net_wgt_kg && r.net_wgt_kg > 0 ? r.value_usd / r.net_wgt_kg : null;
-  return r.qty_unit_code === ITEM_UNIT && r.qty && r.qty > 0 ? r.value_usd / r.qty : null;
+  if (basis === "kg") return r.net_wgt_kg && r.net_wgt_kg > 0 && !r.wgt_estimated ? r.value_usd / r.net_wgt_kg : null;
+  return r.qty_unit_code === ITEM_UNIT && r.qty && r.qty > 0 && !r.qty_estimated ? r.value_usd / r.qty : null;
 }
 
 /** Trade-value-weighted quantile. */
@@ -132,11 +156,14 @@ export function summarise(hs6: string, origin: number | null, basis: Basis, flow
   // Drop wild values (bad weights or quantities): more than 10x from the plain median.
   const plain = [...p].sort((a, b) => a.v - b.v)[Math.floor(p.length / 2)].v;
   p = p.filter((x) => x.v <= plain * 10 && x.v >= plain / 10);
+  if (p.length < MIN_POINTS) return null;
   const w = p.map((x) => ({ v: x.v, w: x.f.value_usd }));
   const round = (n: number) => Number(n.toPrecision(4));
+  const [low, median, high] = [round(wq(w, 0.1)), round(wq(w, 0.5)), round(wq(w, 0.9))];
+  const spread = Math.round((high / low) * 100) / 100;
   return {
-    hs6, origin_m49: origin, basis,
-    low: round(wq(w, 0.1)), median: round(wq(w, 0.5)), high: round(wq(w, 0.9)),
+    hs6, origin_m49: origin, basis, low, median, high, spread,
+    confidence: p.length >= 5 && spread <= 2 ? "high" : spread <= 4 ? "medium" : "low",
     points: p.length,
     years: [...new Set(p.map((x) => x.f.period))].sort(),
     sources: [...new Set(p.map((x) => x.f.source))],

@@ -16,7 +16,11 @@ Each yearly record gives a unit value: USD per kg of net weight, or per item whe
 
 **Comparison basis** (`units.ts`): an invoice line is compared per kg (from MT/kg units or a packing-list net weight) or per item (set, unit, piece...). A line priced per drum or metre with no weight is reported as "can't compare" rather than guessed.
 
-**Catalogue** (`catalog.ts`): 20 HS codes pre-fetched for their usual origins; any other code or origin is fetched on demand.
+**Catalogue** (`catalog.ts`): 20 HS codes pre-fetched for their usual origins (`benchmarks-seed.json`, 351 Comtrade records for 2020–2024, shipped with the app so these lookups make no Comtrade calls). Any other code or origin is fetched on demand and cached in Supabase. 37 of the 41 code-origin pairs have a band (21 high confidence, 14 medium, 2 low); 4 have too little reliable data.
+
+**What the real data showed.** Nigeria's own import records often carry *estimated* quantities (e.g. generator sets from China, 2023: about $20,000 per set by Nigeria's figures vs about $6,800 by China's export figures for the same trade). Estimated quantities and weights are therefore excluded, and a band needs at least 3 yearly points. Each band gets a confidence level from its point count and width (high: 5+ points and high/low ≤ 2).
+
+The keyless preview endpoint allows one year per call (about 2.5 minutes per HS code for 3 views × 5 years), so on-demand lookups for new codes are slow without a free API key, which allows all years in one call.
 
 **Tables** (`supabase/migrations/20261117_pricecheck.sql`): `pc_benchmarks`, `pc_benchmark_queries`, `pc_invoices`, `pc_lines`, `pc_suppliers`. RLS on, server access only.
 

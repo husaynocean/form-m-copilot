@@ -32,6 +32,8 @@ t("unit value per item", () => assert.equal(unitValue(rec, "item"), 8000));
 t("unit value per kg", () => assert.ok(Math.abs(unitValue(rec, "kg")! - 5.517) < 0.01));
 t("no per-item value when the supplementary unit isn't a count", () => assert.equal(unitValue({ ...rec, qty_unit_code: 8 }, "item"), null));
 t("tiny flows are ignored", () => assert.equal(unitValue({ ...rec, value_usd: 1000 }, "item"), null));
+t("estimated quantities are not used per item", () => assert.equal(unitValue({ ...rec, qty_estimated: true }, "item"), null));
+t("estimated weights are not used per kg", () => assert.equal(unitValue({ ...rec, wgt_estimated: true }, "kg"), null));
 
 // Five direct-route years around $8,000 per set plus one bad record ($800,000 per set).
 const flows = [7500, 8000, 8200, 8800, 9500].map((u, i) => ({ ...rec, period: 2020 + i, value_usd: u * 100 }));
@@ -40,6 +42,8 @@ const b = summarise("850212", 156, "item", flows)!;
 t("band is built from the direct route", () => assert.deepEqual(b.sources.sort(), ["ng_imports"]));
 t("wild values are dropped", () => assert.equal(b.points, 5));
 t("median is in the middle of the band", () => assert.ok(b.low <= b.median && b.median <= b.high && b.median >= 8000 && b.median <= 8800, JSON.stringify(b)));
+t("a single data point is not a benchmark", () => assert.equal(summarise("252329", 792, "kg", [{ ...rec, period: 2024 }]), null));
+t("tight five-year band is high confidence", () => assert.equal(b.confidence, "high"));
 t("falls back to world exports when the direct route is thin", () => {
   const world = [5, 6, 7].map((u, i) => ({ ...rec, source: "origin_exports_world" as const, flow: "X" as const, partner_m49: 0, period: 2021 + i, value_usd: u * 1e6, net_wgt_kg: 1e6 }));
   const s = summarise("850212", 156, "kg", [{ ...rec, period: 2024 }, ...world])!;

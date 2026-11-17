@@ -114,14 +114,26 @@ async function call(q: FlowQuery, periods: number[]): Promise<Record<string, unk
   throw new Error("comtrade: no response after retries");
 }
 
-/** Fetch one query; if the API rejects a list of years, ask year by year. */
+const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Fetch one query. With a key, all years in one call; the keyless preview
+ * allows one year per call, so it asks year by year with a short pause.
+ */
 export async function fetchFlows(q: FlowQuery): Promise<FlowRecord[]> {
-  let rows: Record<string, unknown>[];
-  try {
+  let rows: Record<string, unknown>[] = [];
+  if (process.env.COMTRADE_API_KEY) {
     rows = await call(q, q.periods);
-  } catch (e) {
-    if (q.periods.length < 2) throw e;
-    rows = (await Promise.all(q.periods.map((p) => call(q, [p]).catch(() => [])))).flat();
+  } else {
+    let failures = 0;
+    for (const p of q.periods) {
+      try {
+        rows.push(...(await call(q, [p])));
+      } catch (e) {
+        if (++failures === q.periods.length) throw e;
+      }
+      await pause(Number(process.env.COMTRADE_PAUSE_MS ?? 350));
+    }
   }
   return rows.map((r) => toRecord(r, q)).filter((r): r is FlowRecord => Boolean(r));
 }

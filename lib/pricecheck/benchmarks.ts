@@ -26,6 +26,12 @@ const STALE_DAYS = 90;
 const MIN_RECORD_USD = 5_000; // tiny flows give noisy unit values
 const ITEM_UNIT = 5; // Comtrade supplementary unit code: number of items
 const MIN_POINTS = 3; // fewer yearly values than this is not a benchmark
+/**
+ * Nigeria's imports are valued CIF (cost + insurance + freight); exports and
+ * most invoices are FOB. CIF points are brought to an FOB equivalent with the
+ * standard 10% CIF/FOB margin used by the IMF, so the band is FOB throughout.
+ */
+export const CIF_FOB = 1.1;
 
 export interface Benchmark {
   hs6: string;
@@ -37,7 +43,7 @@ export interface Benchmark {
   points: number;
   years: number[];
   sources: FlowSource[];
-  /** Share of the points valued CIF (imports) rather than FOB (exports). */
+  /** Share of the points that were CIF (imports) and converted to FOB. All values are FOB-equivalent USD. */
   cif_share: number;
   /** high / low: how wide the normal range is. */
   spread: number;
@@ -145,7 +151,13 @@ function wq(points: { v: number; w: number }[], q: number): number {
 
 export function summarise(hs6: string, origin: number | null, basis: Basis, flows: FlowRecord[]): Benchmark | null {
   const pts = (sources: FlowSource[]) =>
-    flows.filter((f) => sources.includes(f.source)).map((f) => ({ f, v: unitValue(f, basis) })).filter((p): p is { f: FlowRecord; v: number } => p.v != null);
+    flows
+      .filter((f) => sources.includes(f.source))
+      .map((f) => {
+        const v = unitValue(f, basis);
+        return { f, v: v == null ? null : f.value_basis === "cif" ? v / CIF_FOB : v };
+      })
+      .filter((p): p is { f: FlowRecord; v: number } => p.v != null);
   let used: FlowSource[] = ["ng_imports", "mirror_exports_to_ng"];
   let p = pts(used);
   if (p.length < 3) {

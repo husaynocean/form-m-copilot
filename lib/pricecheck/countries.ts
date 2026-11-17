@@ -23,3 +23,14 @@ export function toM49(country: string | null | undefined): number | null {
   const k = country.toLowerCase().replace(/^the\s+/, "").replace(/\s+/g, " ").trim();
   return M49[k] ?? null;
 }
+
+const NAMES: Record<number, string> = {
+  566: "Nigeria", 156: "China", 344: "Hong Kong", 699: "India", 276: "Germany", 784: "the UAE", 792: "Turkey", 842: "the USA",
+  826: "the UK", 528: "the Netherlands", 56: "Belgium", 251: "France", 381: "Italy", 724: "Spain", 76: "Brazil", 32: "Argentina",
+  124: "Canada", 392: "Japan", 410: "South Korea", 764: "Thailand", 704: "Vietnam", 360: "Indonesia", 458: "Malaysia", 702: "Singapore",
+  586: "Pakistan", 50: "Bangladesh", 710: "South Africa", 818: "Egypt", 504: "Morocco", 288: "Ghana", 384: "Côte d'Ivoire", 204: "Benin",
+  768: "Togo", 562: "Niger", 120: "Cameroon", 404: "Kenya", 682: "Saudi Arabia", 643: "Russia", 804: "Ukraine", 616: "Poland",
+  752: "Sweden", 208: "Denmark", 579: "Norway", 757: "Switzerland", 372: "Ireland", 620: "Portugal", 484: "Mexico", 152: "Chile",
+  36: "Australia", 554: "New Zealand", 490: "Taiwan", 608: "the Philippines", 144: "Sri Lanka", 376: "Israel", 0: "the world",
+};
+export const countryName = (m49: number | null | undefined) => (m49 == null ? "any origin" : NAMES[m49] ?? `country ${m49}`);

@@ -254,3 +254,6 @@ dd.missing { color: var(--red); }
 .tracker + .tracker { margin-top: 12px; }
 .tracker-action { margin: 10px 0 0; }
 .tracker-save { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 12px; }
+
+/* link-style tabs (Price check) look like the button tabs */
+a.mode { text-decoration: none; display: inline-flex; align-items: center; }

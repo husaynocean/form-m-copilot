@@ -12,7 +12,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from generate_samples import H, N, S, fmt, photo_from_pdf, tbl  # noqa: E402
+from generate_samples import H, N, S, fmt, make_proforma, money, photo_from_pdf, tbl  # noqa: E402
+import shutil  # noqa: E402
 
 from reportlab.lib.pagesizes import A4  # noqa: E402
 from reportlab.lib.units import mm  # noqa: E402
@@ -63,12 +64,44 @@ def build(path):
     }
 
 
+# Demo invoices for the Price Check page. "Normal" prices sit inside the real
+# Comtrade bands (China FOB: air conditioners ~$151-179, motorcycles ~$444-517,
+# smartphones ~$68-101 each); the problem invoice plants over-invoicing and a
+# repeated price.
+DEMOS = {
+    "pricecheck_clean": [("Split air conditioner, 1.5 HP, inverter, R32", "8415.10", "unit", 300, 162.40),
+                         ("Motorcycle, 125 cc, 4-stroke petrol", "8711.20", "unit", 150, 486.00),
+                         ("Smartphone, 6.6 inch, 128 GB, dual SIM", "8517.13", "unit", 200, 79.50)],
+    "pricecheck_problem": [("Split air conditioner, 1.5 HP, inverter, R32", "8415.10", "unit", 300, 420.00),
+                           ("Motorcycle, 125 cc, 4-stroke petrol", "8711.20", "unit", 150, 486.00),
+                           ("Smartphone, 6.6 inch, 128 GB, dual SIM", "8517.13", "unit", 200, 420.00)],
+}
+
+
+def demo_case(name, lines):
+    items = [{"description": d, "hs_code": h, "unit": u, "quantity": q, "unit_price": p, "line_total": money(q * p)} for d, h, u, q, p in lines]
+    goods = money(sum(i["line_total"] for i in items))
+    return {
+        "importer": {"name": "Kano Home Appliances Ltd", "rc_number": "RC 2398115", "address": "8 Bello Road, Kano", "phone": "08031330009"},
+        "beneficiary": {"name": "Shenzhen Goldpeak Trading Co., Ltd", "address": "301 Futian Road, Shenzhen, China", "country": "China"},
+        "proforma": {"number": f"GP-2611-{'204' if 'clean' in name else '377'}", "date": "2026-11-03", "valid_until": "2027-01-31", "currency": "USD",
+                     "incoterm": "FOB", "country_of_origin": "China", "country_of_supply": "China", "port_of_loading": "Shekou",
+                     "port_of_discharge": "Apapa, Lagos", "mode_of_transport": "Sea", "payment_terms": "100% telegraphic transfer before shipment",
+                     "items": items, "goods_value": goods, "freight": 0.0, "insurance": 0.0, "total": goods},
+    }
+
+
 def main():
     (ROOT / "photos").mkdir(parents=True, exist_ok=True)
     truth = build(ROOT / "form_m_01.pdf")
     photo_from_pdf(ROOT / "form_m_01.pdf", ROOT / "photos" / "form_m_01.jpg", "pc-form-m-01")
     (ROOT / "form_m_01.json").write_text(json.dumps(truth, indent=2))
-    print("Generated", ROOT / "form_m_01.pdf")
+    demo = ROOT.parent.parent / "public" / "demo"
+    for name, lines in DEMOS.items():
+        make_proforma(demo_case(name, lines), ROOT / f"{name}.pdf")
+        photo_from_pdf(ROOT / f"{name}.pdf", ROOT / "photos" / f"{name}.jpg", f"pc-{name}")
+        shutil.copy(ROOT / "photos" / f"{name}.jpg", demo / f"{name}_invoice.jpg")
+    print("Generated PriceCheck samples")
 
 
 if __name__ == "__main__":

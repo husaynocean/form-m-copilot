@@ -41,7 +41,8 @@ flows.push({ ...rec, period: 2024, source: "mirror_exports_to_ng", flow: "X", va
 const b = summarise("850212", 156, "item", flows)!;
 t("band is built from the direct route", () => assert.deepEqual(b.sources.sort(), ["ng_imports"]));
 t("wild values are dropped", () => assert.equal(b.points, 5));
-t("median is in the middle of the band", () => assert.ok(b.low <= b.median && b.median <= b.high && b.median >= 8000 && b.median <= 8800, JSON.stringify(b)));
+t("median is in the middle of the band", () => assert.ok(b.low <= b.median && b.median <= b.high, JSON.stringify(b)));
+t("CIF import values are converted to FOB (÷1.1)", () => assert.ok(b.median >= 8000 / 1.1 && b.median <= 8800 / 1.1, JSON.stringify(b)));
 t("a single data point is not a benchmark", () => assert.equal(summarise("252329", 792, "kg", [{ ...rec, period: 2024 }]), null));
 t("tight five-year band is high confidence", () => assert.equal(b.confidence, "high"));
 t("falls back to world exports when the direct route is thin", () => {

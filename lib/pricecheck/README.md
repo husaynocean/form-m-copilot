@@ -26,8 +26,27 @@ The keyless preview endpoint allows one year per call (about 2.5 minutes per HS 
 
 Tests: `npx tsx scripts/pc-test-offline.ts` (22 checks, no network). `PC_STORE=memory npx tsx scripts/pc-seed-benchmarks.ts` fetches the catalogue from Comtrade; `scripts/pc-check.ts <photo>` runs one document end to end.
 
-## Known gaps, for week 2
+## Week 2: scoring, explanations, the page (done)
 
-- Currency: Comtrade is in USD; non-USD invoices need conversion before the ratio is computed.
-- CIF vs FOB: Nigeria's imports are CIF while most invoices are FOB; the band needs an Incoterm adjustment.
-- A 6-digit HS code can span very different products (a 75 kVA and a 375 kVA generator share 8502.12), so the band is wide by design and scoring must allow for it.
+**Comparing like with like.** Bands are FOB-equivalent US dollars: Nigeria's CIF import values are divided by 1.10 (the IMF's standard CIF/FOB margin). Invoice prices are converted to USD (`fx.ts`: live daily rates from open.er-api.com, with an approximate built-in table as a labelled fallback) and, on CIF/CFR invoices without separate freight, divided by 1.10 / 1.08.
+
+**Score** (`score.ts`, deterministic: the model only reads the document). A price within 15% of the band edge is treated as normal. Beyond it, points rise with the size of the gap (1.2× → ~18, 1.5× → ~41, 1.8× → ~60, capped at 80), weighted by benchmark confidence and the line's share of the invoice. Other red flags:
+
+| Flag | Points |
+|---|---|
+| HS code doesn't exist / doesn't match the description | 15 / 12 |
+| Different goods at exactly the same unit price | 10 |
+| Quantity × price ≠ line total | 10 |
+| All prices round hundreds (not for bulk goods priced per tonne/kg) | 6 |
+| First invoice from this supplier (per private key) | 5 |
+
+0–29 low, 30–59 medium, 60–100 high. Every flag carries the numbers behind it and what to do. Lines that can't be compared (no HS code, no weight) are listed as notes, not scored.
+
+**Run it.** `/pricecheck` (tab in the main navigation): upload up to 3 pages, or use "Run price check" on a Form M check's results to reuse its documents and packing-list weights. API: `POST /api/pricecheck`. Results are saved to `pc_invoices` / `pc_lines`, suppliers to `pc_suppliers`.
+
+Tests: `npx tsx scripts/pc-test-score.ts` (13 synthetic invoices against the real bands: fair prices, over- and under-invoicing, EUR, CIF, wrong HS code, repeated price, round prices, arithmetic, missing weight, new supplier).
+
+## Known limits
+
+- A 6-digit HS code can span very different products (a 75 kVA and a 375 kVA generator share 8502.12): bands are wide by design and low-confidence bands carry half weight.
+- Annual averages, not transaction prices: a premium brand can legitimately sit above the band. The score is a screening signal for review.

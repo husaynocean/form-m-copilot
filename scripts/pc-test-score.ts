@@ -38,7 +38,7 @@ const CASES: Case[] = [
   ["round prices", D("China", [L("Diesel generating set, 100 kVA", "8502.12", 4, "set", 7000), L("Injection moulding machine, 250 T", "8477.10", 1, "set", 17000)]),
     (r) => assert.ok(codes(r).includes("ROUND_PRICES"))],
   ["slightly above the band edge is not flagged", D("China", [L("Motorcycle, 125 cc petrol", "8711.20", 120, "unit", 560)]),
-    (r) => { assert.equal(r.lines[0].position, "above"); assert.deepEqual(codes(r), []); }],
+    (r) => { assert.equal(r.lines[0].position, "within"); assert.match(r.lines[0].note ?? "", /Just above the normal range/); assert.deepEqual(codes(r), []); }],
   ["line arithmetic error", D("India", [{ ...L("Motorcycle, 150 cc", "8711.20", 200, "unit", 500), line_total: 120000 }]),
     (r) => assert.ok(codes(r).includes("LINE_ARITHMETIC"))],
   ["tomato paste per drum without weight", D("China", [L("Tomato paste, 220 L drums", "2002.90", 160, "drum", 196.5)]),

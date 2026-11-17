@@ -33,7 +33,7 @@ async function save(doc: PriceDoc, r: PriceCheckResult, opts: { owner: string | 
       owner: opts.owner, source: opts.source, doc_kind: doc.doc_kind, supplier: doc.supplier, supplier_norm: norm, buyer: doc.buyer,
       origin: doc.country_of_origin, origin_m49: opts.origin_m49, currency: doc.currency, incoterm: doc.incoterm,
       invoice_number: doc.invoice_number, invoice_date: /^\d{4}-\d{2}-\d{2}$/.test(doc.invoice_date ?? "") ? doc.invoice_date : null,
-      total: doc.total, risk_score: r.score, summary: r.summary,
+      total: doc.total, risk_score: r.score, summary: r.summary, doc, result: r,
     }),
   });
   await rest("pc_lines", {

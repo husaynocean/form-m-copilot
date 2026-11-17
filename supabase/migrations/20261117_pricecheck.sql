@@ -99,3 +99,8 @@ alter table public.pc_benchmark_queries enable row level security;
 alter table public.pc_invoices enable row level security;
 alter table public.pc_lines enable row level security;
 alter table public.pc_suppliers enable row level security;
+
+-- Week 3: keep the full result and the extracted document, so the PDF report
+-- is built from what was actually checked (not from data sent by the browser).
+alter table public.pc_invoices add column if not exists doc jsonb;
+alter table public.pc_invoices add column if not exists result jsonb;

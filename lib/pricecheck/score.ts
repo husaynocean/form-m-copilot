@@ -129,7 +129,9 @@ export function scorePriceCheck(
     if (p > b.high || p < b.low) {
       const above = p > b.high;
       const factor = above ? p / b.high : b.low / p;
-      res.position = above ? "above" : "below";
+      // Just past the band edge counts as normal; the line says so.
+      res.position = factor >= EDGE_TOLERANCE ? (above ? "above" : "below") : "within";
+      if (factor < EDGE_TOLERANCE) res.note = `Just ${above ? "above" : "below"} the normal range, within the ${Math.round((EDGE_TOLERANCE - 1) * 100)}% tolerance.`;
       if (factor >= EDGE_TOLERANCE) {
         // Beyond the band edge by 1.2x ~18 points, 1.5x ~41, 1.8x ~60 (high), 2.2x+ 80
         // (before the confidence and line-share weights).

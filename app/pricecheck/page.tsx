@@ -1,11 +1,19 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
+import { LANGUAGES, type Lang } from "@/lib/languages";
+import type { Phase, SheetState } from "@/components/DocScene";
 import { resizeImage } from "@/lib/resize";
 import { getTrackerKey, setTrackerKey } from "@/lib/tracker-key";
 import type { PriceCheckResult, Flag, LineResult } from "@/lib/pricecheck/score";
 import type { PriceDoc } from "@/lib/pricecheck/extract";
 import s from "./pricecheck.module.css";
+
+const DocScene = dynamic(() => import("@/components/DocScene"), { ssr: false, loading: () => <div className="scene" /> });
+const QUICK: Lang[] = ["en", "ha", "yo", "ig", "pcm"];
+// Flag severities in the shape the fix-list translator expects.
+const AS_ISSUE: Record<Flag["severity"], "error" | "warning" | "info"> = { high: "error", medium: "warning", low: "warning", info: "info" };
 
 const TABS = [
   { href: "/?mode=import", label: "Form M · imports" },
@@ -31,6 +39,10 @@ const money = (n: number) => {
   const d = n >= 100 ? 0 : n >= 1 ? 2 : 3;
   return `$${n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 };
+
+function ownerKeyIfAny(): string | null {
+  try { return getTrackerKey(); } catch { return null; }
+}
 
 /** Private key that ties price checks to this browser (same key as the deadline tracker). */
 function ownerKey(): string {
@@ -73,6 +85,10 @@ export default function PriceCheck() {
   const [step, setStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [res, setRes] = useState<Response | null>(null);
+  const [elapsed, setElapsed] = useState(0);
+  const [lang, setLang] = useState<Lang>("en");
+  const [translated, setTranslated] = useState<{ title: string; body: string; verified: boolean }[] | null>(null);
+  const [translating, setTranslating] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -84,6 +100,13 @@ export default function PriceCheck() {
       if (raw) setFromCheck(JSON.parse(raw));
     } catch { /* storage unavailable */ }
   }, []);
+
+  useEffect(() => {
+    if (!busy) return;
+    const t0 = performance.now();
+    const id = setInterval(() => setElapsed((performance.now() - t0) / 1000), 100);
+    return () => clearInterval(id);
+  }, [busy]);
 
   useEffect(() => {
     if (!busy) return;
@@ -100,12 +123,16 @@ export default function PriceCheck() {
     setFromCheck(null);
     setRes(null);
     setError(null);
+    setLang("en");
+    setTranslated(null);
   }
 
   async function run(body: FormData | string) {
     setBusy(true);
     setError(null);
     setRes(null);
+    setLang("en");
+    setTranslated(null);
     try {
       const r = await fetch("/api/pricecheck", {
         method: "POST",
@@ -142,6 +169,29 @@ export default function PriceCheck() {
   const r = res?.result;
   const scored = r?.flags.filter((f) => f.points > 0) ?? [];
   const notes = r?.flags.filter((f) => f.points === 0) ?? [];
+  const shown = [...scored, ...notes];
+  const phase: Phase = busy ? (step >= 1 ? "checking" : "reading") : res ? "result" : "idle";
+  const sheetStates: SheetState[] = previews.map(() => (busy ? "scanning" : res ? "done" : "idle"));
+  const reportUrl = res?.id ? `/api/pricecheck/report?id=${res.id}&owner=${encodeURIComponent(ownerKeyIfAny() ?? "")}` : null;
+
+  async function switchLang(next: Lang) {
+    setLang(next);
+    if (next === "en" || !shown.length) return setTranslated(null);
+    setTranslating(true);
+    try {
+      const issues = shown.map((f) => ({ code: f.code, severity: AS_ISSUE[f.severity], title: f.title, detail: f.detail, fix: f.advice, evidence: [] }));
+      const out = await fetch("/api/explain", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ issues, lang: next }) });
+      const data = await out.json();
+      if (!out.ok) throw new Error(data.error ?? "Translation failed");
+      setTranslated(data.items);
+    } catch (e) {
+      setError((e as Error).message);
+      setLang("en");
+      setTranslated(null);
+    } finally {
+      setTranslating(false);
+    }
+  }
 
   return (
     <div className="shell">
@@ -165,22 +215,25 @@ export default function PriceCheck() {
           <p className="lead">Upload a proforma invoice, commercial invoice or Form M. Each line is compared with what the same goods from the same country normally cost, from UN Comtrade trade data, and you get a 0–100 risk score with the reasons.</p>
         </section>
 
-        {fromCheck ? (
-          <div className={s.from}>Using the documents from your Form M check: no need to upload again.</div>
-        ) : (
-          <div className={s.upload}>
-            <button className="drop" onClick={() => input.current?.click()} disabled={busy} style={{ position: "static" }}>
-              <span className="drop-icon" aria-hidden="true">＋</span>
-              <span><b>Add the invoice or Form M</b><small>JPG / PNG · up to 3 pages of one document</small></span>
-            </button>
-            {previews.length > 0 && (
-              <div className={s.files}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                {previews.map((p, i) => <img key={p} src={p} alt={`page ${i + 1}`} className={s.thumb} />)}
+        {fromCheck ? <div className={s.from}>Using the documents from your Form M check: no need to upload again.</div> : null}
+        <section className={`stage ${phase}`}>
+          <DocScene images={previews} states={sheetStates} phase={phase} links={[]} />
+          <div className="stage-overlay">
+            {!busy && !res && previews.length === 0 && !fromCheck && (
+              <button className="drop" onClick={() => input.current?.click()}>
+                <span className="drop-icon" aria-hidden="true">＋</span>
+                <span><b>Add the invoice or Form M</b><small>JPG / PNG · up to 3 pages of one document</small></span>
+              </button>
+            )}
+            {busy && <div className="timer mono">{elapsed.toFixed(1)}s</div>}
+            {r && !busy && (
+              <div className={`verdict ${r.level === "low" ? "good" : "bad"}`}>
+                <span className="big mono">{r.score}</span>
+                <span>{r.level} risk · out of 100</span>
               </div>
             )}
           </div>
-        )}
+        </section>
         <input
           ref={input}
           type="file"
@@ -202,6 +255,7 @@ export default function PriceCheck() {
           <button className="cta" disabled={busy || (!files.length && !fromCheck)} onClick={() => check()}>
             {busy ? <><span className="spinner" /> Checking…</> : res ? "Check again" : "Check prices"}
           </button>
+          {!fromCheck && <button className="ghost" disabled={busy} onClick={() => input.current?.click()}>Upload photos</button>}
           {!fromCheck && DEMOS.map((d) => <button key={d.id} className="ghost" disabled={busy} onClick={() => demo(d.id)}>{d.label}</button>)}
           {fromCheck ? <a className="ghost" href="/pricecheck">Upload a different document</a> : null}
         </div>
@@ -229,6 +283,11 @@ export default function PriceCheck() {
                 <div>
                   <span className={`${s.level} ${s[r.level]}`}><b>{r.level} risk</b></span>
                   <p>{r.summary}</p>
+                  {reportUrl && (
+                    <p style={{ margin: "12px 0 4px" }}>
+                      <a className="ghost" href={reportUrl} target="_blank" rel="noopener">⬇ Download PDF report</a>
+                    </p>
+                  )}
                   <p className="dim small">
                     {res.doc.supplier ?? "Unknown supplier"} → {res.doc.buyer ?? "unknown buyer"} · origin {r.origin} · {res.doc.currency ?? "?"} {res.doc.incoterm ?? ""} ·{" "}
                     {r.checked_lines} of {r.lines.length} line{r.lines.length === 1 ? "" : "s"} compared · {(res.ms / 1000).toFixed(1)}s
@@ -239,18 +298,34 @@ export default function PriceCheck() {
 
             {(scored.length > 0 || notes.length > 0) && (
               <section>
-                <div className="section-head"><h2>Why</h2><span className="dim small">Every figure comes from the document and UN Comtrade</span></div>
+                <div className="section-head">
+                  <h2>Why</h2>
+                  <div className="langs">
+                    {QUICK.map((l) => (
+                      <button key={l} className={`lang ${lang === l ? "on" : ""}`} disabled={translating} onClick={() => switchLang(l)}>{LANGUAGES[l].label}</button>
+                    ))}
+                    <select aria-label="More languages" value={QUICK.includes(lang) ? "" : lang} disabled={translating} onChange={(e) => e.target.value && switchLang(e.target.value as Lang)}>
+                      <option value="">More…</option>
+                      {(Object.keys(LANGUAGES) as Lang[]).filter((l) => !QUICK.includes(l)).map((l) => <option key={l} value={l}>{LANGUAGES[l].label}</option>)}
+                    </select>
+                    {translating && <span className="spinner" />}
+                  </div>
+                </div>
+                <p className="dim small" style={{ marginTop: -6 }}>Every figure comes from the document and UN Comtrade.</p>
                 <div className="issues">
-                  {[...scored, ...notes].map((f, k) => (
-                    <article key={`${f.code}-${k}`} className={SEV[f.severity].cls} style={{ animationDelay: `${k * 80}ms` }}>
-                      <header>
-                        <span className="sev">{SEV[f.severity].label}{f.points ? ` · +${f.points}` : ""}</span>
-                      </header>
-                      <h3>{f.title}</h3>
-                      <p>{f.detail}</p>
-                      <p className="fix"><b>What to do</b> {f.advice}</p>
-                    </article>
-                  ))}
+                  {shown.map((f, k) => {
+                    const t = translated?.[k];
+                    return (
+                      <article key={`${lang}-${f.code}-${k}`} className={SEV[f.severity].cls} style={{ animationDelay: `${k * 80}ms` }} dir={t ? "auto" : undefined}>
+                        <header>
+                          <span className="sev">{SEV[f.severity].label}{f.points ? ` · +${f.points}` : ""}</span>
+                        </header>
+                        <h3>{t ? t.title : f.title}</h3>
+                        {t ? <p>{t.body}</p> : <><p>{f.detail}</p><p className="fix"><b>What to do</b> {f.advice}</p></>}
+                        {t && <footer className="mono">{t.verified ? "figures verified" : "shown in English: figures couldn't be verified in translation"}</footer>}
+                      </article>
+                    );
+                  })}
                 </div>
               </section>
             )}
@@ -269,7 +344,7 @@ export default function PriceCheck() {
                       <>
                         <PriceBar l={l} />
                         <p className="dim small" style={{ margin: "8px 0 0" }}>
-                          {l.position === "within" ? "Within the normal range" : l.position === "above" ? "Above the normal range" : "Below the normal range"} · {l.ratio}× the typical price
+                          {l.note ?? (l.position === "within" ? "Within the normal range" : l.position === "above" ? "Above the normal range" : "Below the normal range")} · {l.ratio}× the typical price
                         </p>
                       </>
                     ) : (

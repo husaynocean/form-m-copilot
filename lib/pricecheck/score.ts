@@ -168,6 +168,17 @@ export function scorePriceCheck(
       advice: "A wrong HS code can be used to compare against the wrong price range or pay less duty. Confirm the classification with your clearing agent.",
     });
   }
+  // A code that doesn't match the goods gives the range of a different product,
+  // so that line's price comparison is withdrawn rather than scored.
+  const misclassified = new Set(flags.filter((f) => f.code === "HS_DESCRIPTION_MISMATCH" && f.line).map((f) => f.line!));
+  for (let k = flags.length - 1; k >= 0; k--) {
+    if (/^PRICE_(ABOVE|BELOW)_RANGE$/.test(flags[k].code) && misclassified.has(flags[k].line!)) flags.splice(k, 1);
+  }
+  for (const l of lines) {
+    if (misclassified.has(l.line_no) && l.position !== "unchecked") {
+      Object.assign(l, { position: "unchecked", ratio: null, note: `HS ${l.hs6} doesn't match the description, so its normal price range is for different goods. Correct the code to compare the price.` });
+    }
+  }
 
   // --- 3. same unit price for different goods --------------------------------
   const seen = new Map<number, number>();

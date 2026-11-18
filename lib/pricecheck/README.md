@@ -46,6 +46,25 @@ Tests: `npx tsx scripts/pc-test-offline.ts` (22 checks, no network). `PC_STORE=m
 
 Tests: `npx tsx scripts/pc-test-score.ts` (13 synthetic invoices against the real bands: fair prices, over- and under-invoicing, EUR, CIF, wrong HS code, repeated price, round prices, arithmetic, missing weight, new supplier).
 
+## Week 3: PDF report (done)
+
+"Download PDF report" on every result: `GET /api/pricecheck/report?id=&owner=` builds an A4 report (score, reasons, every line against its range, method) from the saved record.
+
+## Week 4: demo on 30 synthetic invoices (done)
+
+30 invented proformas priced from the real Comtrade ranges (`scripts/pc-demo-plan.ts`, rendered as phone photos by `scripts/generate_pricecheck_demo.py`): 15 fairly priced, 11 with planted over- or under-invoicing (1.8–2.4× beyond the edge of the normal range), and 4 with one other red flag each (same price for different goods, wrong HS code, round prices, arithmetic). USD, EUR and GBP; FOB, CFR and CIF; 13 origins.
+
+| | Printed values (rules only) | Read from the photos by the model |
+|---|---|---|
+| Mispricing caught (medium/high, right line) | 11/11 | 11/11 |
+| False alarms on the other 19 | 0/19 | 0/19 |
+| Other red flags found | 4/4 | 4/4 |
+| Price fields read correctly | – | 310/310 |
+
+Run: `npx tsx scripts/pc-demo-plan.ts && python3 scripts/generate_pricecheck_demo.py && npx tsx scripts/pc-eval-demo.ts [--model]`. With `PC_REMOTE=<deployment>` the photos are read by that deployment's API (test rows saved under one throwaway owner key).
+
+Fixed during the demo: a wrong HS code no longer gets its price scored against the wrong product's range (the line is marked "not compared" and the HS flag explains why).
+
 ## Known limits
 
 - A 6-digit HS code can span very different products (a 75 kVA and a 375 kVA generator share 8502.12): bands are wide by design and low-confidence bands carry half weight.

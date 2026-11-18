@@ -14,7 +14,7 @@ const DocScene = dynamic(() => import("@/components/DocScene"), { ssr: false, lo
 
 interface HsSuggestion { line: number; code: string | null; official_text: string | null; confidence: string; reason: string; missing_info: string | null }
 interface DocEvent { index: number; file: string; status: string; doc_type?: string; model?: string; ms?: number; repaired?: boolean; error?: string; verification?: { rereads: number; agreed: boolean; corrected: string[]; uncertain: string[] } }
-interface Result { mode: Mode; issues: Issue[]; draft: FormMDraft; hs: HsSuggestion[]; ms: number; deadlines?: Deadline[] }
+interface Result { mode: Mode; issues: Issue[]; draft: FormMDraft; hs: HsSuggestion[]; ms: number; deadlines?: Deadline[]; docs?: unknown }
 type Mode = "import" | "export" | "formq" | "forma";
 
 const MODES: Record<Mode, {
@@ -120,6 +120,19 @@ export default function Home() {
     setFiles(list.slice(0, 6));
     setPreviews(list.slice(0, 6).map((f) => URL.createObjectURL(f)));
     reset();
+  }
+
+  useEffect(() => {
+    const m = new URLSearchParams(location.search).get("mode");
+    if (m === "import" || m === "export" || m === "formq" || m === "forma") setMode(m);
+  }, []);
+
+  /** Hand this check's documents to PriceCheck without re-uploading. */
+  function runPriceCheck() {
+    try {
+      sessionStorage.setItem("pc-docs", JSON.stringify(result?.docs ?? {}));
+    } catch { /* storage unavailable: the page will ask for an upload */ }
+    location.href = "/pricecheck?from=formm";
   }
 
   function switchMode(next: Mode) {
@@ -308,6 +321,7 @@ export default function Home() {
             {(Object.keys(MODES) as Mode[]).map((m) => (
               <button key={m} role="tab" aria-selected={mode === m} className={`mode ${mode === m ? "on" : ""}`} disabled={busy} onClick={() => switchMode(m)}>{MODES[m].tab}</button>
             ))}
+            <a className="mode" href="/pricecheck">Price check</a>
           </div>
           {mode === "import" && (
             <div className="cats" role="radiogroup" aria-label="Type of goods">
@@ -519,7 +533,13 @@ export default function Home() {
             )}
 
             <section>
-              <div className="section-head"><h2>{M.form} draft</h2><span className="dim small">{M.draftNote}</span></div>
+              <div className="section-head">
+                <h2>{M.form} draft</h2>
+                <span className="dim small">{M.draftNote}</span>
+                {mode === "import" && Boolean((result.docs as { proforma_invoice?: unknown } | undefined)?.proforma_invoice) && (
+                  <button className="ghost" onClick={runPriceCheck}>Run price check</button>
+                )}
+              </div>
               <div className="draft">
                 {result.draft.sections.map((s, i) => (
                   <div className="panel" key={s.title} style={{ animationDelay: `${i * 70}ms` }}>

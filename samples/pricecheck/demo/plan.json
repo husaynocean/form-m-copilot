@@ -1,0 +1,1064 @@
+[
+ {
+  "id": "pc01",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Guangzhou Hengtai Industrial Co., Ltd",
+   "supplier_country": "China",
+   "buyer": "Kano Mobility Ventures Ltd",
+   "invoice_number": "PI-2611-107",
+   "invoice_date": "2026-10-02",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "China",
+   "country_of_supply": "China",
+   "total": 29810.66,
+   "lines": [
+    {
+     "description": "Split air conditioner, 1.5 HP, wall-mounted, inverter",
+     "hs_code": "8415.10",
+     "quantity": 179,
+     "unit": "unit",
+     "unit_price": 166.54,
+     "line_total": 29810.66,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc02",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Shenzhen Coolwave Appliances Co., Ltd",
+   "supplier_country": "China",
+   "buyer": "Sahel Foods & Grains Ltd",
+   "invoice_number": "PI-2610-114",
+   "invoice_date": "2026-11-03",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "China",
+   "country_of_supply": "China",
+   "total": 207161.7,
+   "lines": [
+    {
+     "description": "Motorcycle, 125 cc petrol engine, 4-stroke",
+     "hs_code": "8711.20",
+     "quantity": 255,
+     "unit": "unit",
+     "unit_price": 477.12,
+     "line_total": 121665.6,
+     "net_weight_kg": null
+    },
+    {
+     "description": "Split air conditioner, 1.5 HP, wall-mounted, inverter",
+     "hs_code": "8415.10",
+     "quantity": 547,
+     "unit": "unit",
+     "unit_price": 156.3,
+     "line_total": 85496.1,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc03",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Chao Phraya Grain Export Co., Ltd",
+   "supplier_country": "Thailand",
+   "buyer": "Lagoon Industrial Supplies Ltd",
+   "invoice_number": "PI-2611-121",
+   "invoice_date": "2026-10-04",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "Thailand",
+   "country_of_supply": "Thailand",
+   "total": 525482.24,
+   "lines": [
+    {
+     "description": "White rice, long grain, 5% broken, 50 kg bags",
+     "hs_code": "1006.30",
+     "quantity": 992,
+     "unit": "MT",
+     "unit_price": 529.72,
+     "line_total": 525482.24,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc04",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Maple Leaf Vehicle Traders Inc.",
+   "supplier_country": "Canada",
+   "buyer": "Zaria Agro Processing Ltd",
+   "invoice_number": "PI-2610-128",
+   "invoice_date": "2026-11-05",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "Canada",
+   "country_of_supply": "Canada",
+   "total": 1051211.52,
+   "lines": [
+    {
+     "description": "Durum wheat, unmilled, bulk",
+     "hs_code": "1001.19",
+     "quantity": 2592,
+     "unit": "MT",
+     "unit_price": 405.56,
+     "line_total": 1051211.52,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc05",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Holland Dairy Ingredients B.V.",
+   "supplier_country": "Netherlands",
+   "buyer": "Delta Fresh Foods Ltd",
+   "invoice_number": "PI-2611-135",
+   "invoice_date": "2026-10-06",
+   "currency": "EUR",
+   "incoterm": "FOB",
+   "country_of_origin": "Netherlands",
+   "country_of_supply": "Netherlands",
+   "total": 606176.46,
+   "lines": [
+    {
+     "description": "Skimmed milk powder, 25 kg bags",
+     "hs_code": "0402.21",
+     "quantity": 162,
+     "unit": "MT",
+     "unit_price": 3741.83,
+     "line_total": 606176.46,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc06",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Gulf Coast Auto Exports LLC",
+   "supplier_country": "USA",
+   "buyer": "Arewa Home Appliances Ltd",
+   "invoice_number": "PI-2610-142",
+   "invoice_date": "2026-11-07",
+   "currency": "USD",
+   "incoterm": "CIF",
+   "country_of_origin": "USA",
+   "country_of_supply": "USA",
+   "total": 27523.04,
+   "lines": [
+    {
+     "description": "Saloon car, 2.0 L petrol engine, used (2016 model)",
+     "hs_code": "8703.23",
+     "quantity": 4,
+     "unit": "unit",
+     "unit_price": 6880.76,
+     "line_total": 27523.04,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc07",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Severn Power Systems Ltd",
+   "supplier_country": "United Kingdom",
+   "buyer": "Kano Mobility Ventures Ltd",
+   "invoice_number": "PI-2611-149",
+   "invoice_date": "2026-10-08",
+   "currency": "GBP",
+   "incoterm": "FOB",
+   "country_of_origin": "United Kingdom",
+   "country_of_supply": "United Kingdom",
+   "total": 31470.3,
+   "lines": [
+    {
+     "description": "Diesel generating set, 100 kVA, 3-phase, soundproof canopy",
+     "hs_code": "8502.12",
+     "quantity": 5,
+     "unit": "set",
+     "unit_price": 6294.06,
+     "line_total": 31470.3,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc08",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Bergen Pelagic AS",
+   "supplier_country": "Norway",
+   "buyer": "Sahel Foods & Grains Ltd",
+   "invoice_number": "PI-2610-156",
+   "invoice_date": "2026-11-09",
+   "currency": "EUR",
+   "incoterm": "CFR",
+   "country_of_origin": "Norway",
+   "country_of_supply": "Norway",
+   "total": 516825.84,
+   "lines": [
+    {
+     "description": "Frozen Atlantic mackerel, whole round, 300-500 g",
+     "hs_code": "0303.54",
+     "quantity": 354,
+     "unit": "MT",
+     "unit_price": 1459.96,
+     "line_total": 516825.84,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc09",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Jubail Polymer Trading Co.",
+   "supplier_country": "Saudi Arabia",
+   "buyer": "Lagoon Industrial Supplies Ltd",
+   "invoice_number": "PI-2611-163",
+   "invoice_date": "2026-10-10",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "Saudi Arabia",
+   "country_of_supply": "Saudi Arabia",
+   "total": 318088.2,
+   "lines": [
+    {
+     "description": "Polypropylene homopolymer granules, injection grade",
+     "hs_code": "3902.10",
+     "quantity": 258,
+     "unit": "MT",
+     "unit_price": 1232.9,
+     "line_total": 318088.2,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc10",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Shenzhen Coolwave Appliances Co., Ltd",
+   "supplier_country": "China",
+   "buyer": "Zaria Agro Processing Ltd",
+   "invoice_number": "PI-2610-170",
+   "invoice_date": "2026-11-11",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "China",
+   "country_of_supply": "China",
+   "total": 708578.88,
+   "lines": [
+    {
+     "description": "Tomato paste, 28-30% brix, aseptic bags in drums",
+     "hs_code": "2002.90",
+     "quantity": 306,
+     "unit": "MT",
+     "unit_price": 919.26,
+     "line_total": 281293.56,
+     "net_weight_kg": null
+    },
+    {
+     "description": "Polypropylene homopolymer granules, injection grade",
+     "hs_code": "3902.10",
+     "quantity": 308,
+     "unit": "MT",
+     "unit_price": 1387.29,
+     "line_total": 427285.32,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc11",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Santos Sugar Exports Ltda",
+   "supplier_country": "Brazil",
+   "buyer": "Delta Fresh Foods Ltd",
+   "invoice_number": "PI-2611-177",
+   "invoice_date": "2026-10-12",
+   "currency": "USD",
+   "incoterm": "CIF",
+   "country_of_origin": "Brazil",
+   "country_of_supply": "Brazil",
+   "total": 3122774.58,
+   "lines": [
+    {
+     "description": "Raw cane sugar, VHP grade, bulk",
+     "hs_code": "1701.14",
+     "quantity": 5793,
+     "unit": "MT",
+     "unit_price": 539.06,
+     "line_total": 3122774.58,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc12",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Ningbo Brightway Trading Co., Ltd",
+   "supplier_country": "China",
+   "buyer": "Arewa Home Appliances Ltd",
+   "invoice_number": "PI-2610-184",
+   "invoice_date": "2026-11-13",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "China",
+   "country_of_supply": "China",
+   "total": 253580.68,
+   "lines": [
+    {
+     "description": "Smartphone, 6.5 inch, 64 GB, dual SIM",
+     "hs_code": "8517.13",
+     "quantity": 1539,
+     "unit": "piece",
+     "unit_price": 77.93,
+     "line_total": 119934.27,
+     "net_weight_kg": null
+    },
+    {
+     "description": "Motorcycle, 125 cc petrol engine, 4-stroke",
+     "hs_code": "8711.20",
+     "quantity": 281,
+     "unit": "unit",
+     "unit_price": 475.61,
+     "line_total": 133646.41,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc13",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Rhein Kunststoffmaschinen GmbH",
+   "supplier_country": "Germany",
+   "buyer": "Kano Mobility Ventures Ltd",
+   "invoice_number": "PI-2611-191",
+   "invoice_date": "2026-10-14",
+   "currency": "EUR",
+   "incoterm": "FOB",
+   "country_of_origin": "Germany",
+   "country_of_supply": "Germany",
+   "total": 166804.53,
+   "lines": [
+    {
+     "description": "Plastic injection moulding machine, 250 T clamping force",
+     "hs_code": "8477.10",
+     "quantity": 1,
+     "unit": "set",
+     "unit_price": 166804.53,
+     "line_total": 166804.53,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc14",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Mumbai Crestline Exports Pvt Ltd",
+   "supplier_country": "India",
+   "buyer": "Sahel Foods & Grains Ltd",
+   "invoice_number": "PI-2610-198",
+   "invoice_date": "2026-11-15",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "India",
+   "country_of_supply": "India",
+   "total": 468357.96,
+   "lines": [
+    {
+     "description": "White rice, long grain, 5% broken, 50 kg bags",
+     "hs_code": "1006.30",
+     "quantity": 466,
+     "unit": "MT",
+     "unit_price": 1005.06,
+     "line_total": 468357.96,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc15",
+  "plant": null,
+  "expect_flag": false,
+  "expect_codes": [],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Waikato Dairy Exports Ltd",
+   "supplier_country": "New Zealand",
+   "buyer": "Lagoon Industrial Supplies Ltd",
+   "invoice_number": "PI-2611-205",
+   "invoice_date": "2026-10-16",
+   "currency": "USD",
+   "incoterm": "CIF",
+   "country_of_origin": "New Zealand",
+   "country_of_supply": "New Zealand",
+   "total": 429246.48,
+   "lines": [
+    {
+     "description": "Skimmed milk powder, 25 kg bags",
+     "hs_code": "0402.21",
+     "quantity": 114,
+     "unit": "MT",
+     "unit_price": 3765.32,
+     "line_total": 429246.48,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc16",
+  "plant": "over",
+  "expect_flag": true,
+  "expect_codes": [
+   "PRICE_ABOVE_RANGE"
+  ],
+  "planted_line": 1,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Ningbo Brightway Trading Co., Ltd",
+   "supplier_country": "China",
+   "buyer": "Zaria Agro Processing Ltd",
+   "invoice_number": "PI-2610-212",
+   "invoice_date": "2026-11-17",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "China",
+   "country_of_supply": "China",
+   "total": 218151.92,
+   "lines": [
+    {
+     "description": "Split air conditioner, 1.5 HP, wall-mounted, inverter",
+     "hs_code": "8415.10",
+     "quantity": 532,
+     "unit": "unit",
+     "unit_price": 410.06,
+     "line_total": 218151.92,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc17",
+  "plant": "over",
+  "expect_flag": true,
+  "expect_codes": [
+   "PRICE_ABOVE_RANGE"
+  ],
+  "planted_line": 2,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Guangzhou Hengtai Industrial Co., Ltd",
+   "supplier_country": "China",
+   "buyer": "Delta Fresh Foods Ltd",
+   "invoice_number": "PI-2611-219",
+   "invoice_date": "2026-10-18",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "China",
+   "country_of_supply": "China",
+   "total": 233898.18,
+   "lines": [
+    {
+     "description": "Motorcycle, 125 cc petrol engine, 4-stroke",
+     "hs_code": "8711.20",
+     "quantity": 104,
+     "unit": "unit",
+     "unit_price": 480.01,
+     "line_total": 49921.04,
+     "net_weight_kg": null
+    },
+    {
+     "description": "Split air conditioner, 1.5 HP, wall-mounted, inverter",
+     "hs_code": "8415.10",
+     "quantity": 563,
+     "unit": "unit",
+     "unit_price": 326.78,
+     "line_total": 183977.14,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc18",
+  "plant": "over",
+  "expect_flag": true,
+  "expect_codes": [
+   "PRICE_ABOVE_RANGE"
+  ],
+  "planted_line": 1,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Shenzhen Coolwave Appliances Co., Ltd",
+   "supplier_country": "China",
+   "buyer": "Arewa Home Appliances Ltd",
+   "invoice_number": "PI-2610-226",
+   "invoice_date": "2026-11-19",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "China",
+   "country_of_supply": "China",
+   "total": 173830.95,
+   "lines": [
+    {
+     "description": "Smartphone, 6.5 inch, 64 GB, dual SIM",
+     "hs_code": "8517.13",
+     "quantity": 765,
+     "unit": "piece",
+     "unit_price": 227.23,
+     "line_total": 173830.95,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc19",
+  "plant": "over",
+  "expect_flag": true,
+  "expect_codes": [
+   "PRICE_ABOVE_RANGE"
+  ],
+  "planted_line": 1,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Zhejiang Sunrise Machinery Co., Ltd",
+   "supplier_country": "China",
+   "buyer": "Kano Mobility Ventures Ltd",
+   "invoice_number": "PI-2611-233",
+   "invoice_date": "2026-10-20",
+   "currency": "USD",
+   "incoterm": "CIF",
+   "country_of_origin": "China",
+   "country_of_supply": "China",
+   "total": 133197.72,
+   "lines": [
+    {
+     "description": "Diesel generating set, 100 kVA, 3-phase, soundproof canopy",
+     "hs_code": "8502.12",
+     "quantity": 6,
+     "unit": "set",
+     "unit_price": 22199.62,
+     "line_total": 133197.72,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc20",
+  "plant": "over",
+  "expect_flag": true,
+  "expect_codes": [
+   "PRICE_ABOVE_RANGE"
+  ],
+  "planted_line": 1,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Maple Leaf Vehicle Traders Inc.",
+   "supplier_country": "Canada",
+   "buyer": "Sahel Foods & Grains Ltd",
+   "invoice_number": "PI-2610-240",
+   "invoice_date": "2026-11-21",
+   "currency": "EUR",
+   "incoterm": "FOB",
+   "country_of_origin": "Canada",
+   "country_of_supply": "Canada",
+   "total": 42392.7,
+   "lines": [
+    {
+     "description": "Saloon car, 2.0 L petrol engine, used (2016 model)",
+     "hs_code": "8703.23",
+     "quantity": 5,
+     "unit": "unit",
+     "unit_price": 8478.54,
+     "line_total": 42392.7,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc21",
+  "plant": "over",
+  "expect_flag": true,
+  "expect_codes": [
+   "PRICE_ABOVE_RANGE"
+  ],
+  "planted_line": 1,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Guangzhou Hengtai Industrial Co., Ltd",
+   "supplier_country": "China",
+   "buyer": "Lagoon Industrial Supplies Ltd",
+   "invoice_number": "PI-2611-247",
+   "invoice_date": "2026-10-22",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "China",
+   "country_of_supply": "China",
+   "total": 1420874.43,
+   "lines": [
+    {
+     "description": "Polypropylene homopolymer granules, injection grade",
+     "hs_code": "3902.10",
+     "quantity": 339,
+     "unit": "MT",
+     "unit_price": 4191.37,
+     "line_total": 1420874.43,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc22",
+  "plant": "under",
+  "expect_flag": true,
+  "expect_codes": [
+   "PRICE_BELOW_RANGE"
+  ],
+  "planted_line": 1,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Chao Phraya Grain Export Co., Ltd",
+   "supplier_country": "Thailand",
+   "buyer": "Zaria Agro Processing Ltd",
+   "invoice_number": "PI-2610-254",
+   "invoice_date": "2026-11-23",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "Thailand",
+   "country_of_supply": "Thailand",
+   "total": 148705.59,
+   "lines": [
+    {
+     "description": "White rice, long grain, 5% broken, 50 kg bags",
+     "hs_code": "1006.30",
+     "quantity": 703,
+     "unit": "MT",
+     "unit_price": 211.53,
+     "line_total": 148705.59,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc23",
+  "plant": "under",
+  "expect_flag": true,
+  "expect_codes": [
+   "PRICE_BELOW_RANGE"
+  ],
+  "planted_line": 1,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Shannon Milk Products Ltd",
+   "supplier_country": "Ireland",
+   "buyer": "Delta Fresh Foods Ltd",
+   "invoice_number": "PI-2611-261",
+   "invoice_date": "2026-10-24",
+   "currency": "EUR",
+   "incoterm": "FOB",
+   "country_of_origin": "Ireland",
+   "country_of_supply": "Ireland",
+   "total": 168561.28,
+   "lines": [
+    {
+     "description": "Skimmed milk powder, 25 kg bags",
+     "hs_code": "0402.21",
+     "quantity": 134,
+     "unit": "MT",
+     "unit_price": 1257.92,
+     "line_total": 168561.28,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc24",
+  "plant": "under",
+  "expect_flag": true,
+  "expect_codes": [
+   "PRICE_BELOW_RANGE"
+  ],
+  "planted_line": 1,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Rotterdam Cold Fish B.V.",
+   "supplier_country": "Netherlands",
+   "buyer": "Arewa Home Appliances Ltd",
+   "invoice_number": "PI-2610-268",
+   "invoice_date": "2026-11-25",
+   "currency": "USD",
+   "incoterm": "CIF",
+   "country_of_origin": "Netherlands",
+   "country_of_supply": "Netherlands",
+   "total": 143594.85,
+   "lines": [
+    {
+     "description": "Frozen Atlantic mackerel, whole round, 300-500 g",
+     "hs_code": "0303.54",
+     "quantity": 163,
+     "unit": "MT",
+     "unit_price": 880.95,
+     "line_total": 143594.85,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc25",
+  "plant": "under",
+  "expect_flag": true,
+  "expect_codes": [
+   "PRICE_BELOW_RANGE"
+  ],
+  "planted_line": 1,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Kochi Harvest Agro Pvt Ltd",
+   "supplier_country": "India",
+   "buyer": "Kano Mobility Ventures Ltd",
+   "invoice_number": "PI-2611-275",
+   "invoice_date": "2026-10-26",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "India",
+   "country_of_supply": "India",
+   "total": 33302.5,
+   "lines": [
+    {
+     "description": "Motorcycle, 125 cc petrol engine, 4-stroke",
+     "hs_code": "8711.20",
+     "quantity": 175,
+     "unit": "unit",
+     "unit_price": 190.3,
+     "line_total": 33302.5,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc26",
+  "plant": "under",
+  "expect_flag": true,
+  "expect_codes": [
+   "PRICE_BELOW_RANGE"
+  ],
+  "planted_line": 1,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Gulf Coast Auto Exports LLC",
+   "supplier_country": "USA",
+   "buyer": "Sahel Foods & Grains Ltd",
+   "invoice_number": "PI-2610-282",
+   "invoice_date": "2026-11-27",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "USA",
+   "country_of_supply": "USA",
+   "total": 1239010.88,
+   "lines": [
+    {
+     "description": "Durum wheat, unmilled, bulk",
+     "hs_code": "1001.19",
+     "quantity": 6212,
+     "unit": "MT",
+     "unit_price": 177.67,
+     "line_total": 1103686.04,
+     "net_weight_kg": null
+    },
+    {
+     "description": "Saloon car, 2.0 L petrol engine, used (2016 model)",
+     "hs_code": "8703.23",
+     "quantity": 19,
+     "unit": "unit",
+     "unit_price": 7122.36,
+     "line_total": 135324.84,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc27",
+  "plant": "same_price",
+  "expect_flag": false,
+  "expect_codes": [
+   "SAME_PRICE_DIFFERENT_GOODS"
+  ],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Kochi Harvest Agro Pvt Ltd",
+   "supplier_country": "India",
+   "buyer": "Lagoon Industrial Supplies Ltd",
+   "invoice_number": "PI-2611-289",
+   "invoice_date": "2026-10-01",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "India",
+   "country_of_supply": "India",
+   "total": 1215651.98,
+   "lines": [
+    {
+     "description": "Polypropylene homopolymer granules, injection grade",
+     "hs_code": "3902.10",
+     "quantity": 465,
+     "unit": "MT",
+     "unit_price": 1153.37,
+     "line_total": 536317.05,
+     "net_weight_kg": null
+    },
+    {
+     "description": "White rice, long grain, 5% broken, 50 kg bags",
+     "hs_code": "1006.30",
+     "quantity": 589,
+     "unit": "MT",
+     "unit_price": 1153.37,
+     "line_total": 679334.93,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc28",
+  "plant": "hs_mismatch",
+  "expect_flag": false,
+  "expect_codes": [
+   "HS_DESCRIPTION_MISMATCH"
+  ],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Rotterdam Cold Fish B.V.",
+   "supplier_country": "Netherlands",
+   "buyer": "Zaria Agro Processing Ltd",
+   "invoice_number": "PI-2610-296",
+   "invoice_date": "2026-11-02",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "Netherlands",
+   "country_of_supply": "Netherlands",
+   "total": 810987.9,
+   "lines": [
+    {
+     "description": "Frozen Atlantic mackerel, whole round, 300-500 g",
+     "hs_code": "8415.10",
+     "quantity": 435,
+     "unit": "MT",
+     "unit_price": 1864.34,
+     "line_total": 810987.9,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc29",
+  "plant": "round",
+  "expect_flag": false,
+  "expect_codes": [
+   "ROUND_PRICES"
+  ],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Guangzhou Hengtai Industrial Co., Ltd",
+   "supplier_country": "China",
+   "buyer": "Delta Fresh Foods Ltd",
+   "invoice_number": "PI-2611-303",
+   "invoice_date": "2026-10-03",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "China",
+   "country_of_supply": "China",
+   "total": 345500,
+   "lines": [
+    {
+     "description": "Split air conditioner, 1.5 HP, wall-mounted, inverter",
+     "hs_code": "8415.10",
+     "quantity": 221,
+     "unit": "unit",
+     "unit_price": 200,
+     "line_total": 44200,
+     "net_weight_kg": null
+    },
+    {
+     "description": "Motorcycle, 125 cc petrol engine, 4-stroke",
+     "hs_code": "8711.20",
+     "quantity": 297,
+     "unit": "unit",
+     "unit_price": 500,
+     "line_total": 148500,
+     "net_weight_kg": null
+    },
+    {
+     "description": "Smartphone, 6.5 inch, 64 GB, dual SIM",
+     "hs_code": "8517.13",
+     "quantity": 1528,
+     "unit": "piece",
+     "unit_price": 100,
+     "line_total": 152800,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "pc30",
+  "plant": "arithmetic",
+  "expect_flag": false,
+  "expect_codes": [
+   "LINE_ARITHMETIC"
+  ],
+  "planted_line": null,
+  "doc": {
+   "doc_kind": "proforma_invoice",
+   "form_m_number": null,
+   "supplier": "Mumbai Crestline Exports Pvt Ltd",
+   "supplier_country": "India",
+   "buyer": "Arewa Home Appliances Ltd",
+   "invoice_number": "PI-2610-310",
+   "invoice_date": "2026-11-04",
+   "currency": "USD",
+   "incoterm": "FOB",
+   "country_of_origin": "India",
+   "country_of_supply": "India",
+   "total": 162723.6,
+   "lines": [
+    {
+     "description": "Polypropylene homopolymer granules, injection grade",
+     "hs_code": "3902.10",
+     "quantity": 117,
+     "unit": "MT",
+     "unit_price": 1356.03,
+     "line_total": 162723.6,
+     "net_weight_kg": null
+    }
+   ]
+  }
+ }
+]

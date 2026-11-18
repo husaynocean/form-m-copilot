@@ -1,0 +1,30 @@
+{
+  "doc_kind": "form_m",
+  "form_m_number": "MF20260098761",
+  "supplier": "Ningbo Everbright Power Co., Ltd",
+  "buyer": "Sabon Gari Power Solutions Ltd",
+  "invoice_number": "NEP-2610-447",
+  "invoice_date": "2026-10-20",
+  "currency": "USD",
+  "incoterm": "FOB",
+  "country_of_origin": "China",
+  "total": 74400.0,
+  "lines": [
+    {
+      "description": "Diesel generating set, 150 kVA, 3-phase, soundproof",
+      "hs_code": "8502.12.00.00",
+      "quantity": 4,
+      "unit": "set",
+      "unit_price": 13800.0,
+      "line_total": 55200.0
+    },
+    {
+      "description": "Copper power cable, 4 core, 35 mm2, 0.6/1 kV",
+      "hs_code": "8544.49.00.00",
+      "quantity": 2000,
+      "unit": "metre",
+      "unit_price": 9.6,
+      "line_total": 19200.0
+    }
+  ]
+}

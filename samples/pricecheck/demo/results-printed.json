@@ -1,0 +1,280 @@
+{
+ "summary": {
+  "mode": "printed values",
+  "mispricing_caught": "11/11",
+  "false_alarms": "0/19",
+  "other_red_flags_found": "4/4"
+ },
+ "rows": [
+  {
+   "id": "pc01",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc02",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc03",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc04",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc05",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc06",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc07",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc08",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc09",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc10",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc11",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc12",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc13",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc14",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc15",
+   "plant": null,
+   "score": 0,
+   "level": "low",
+   "status": "OK",
+   "flags": []
+  },
+  {
+   "id": "pc16",
+   "plant": "over",
+   "score": 80,
+   "level": "high",
+   "status": "CAUGHT",
+   "flags": [
+    "PRICE_ABOVE_RANGE@1"
+   ]
+  },
+  {
+   "id": "pc17",
+   "plant": "over",
+   "score": 56,
+   "level": "medium",
+   "status": "CAUGHT",
+   "flags": [
+    "PRICE_ABOVE_RANGE@2"
+   ]
+  },
+  {
+   "id": "pc18",
+   "plant": "over",
+   "score": 64,
+   "level": "high",
+   "status": "CAUGHT",
+   "flags": [
+    "PRICE_ABOVE_RANGE@1"
+   ]
+  },
+  {
+   "id": "pc19",
+   "plant": "over",
+   "score": 53,
+   "level": "medium",
+   "status": "CAUGHT",
+   "flags": [
+    "PRICE_ABOVE_RANGE@1"
+   ]
+  },
+  {
+   "id": "pc20",
+   "plant": "over",
+   "score": 80,
+   "level": "high",
+   "status": "CAUGHT",
+   "flags": [
+    "PRICE_ABOVE_RANGE@1"
+   ]
+  },
+  {
+   "id": "pc21",
+   "plant": "over",
+   "score": 80,
+   "level": "high",
+   "status": "CAUGHT",
+   "flags": [
+    "PRICE_ABOVE_RANGE@1"
+   ]
+  },
+  {
+   "id": "pc22",
+   "plant": "under",
+   "score": 75,
+   "level": "high",
+   "status": "CAUGHT",
+   "flags": [
+    "PRICE_BELOW_RANGE@1"
+   ]
+  },
+  {
+   "id": "pc23",
+   "plant": "under",
+   "score": 76,
+   "level": "high",
+   "status": "CAUGHT",
+   "flags": [
+    "PRICE_BELOW_RANGE@1"
+   ]
+  },
+  {
+   "id": "pc24",
+   "plant": "under",
+   "score": 80,
+   "level": "high",
+   "status": "CAUGHT",
+   "flags": [
+    "PRICE_BELOW_RANGE@1"
+   ]
+  },
+  {
+   "id": "pc25",
+   "plant": "under",
+   "score": 80,
+   "level": "high",
+   "status": "CAUGHT",
+   "flags": [
+    "PRICE_BELOW_RANGE@1"
+   ]
+  },
+  {
+   "id": "pc26",
+   "plant": "under",
+   "score": 66,
+   "level": "high",
+   "status": "CAUGHT",
+   "flags": [
+    "PRICE_BELOW_RANGE@1"
+   ]
+  },
+  {
+   "id": "pc27",
+   "plant": "same_price",
+   "score": 10,
+   "level": "low",
+   "status": "FOUND",
+   "flags": [
+    "SAME_PRICE_DIFFERENT_GOODS@2"
+   ]
+  },
+  {
+   "id": "pc28",
+   "plant": "hs_mismatch",
+   "score": 12,
+   "level": "low",
+   "status": "FOUND",
+   "flags": [
+    "HS_DESCRIPTION_MISMATCH@1"
+   ]
+  },
+  {
+   "id": "pc29",
+   "plant": "round",
+   "score": 6,
+   "level": "low",
+   "status": "FOUND",
+   "flags": [
+    "ROUND_PRICES"
+   ]
+  },
+  {
+   "id": "pc30",
+   "plant": "arithmetic",
+   "score": 10,
+   "level": "low",
+   "status": "FOUND",
+   "flags": [
+    "LINE_ARITHMETIC@1"
+   ]
+  }
+ ]
+}

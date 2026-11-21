@@ -1,7 +1,10 @@
 /**
- * Plan the 30-invoice PriceCheck demo set. "Fair" prices are drawn from inside
- * the real Comtrade bands (lib/pricecheck/benchmarks-seed.json); planted
- * mispricing sits 1.8–2.4x beyond the band edge. Every company is invented.
+ * Plan the PriceCheck demo set. "Fair" prices are drawn from inside the real
+ * Comtrade bands (lib/pricecheck/benchmarks-seed.json). Every company is invented.
+ *   pc01–pc30  the original set: obvious mispricing, 1.8–2.4x beyond the band edge
+ *   pc31–pc40  subtle mispricing: a true price anywhere in the normal range,
+ *              marked up or down by 1.2–1.5x (closer to real over-invoicing;
+ *              some of these are expected to slip through)
  *
  *   npx tsx scripts/pc-demo-plan.ts && python3 scripts/generate_pricecheck_demo.py
  *
@@ -62,13 +65,19 @@ const SUPPLIERS: Record<number, string[]> = {
 };
 const BUYERS = ["Arewa Home Appliances Ltd", "Kano Mobility Ventures Ltd", "Sahel Foods & Grains Ltd", "Lagoon Industrial Supplies Ltd", "Zaria Agro Processing Ltd", "Delta Fresh Foods Ltd"];
 
-type Plant = "over" | "under" | "same_price" | "hs_mismatch" | "round" | "arithmetic" | null;
-interface Case { id: string; plant: Plant; expect_flag: boolean; expect_codes: string[]; planted_line: number | null; doc: PriceDoc }
+type Plant = "over" | "under" | "subtle_over" | "subtle_under" | "same_price" | "hs_mismatch" | "round" | "arithmetic" | null;
+interface Case {
+  id: string; plant: Plant; expect_flag: boolean; expect_codes: string[]; planted_line: number | null; doc: PriceDoc;
+  /** Subtle cases: the markup applied, and where the invoiced price lands against the band. */
+  markup?: number; true_vs_typical?: number; invoiced_vs_typical?: number; band_edge_factor?: number;
+}
+const isOver = (p: Plant) => p === "over" || p === "subtle_over";
+const isUnder = (p: Plant) => p === "under" || p === "subtle_under";
 
 const cases: Case[] = [];
 let n = 0;
 
-function make(opts: { goods: number[]; origin?: number; currency?: string; incoterm?: string; plant?: Plant; plantedLine?: number }): Case {
+function make(opts: { goods: number[]; origin?: number; currency?: string; incoterm?: string; plant?: Plant; plantedLine?: number; markup?: number }): Case {
   n++;
   const id = `pc${String(n).padStart(2, "0")}`;
   const plant = opts.plant ?? null;
@@ -82,6 +91,7 @@ function make(opts: { goods: number[]; origin?: number; currency?: string; incot
   const incoterm = opts.incoterm ?? "FOB";
   const cifFactor = incoterm === "CIF" ? 1.1 : incoterm === "CFR" ? 1.08 : 1;
   const plantedLine = opts.plantedLine ?? 1;
+  let subtle: Pick<Case, "markup" | "true_vs_typical" | "invoiced_vs_typical" | "band_edge_factor"> = {};
   const lines: PriceLine[] = opts.goods.map((gi, k) => {
     const g = GOODS[gi];
     const b = band(g.hs, origin, g.perKg ? "kg" : "item");
@@ -89,14 +99,22 @@ function make(opts: { goods: number[]; origin?: number; currency?: string; incot
     let fob = Math.min(b.high * 0.97, Math.max(b.low * 1.03, b.median * between(0.92, 1.08)));
     if (k + 1 === plantedLine && plant === "over") fob = b.high * between(1.8, 2.4);
     if (k + 1 === plantedLine && plant === "under") fob = b.low / between(1.8, 2.4);
+    if (k + 1 === plantedLine && (plant === "subtle_over" || plant === "subtle_under")) {
+      // The supplier's real price can sit anywhere in the normal range.
+      const truePrice = between(b.low, b.high);
+      const m = opts.markup!;
+      fob = plant === "subtle_over" ? truePrice * m : truePrice / m;
+      const edge = fob > b.high ? fob / b.high : fob < b.low ? b.low / fob : 1;
+      subtle = { markup: m, true_vs_typical: +(truePrice / b.median).toFixed(2), invoiced_vs_typical: +(fob / b.median).toFixed(2), band_edge_factor: +edge.toFixed(2) };
+    }
     const perUnit = fob * (g.perKg || 1) * cifFactor * FX_PER_USD[currency];
     const qty = Math.round(between(g.qty[0], g.qty[1]));
     const unit_price = cents(perUnit);
     return { description: g.desc, hs_code: g.hs, quantity: qty, unit: g.unit, unit_price, line_total: Math.round(qty * unit_price * 100) / 100, net_weight_kg: null };
   });
   const expect: string[] = [];
-  if (plant === "over") expect.push("PRICE_ABOVE_RANGE");
-  if (plant === "under") expect.push("PRICE_BELOW_RANGE");
+  if (isOver(plant)) expect.push("PRICE_ABOVE_RANGE");
+  if (isUnder(plant)) expect.push("PRICE_BELOW_RANGE");
   if (plant === "same_price") {
     // Two goods whose normal ranges overlap, both priced at one figure inside
     // the overlap: the price is fair for each, only the coincidence is odd.
@@ -133,7 +151,8 @@ function make(opts: { goods: number[]; origin?: number; currency?: string; incot
     invoice_number: `PI-26${String(10 + (n % 2)).padStart(2, "0")}-${String(100 + n * 7)}`, invoice_date: `2026-${n % 2 ? "10" : "11"}-${String(1 + (n % 27)).padStart(2, "0")}`,
     currency, incoterm, country_of_origin: ORIGIN[origin], country_of_supply: ORIGIN[origin], total, lines,
   };
-  const c: Case = { id, plant, expect_flag: plant === "over" || plant === "under", expect_codes: expect, planted_line: plant === "over" || plant === "under" ? plantedLine : null, doc };
+  const mis = isOver(plant) || isUnder(plant);
+  const c: Case = { id, plant, expect_flag: mis, expect_codes: expect, planted_line: mis ? plantedLine : null, doc, ...subtle };
   cases.push(c);
   return c;
 }
@@ -171,8 +190,21 @@ make({ goods: [11, 6], origin: 699, plant: "same_price" }); // polypropylene and
 make({ goods: [9], origin: 528, plant: "hs_mismatch" });
 make({ goods: [1, 2, 4], origin: 156, plant: "round" });
 make({ goods: [11], origin: 699, plant: "arithmetic" });
+// --- 10 subtle mispricing (pc31–pc40): 1.2–1.5x on a true price anywhere in the range
+// Narrow and wide ranges, all currencies and terms, over and under.
+make({ goods: [1], origin: 156, plant: "subtle_over", markup: 1.2 });                    // air conditioners, narrow range
+make({ goods: [2], origin: 156, plant: "subtle_over", markup: 1.3 });                    // motorcycles
+make({ goods: [4], origin: 156, plant: "subtle_over", markup: 1.5 });                    // smartphones
+make({ goods: [0], origin: 826, plant: "subtle_over", markup: 1.4, currency: "GBP" });   // generators, wide range
+make({ goods: [11, 6], origin: 699, plant: "subtle_over", markup: 1.35, plantedLine: 1 }); // polypropylene, one line of two
+make({ goods: [6], origin: 764, plant: "subtle_under", markup: 1.2 });                   // rice
+make({ goods: [8], origin: 76, plant: "subtle_under", markup: 1.3, incoterm: "CIF" });   // sugar
+make({ goods: [10], origin: 528, plant: "subtle_under", markup: 1.5, currency: "EUR" }); // milk powder
+make({ goods: [3], origin: 842, plant: "subtle_under", markup: 1.4 });                   // used cars, wide range
+make({ goods: [9], origin: 579, plant: "subtle_under", markup: 1.25, currency: "EUR", incoterm: "CFR" }); // mackerel
 
 const dir = join(__dirname, "..", "samples", "pricecheck", "demo");
 mkdirSync(dir, { recursive: true });
 writeFileSync(join(dir, "plan.json"), JSON.stringify(cases, null, 1));
-console.log(`${cases.length} invoices: ${cases.filter((c) => !c.plant).length} fair, ${cases.filter((c) => c.expect_flag).length} mispriced, ${cases.filter((c) => c.plant && !c.expect_flag).length} other red flags`);
+console.log(`${cases.length} invoices: ${cases.filter((c) => !c.plant).length} fair, ${cases.filter((c) => c.plant === "over" || c.plant === "under").length} obvious mispricing, ${cases.filter((c) => c.plant?.startsWith("subtle")).length} subtle mispricing, ${cases.filter((c) => c.plant && !c.expect_flag).length} other red flags`);
+for (const c of cases.filter((x) => x.markup)) console.log(`  ${c.id} ${c.plant} ${c.markup}x: true price ${c.true_vs_typical}x typical -> invoiced ${c.invoiced_vs_typical}x typical, ${c.band_edge_factor === 1 ? "inside the normal range" : `${c.band_edge_factor}x past the range edge`}`);

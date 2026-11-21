@@ -35,7 +35,7 @@ async function readPhoto(file: string): Promise<PriceDoc> {
 }
 const only = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 
-interface Case { id: string; plant: string | null; expect_flag: boolean; expect_codes: string[]; planted_line: number | null; doc: PriceDoc }
+interface Case { id: string; plant: string | null; expect_flag: boolean; expect_codes: string[]; planted_line: number | null; doc: PriceDoc; markup?: number; band_edge_factor?: number }
 const plan: Case[] = JSON.parse(readFileSync(join(DIR, "plan.json"), "utf8"));
 
 const eq = (a: unknown, b: unknown) => (typeof a === "number" && typeof b === "number" ? Math.abs(a - b) < 0.01 : String(a ?? "").toLowerCase().replace(/[^a-z0-9]/g, "") === String(b ?? "").toLowerCase().replace(/[^a-z0-9]/g, ""));
@@ -58,19 +58,28 @@ const eq = (a: unknown, b: unknown) => (typeof a === "number" && typeof b === "n
     const scored = result.flags.filter((f) => f.points > 0);
     const flagged = result.level !== "low";
     const priceFlag = scored.find((f) => /^PRICE_(ABOVE|BELOW)_RANGE$/.test(f.code));
-    const caught = c.expect_flag ? flagged && scored.some((f) => f.code === c.expect_codes[0] && f.line === c.planted_line) : null;
+    const onLine = scored.some((f) => f.code === c.expect_codes[0] && f.line === c.planted_line);
+    const caught = c.expect_flag ? flagged && onLine : null;
     const falseAlarm = !c.expect_flag ? flagged || Boolean(priceFlag) : null;
     const otherFound = c.plant && !c.expect_flag ? c.expect_codes.every((code) => scored.some((f) => f.code === code)) : null;
-    const status = c.expect_flag ? (caught ? "CAUGHT" : "MISSED") : falseAlarm ? "FALSE ALARM" : c.plant ? (otherFound ? "FOUND" : "MISSED FLAG") : "OK";
-    console.log(`${c.id} ${(c.plant ?? "fair").padEnd(11)} ${String(result.score).padStart(3)}/100 ${result.level.padEnd(6)} ${status.padEnd(11)} ${scored.map((f) => f.code).join(",") || "-"}`);
-    rows.push({ id: c.id, plant: c.plant, score: result.score, level: result.level, status, flags: scored.map((f) => `${f.code}${f.line ? `@${f.line}` : ""}`) });
+    // FLAGGED LOW: the right price flag on the right line, but the total stayed under 30.
+    const status = c.expect_flag ? (caught ? "CAUGHT" : onLine ? "FLAGGED LOW" : "MISSED") : falseAlarm ? "FALSE ALARM" : c.plant ? (otherFound ? "FOUND" : "MISSED FLAG") : "OK";
+    const why = c.markup ? ` (${c.markup}x markup, ${c.band_edge_factor === 1 ? "inside range" : `${c.band_edge_factor}x past edge`})` : "";
+    console.log(`${c.id} ${(c.plant ?? "fair").padEnd(12)} ${String(result.score).padStart(3)}/100 ${result.level.padEnd(6)} ${status.padEnd(11)} ${scored.map((f) => f.code).join(",") || "-"}${why}`);
+    rows.push({ id: c.id, plant: c.plant, score: result.score, level: result.level, status, markup: c.markup, band_edge_factor: c.band_edge_factor, flags: scored.map((f) => `${f.code}${f.line ? `@${f.line}` : ""}`) });
   }
   const mis = rows.filter((r) => r.plant === "over" || r.plant === "under");
-  const fair = rows.filter((r) => !r.plant || !["over", "under"].includes(r.plant as string));
-  const other = rows.filter((r) => r.plant && !["over", "under"].includes(r.plant as string));
+  const subtle = rows.filter((r) => String(r.plant).startsWith("subtle"));
+  const MIS = ["over", "under", "subtle_over", "subtle_under"];
+  const fair = rows.filter((r) => !r.plant || !MIS.includes(r.plant as string));
+  const other = rows.filter((r) => r.plant && !MIS.includes(r.plant as string));
+  const n = (rs: typeof rows, st: string) => rs.filter((r) => r.status === st).length;
   const summary = {
     mode: useModel ? "read from photos" : "printed values",
-    mispricing_caught: `${mis.filter((r) => r.status === "CAUGHT").length}/${mis.length}`,
+    mispricing_caught: `${n(mis, "CAUGHT")}/${mis.length}`,
+    subtle_caught_medium_or_high: `${n(subtle, "CAUGHT")}/${subtle.length}`,
+    subtle_flagged_low_only: `${n(subtle, "FLAGGED LOW")}/${subtle.length}`,
+    subtle_missed: `${n(subtle, "MISSED")}/${subtle.length}`,
     false_alarms: `${fair.filter((r) => r.status === "FALSE ALARM").length}/${fair.length}`,
     other_red_flags_found: `${other.filter((r) => r.status === "FOUND").length}/${other.length}`,
     ...(useModel ? { fields_read_correctly: `${fieldsOk}/${fields}` } : {}),

@@ -50,18 +50,47 @@ Tests: `npx tsx scripts/pc-test-score.ts` (13 synthetic invoices against the rea
 
 "Download PDF report" on every result: `GET /api/pricecheck/report?id=&owner=` builds an A4 report (score, reasons, every line against its range, method) from the saved record.
 
-## Week 4: demo on 30 synthetic invoices (done)
+## Week 4: how well it works (measured)
 
-30 invented proformas priced from the real Comtrade ranges (`scripts/pc-demo-plan.ts`, rendered as phone photos by `scripts/generate_pricecheck_demo.py`): 15 fairly priced, 11 with planted over- or under-invoicing (1.8–2.4× beyond the edge of the normal range), and 4 with one other red flag each (same price for different goods, wrong HS code, round prices, arithmetic). USD, EUR and GBP; FOB, CFR and CIF; 13 origins.
+Three tests, from easiest to hardest. Read them together: the first is the demo, the last is the honest picture.
 
-| | Printed values (rules only) | Read from the photos by the model |
+**1. Obvious mispricing, 30 synthetic invoices (pc01–pc30).** Invented proformas priced from the real Comtrade ranges: 15 fair, 11 with planted mispricing 1.8–2.4× beyond the edge of the normal range, 4 with one other red flag each. USD, EUR and GBP; FOB, CFR and CIF; 13 origins. This is close to guaranteed to pass, because the invoices were priced from the same ranges the check uses and the planted errors are large.
+
+| | Printed values | Read from the photos by the model |
 |---|---|---|
-| Mispricing caught (medium/high, right line) | 11/11 | 11/11 |
+| Obvious mispricing caught (medium/high, right line) | 11/11 | 11/11 |
 | False alarms on the other 19 | 0/19 | 0/19 |
 | Other red flags found | 4/4 | 4/4 |
 | Price fields read correctly | – | 310/310 |
 
-Run: `npx tsx scripts/pc-demo-plan.ts && python3 scripts/generate_pricecheck_demo.py && npx tsx scripts/pc-eval-demo.ts [--model]`. With `PC_REMOTE=<deployment>` the photos are read by that deployment's API (test rows saved under one throwaway owner key).
+**2. Subtle mispricing, 10 synthetic invoices (pc31–pc40).** Closer to real over- and under-invoicing: the supplier's true price is drawn from anywhere in the normal range, then marked up or down by 1.2–1.5×.
+
+| | Printed values | Read from the photos |
+|---|---|---|
+| Caught at medium/high | 1/10 | 1/10 |
+| Flagged on the right line, but the score stayed low | 4/10 | 4/10 |
+| Missed | 5/10 | 5/10 |
+| Price fields read correctly | – | 95/95 |
+
+Two of the five misses (pc35, pc37) are invisible to any range check: after the markup the price is still inside the normal range. The other three are 1.02–1.09× past the edge, inside the 15% tolerance.
+
+**3. Real shipments (`scripts/pc-eval-real.ts`).** 266 real UN Comtrade records for 37 goods/origin pairs, each judged by the app's scorer against a range built from the *other* records (leave-one-out), then marked up or down:
+
+| Price change | Flagged (any level) | Medium/high |
+|---|---|---|
+| Honest (×1.0) | 23% | 13% |
+| ×1.2 over / under | 30% / 35% | 16% / 16% |
+| ×1.3 over / under | 38% / 45% | 19% / 22% |
+| ×1.5 over / under | 56% / 61% | 32% / 39% |
+| ×2 over / under | 79% / 87% | 65% / 70% |
+
+What this means:
+- PriceCheck reliably separates **large** mispricing (around 2×) from normal prices. At 1.2–1.3× it barely does better than chance: a marked-up invoice is flagged only a little more often than an honest one.
+- About **1 in 8 honest shipments gets a medium/high price flag**. Annual trade figures vary a lot between years and routes; even the best-supported ranges put 10% of real shipments more than 1.5× past the edge.
+- Caveats in both directions: a Comtrade record is a year's total, smoother than one invoice (so real false alarms could be higher); and Nigeria's own import records may already contain misinvoicing (they have more outliers than exporters' figures: 28% vs 19% past the edge), so some "honest" records aren't.
+- The price check is a screening signal that tells a reviewer where to look, not a verdict. Catching 1.2–1.3× needs finer data than 6-digit HS annual averages: the bank's own past transactions for the same goods and supplier, or specification-level prices.
+
+Run: `npx tsx scripts/pc-demo-plan.ts && python3 scripts/generate_pricecheck_demo.py && npx tsx scripts/pc-eval-demo.ts [--model]`, and `npx tsx scripts/pc-eval-real.ts`. With `PC_REMOTE=<deployment>` the photos are read by that deployment's API (test rows saved under one throwaway owner key; delete them afterwards).
 
 Fixed during the demo: a wrong HS code no longer gets its price scored against the wrong product's range (the line is marked "not compared" and the HS flag explains why).
 

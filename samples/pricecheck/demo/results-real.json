@@ -1,0 +1,41 @@
+{
+ "tested": 266,
+ "groups": 37,
+ "rows": [
+  {
+   "change": "honest (x1.0)",
+   "over_flagged": "23%",
+   "over_medium_or_high": "13%",
+   "under_flagged": "",
+   "under_medium_or_high": ""
+  },
+  {
+   "change": "x1.2",
+   "over_flagged": "30%",
+   "over_medium_or_high": "16%",
+   "under_flagged": "35%",
+   "under_medium_or_high": "16%"
+  },
+  {
+   "change": "x1.3",
+   "over_flagged": "38%",
+   "over_medium_or_high": "19%",
+   "under_flagged": "45%",
+   "under_medium_or_high": "22%"
+  },
+  {
+   "change": "x1.5",
+   "over_flagged": "56%",
+   "over_medium_or_high": "32%",
+   "under_flagged": "61%",
+   "under_medium_or_high": "39%"
+  },
+  {
+   "change": "x2",
+   "over_flagged": "79%",
+   "over_medium_or_high": "65%",
+   "under_flagged": "87%",
+   "under_medium_or_high": "70%"
+  }
+ ]
+}
